@@ -25,3 +25,55 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+/* metrics variant — big value + muted label */
+.cards.metrics > ul {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.cards.metrics > ul > li {
+  border: none;
+  border-radius: 12px;
+  background-color: #f1f5f9;
+}
+
+.cards.metrics .cards-card-body p:first-child {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.cards.metrics .cards-card-body p:last-child {
+  margin: 6px 0 0;
+  color: #5f6b7a;
+  font-size: 0.9em;
+}
+
+/* files variant — monospace filename chip + description */
+.cards.files > ul {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.cards.files > ul > li {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.cards.files .cards-card-body p:first-child {
+  margin: 0;
+}
+
+.cards.files .cards-card-body p:first-child code {
+  display: inline-block;
+  background-color: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.cards.files .cards-card-body p:last-child {
+  margin: 10px 0 0;
+  color: #5f6b7a;
+  font-size: 0.9em;
+  line-height: 1.5;
+}

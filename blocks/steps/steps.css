@@ -1,0 +1,54 @@
+.steps .steps-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.steps .steps-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: var(--background-color, #fff);
+}
+
+.steps .steps-num {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e6f1fb;
+  color: #185fa5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.steps .steps-title p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.steps .steps-desc p {
+  margin: 6px 0 0;
+  color: #5f6b7a;
+  font-size: 0.9em;
+  line-height: 1.5;
+}
+
+@media (width >= 900px) {
+  .steps .steps-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .steps .steps-step {
+    flex-direction: column;
+  }
+}
