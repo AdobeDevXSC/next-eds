@@ -8,7 +8,9 @@
   overflow: hidden;
 }
 
-/* picture sits behind everything; the scrim sits between it and the text */
+/* picture sits behind everything; the scrim sits between it and the text.
+   Selectors target .hero descendants so they work for both the native EDS
+   markup and the React .hero-content structure. */
 .hero picture {
   position: absolute;
   inset: 0;
@@ -26,21 +28,21 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(90deg, rgb(2 6 23 / 88%) 0%, rgb(2 6 23 / 60%) 45%, rgb(2 6 23 / 20%) 100%);
+  background: linear-gradient(to top, rgb(2 6 23 / 92%) 0%, rgb(2 6 23 / 70%) 55%, rgb(2 6 23 / 45%) 100%);
 }
 
 .hero-content {
   max-width: 720px;
 }
 
-.hero-content h1 {
+.hero h1 {
   margin: 0;
   color: #fff;
   font-size: clamp(28px, 5vw, 48px);
   line-height: 1.1;
 }
 
-.hero-content p {
+.hero p {
   margin: 12px 0 0;
   max-width: 560px;
   color: #e2e8f0;
@@ -48,13 +50,13 @@
 }
 
 /* the <p> that only wraps the background picture must not add spacing */
-.hero-content p:has(picture) {
+.hero p:has(picture) {
   margin: 0;
   max-width: none;
 }
 
 /* call-to-action row */
-.hero-content p:last-child {
+.hero p:last-child {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -62,7 +64,7 @@
   max-width: none;
 }
 
-.hero-content a {
+.hero p:last-child a {
   display: inline-flex;
   align-items: center;
   padding: 11px 20px;
@@ -71,15 +73,15 @@
   text-decoration: none;
 }
 
-.hero-content p:last-child a:first-child {
+.hero p:last-child a:first-child {
   background-color: #2563eb;
   color: #fff;
 }
 
-.hero-content p:last-child a:last-child {
-  background-color: transparent;
+.hero p:last-child a:last-child {
+  background-color: rgb(255 255 255 / 12%);
   color: #fff;
-  border: 1px solid rgb(255 255 255 / 45%);
+  border: 1px solid rgb(255 255 255 / 50%);
 }
 
 @media (width >= 900px) {
