@@ -6,10 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "preview:cf": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "deploy:cf:preview": "opennextjs-cloudflare build && wrangler deploy --env preview",
+    "serve": "npx serve out",
     "lint:js": "eslint .",
     "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",
@@ -33,12 +30,10 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.29.7",
-    "@opennextjs/cloudflare": "^1.20.0",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.32.0",
     "stylelint": "17.13.0",
-    "stylelint-config-standard": "40.0.0",
-    "wrangler": "^4.105.0"
+    "stylelint-config-standard": "40.0.0"
   }
 }
