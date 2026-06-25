@@ -10,5 +10,3 @@ next.config.mjs
 open-next.config.ts
 .next
 .open-next
-out
-rebuild

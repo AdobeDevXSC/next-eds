@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "next-eds-spike",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-03-25",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    // Override per environment. Prod must point at a `main--…aem.live` origin so EDS
+    // push invalidation fires (it only triggers for `main` host names).
+    "EDS_ORIGIN": "https://main--next-eds--AdobeDevXSC.aem.live"
+  },
+  // R2 bucket backing the OpenNext incremental (ISR) cache. Create with:
+  //   npx wrangler r2 bucket create next-eds-spike-cache
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "next-eds-spike-cache"
+    }
+  ],
+  "env": {
+    "preview": {
+      "vars": {
+        // Preview deployment renders sidekick-previewed content from the .page origin.
+        "EDS_ORIGIN": "https://main--next-eds--AdobeDevXSC.aem.page"
+      }
+    }
+  }
+}
