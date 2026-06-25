@@ -4,14 +4,17 @@ Your project's description...
 ## Next.js rendering layer
 
 This project renders AEM Edge Delivery content through **Next.js App Router + React Server
-Components** instead of the native client-side `aem.js` decoration. EDS remains the headless
-content/authoring source (Docs/DA, sidekick, `.page`/`.live` unchanged); a Cloudflare Worker
-fronts EDS and renders at the edge. See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full picture.
+Components** instead of the native client-side `aem.js` decoration. EDS remains the content +
+authoring source (Docs/DA, sidekick, `.page`/`.live` unchanged), consumed for decoupled
+rendering; the app **prerenders to static HTML** (`output: 'export'`) at build time, which you
+host anywhere. See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full picture.
 
 - Blocks live in `/blocks/<name>/`: `Name.jsx` (the React component) + `name.js` (entry shim)
   + `name.css`. The registry in [`lib/registry.js`](lib/registry.js) maps block name → component.
-- The EDS parse layer is in [`lib/eds/`](lib/eds) (fetch → parse → render).
-- Requires Node 18+ (`nvm use 22`). Run locally with `npm run dev`; deploy with `npm run deploy:cf`.
+- The EDS parse layer is in [`lib/eds/`](lib/eds) (fetch → parse → render → metadata).
+- Requires Node 18+ (`nvm use 22`). Run locally with `npm run dev`.
+- The app **prerenders to static HTML** (`output: 'export'`): `npm run build` → `out/`, then
+  host that folder anywhere. See [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 > Status: spike — `hero`, `cards`, and `columns` are converted. Other blocks still have their
 > native `aem.js` decorate functions and render as placeholders until ported.

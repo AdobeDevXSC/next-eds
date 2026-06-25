@@ -19,3 +19,6 @@ helix-importer-ui
 !CLAUDE.md
 !AGENTS.md
 .claude-plugin/
+
+# Next.js static export output
+out
