@@ -68,8 +68,30 @@ read a sitemap / query-index and map its `.data[].path` entries.
 
 ## SEO / GEO notes
 
-- `generateMetadata()` bakes `<title>`, description, Open Graph, and (with `SITE_URL`) a
-  canonical `<link>` into each page's `<head>` — what makes the static surface indexable,
-  shareable, and citable.
-- Canonicalize to this host and keep the EDS origin (`…aem.live`) out of the index to avoid
-  duplicate content across the two surfaces.
+`generateMetadata()` bakes `<title>`, description, Open Graph, and (with `SITE_URL`) a canonical
+`<link>` into each page's `<head>` — what makes the static surface indexable, shareable, and
+citable.
+
+### Canonical & indexing (resolve the duplicate-surface risk)
+
+The same content is reachable on **two** surfaces: the Cloudflare Pages site (the public front
+door) and the EDS origin (`…aem.live`). Pick the Pages site as the single canonical, indexable
+surface:
+
+1. **Make the Pages site canonical.** Set `SITE_URL` to the public Pages/custom domain in the
+   Pages build env. Then `generateMetadata()` emits `<link rel="canonical" href="https://your-
+   domain/…">` on every page, pointing search and AI engines at this surface.
+2. **Keep the Pages pages indexable.** The build emits no `robots` `noindex` for content pages,
+   so they're crawlable by default — leave it that way. (The `nav`/`footer` fragments keep their
+   own `noindex` and are not standalone pages, which is correct.)
+3. **De-index the EDS origin.** So `…aem.live` doesn't compete as duplicate content, disallow it
+   in the EDS-served `robots.txt` (it's per-host) and/or only ever publicize/link the Pages
+   domain. The `…aem.page` preview host is already non-public.
+
+### Cloudflare Pages build environment
+
+| Variable | Purpose |
+| --- | --- |
+| `NODE_VERSION=22` | Build needs Node 18+ |
+| `EDS_ORIGIN` | Content origin to read at build (defaults to the `main` preview) |
+| `SITE_URL` | Public host — drives the canonical `<link>`; set to the Pages/custom domain |
