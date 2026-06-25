@@ -3,9 +3,9 @@ import './cards.css';
 // Server Component port of the native cards decorate(): each row → <li>, each cell classed
 // as image or body. Picture markup arrives already optimized from EDS .plain.html, so (unlike
 // the old block) there's no createOptimizedPicture step.
-export default function Cards({ rows }) {
+export default function Cards({ rows, variants = [] }) {
   return (
-    <div className="cards block">
+    <div className={['cards', ...variants, 'block'].join(' ')}>
       <ul>
         {rows.map((cells, i) => (
           // eslint-disable-next-line react/no-array-index-key
