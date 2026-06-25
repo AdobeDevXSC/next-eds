@@ -44,15 +44,20 @@ SITE_URL=https://www.yourdomain.com npm run build
 Deploy `out/` to any static host (Cloudflare Pages, S3 + CloudFront, Netlify, GitHub Pages).
 No server, no Worker, no Node runtime.
 
-## Keeping content fresh — rebuild on publish
+## Keeping content fresh — rebuild on publish (Cloudflare-native)
 
 Because the HTML is generated at build time, content changes go live by **rebuilding**, not by a
-cache purge. Wire the Edge Delivery publish event to trigger a build:
+cache purge. The wired setup is all Cloudflare:
 
-- EDS push invalidation / a publish webhook → your host's build hook (e.g. Cloudflare Pages
-  deploy hook, or a GitHub Actions `repository_dispatch`) → `npm run build` → redeploy `out/`.
+- **Cloudflare Pages** builds (`npm run build`) and hosts `out/`; its Git integration auto-builds
+  on code pushes.
+- A **Cron Trigger Worker** in [`rebuild/`](rebuild/README.md) pokes the Pages **Deploy Hook** on
+  a schedule (default every 15 min) to pick up newly published content.
 
-Trade-off vs. a runtime server: a publish takes a build cycle to appear (seconds–minutes)
+See [`rebuild/README.md`](rebuild/README.md) for the exact steps. A GitHub Actions
+`repository_dispatch` calling the same Deploy Hook is an equivalent non-Cloudflare alternative.
+
+Trade-off vs. a runtime server: a publish takes a build cycle to appear (the cron interval)
 instead of being instant, in exchange for zero server cost and a purely static surface.
 
 ## What pages get built
