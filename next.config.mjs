@@ -5,8 +5,8 @@ initOpenNextCloudflareForDev();
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Pin the workspace root (this dir nests inside the EDS repo, which has its own lockfile).
-  turbopack: { root: import.meta.dirname },
+  // The Next app is rooted at the repo root, so the colocated React blocks in /blocks are
+  // naturally in compilation scope — no root overrides needed.
   // EDS optimizes images on its own delivery origin; the spike renders the EDS <picture>
   // markup as-is, so no remote image config is required.
 };

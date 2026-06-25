@@ -8,6 +8,14 @@ helix-importer-ui
 *.bak
 .idea
 
+# Next.js / OpenNext build artifacts
+.next
+.open-next
+.wrangler
+.dev.vars
+.env*.local
+
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
+.claude-plugin/

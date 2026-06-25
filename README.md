@@ -1,6 +1,21 @@
 # Your Project's Title...
 Your project's description...
 
+## Next.js rendering layer
+
+This project renders AEM Edge Delivery content through **Next.js App Router + React Server
+Components** instead of the native client-side `aem.js` decoration. EDS remains the headless
+content/authoring source (Docs/DA, sidekick, `.page`/`.live` unchanged); a Cloudflare Worker
+fronts EDS and renders at the edge. See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full picture.
+
+- Blocks live in `/blocks/<name>/`: `Name.jsx` (the React component) + `name.js` (entry shim)
+  + `name.css`. The registry in [`lib/registry.js`](lib/registry.js) maps block name → component.
+- The EDS parse layer is in [`lib/eds/`](lib/eds) (fetch → parse → render).
+- Requires Node 18+ (`nvm use 22`). Run locally with `npm run dev`; deploy with `npm run deploy:cf`.
+
+> Status: spike — `hero`, `cards`, and `columns` are converted. Other blocks still have their
+> native `aem.js` decorate functions and render as placeholders until ported.
+
 ## Environments
 - Preview: https://main--{repo}--{owner}.aem.page/
 - Live: https://main--{repo}--{owner}.aem.live/
