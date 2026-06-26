@@ -5,6 +5,13 @@ import { NextResponse } from 'next/server';
 // so EDS push invalidation (purge-by-cache-tag on the BYO Cloudflare CDN) and the
 // /api/revalidate endpoint both target the same key when an author publishes.
 export function middleware(request) {
+  // Canonicalize www → apex (301), preserving path and query.
+  if (request.nextUrl.hostname === 'www.nxtjs.page') {
+    const url = request.nextUrl.clone();
+    url.hostname = 'nxtjs.page';
+    return NextResponse.redirect(url, 301);
+  }
+
   const res = NextResponse.next();
   const slug = request.nextUrl.pathname.replace(/^\/+|\/+$/g, '') || 'index';
   res.headers.set('Cache-Tag', `page:${slug}`);

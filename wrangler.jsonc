@@ -6,8 +6,10 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   // Custom domain (the zone must already exist in this Cloudflare account). On deploy,
   // wrangler provisions the DNS record + TLS cert and routes the apex to this Worker.
+  // www is also routed to the Worker so middleware.js can 301-redirect it to the apex.
   "routes": [
-    { "pattern": "nxtjs.page", "custom_domain": true }
+    { "pattern": "nxtjs.page", "custom_domain": true },
+    { "pattern": "www.nxtjs.page", "custom_domain": true }
   ],
   "assets": {
     "directory": ".open-next/assets",
