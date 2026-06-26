@@ -50,7 +50,8 @@ npx wrangler dev --var EDS_ORIGIN:https://main--next-eds--AdobeDevXSC.aem.page
 ```bash
 npx wrangler login
 npx wrangler r2 bucket create next-eds-spike-cache   # backs the ISR incremental cache
-npx wrangler secret put REVALIDATE_SECRET            # optional: protects /api/revalidate
+npx wrangler kv namespace create next-eds-tag-cache  # backs the tag cache (revalidateTag)
+npx wrangler secret put REVALIDATE_SECRET            # protects /api/revalidate (see below)
 ```
 
 ## Deploy
@@ -83,21 +84,33 @@ The R2 (R2 Storage) and Zone DNS scopes are required for the ISR cache bucket an
 domain, respectively — without them the deploy uploads the Worker but the cache binding or
 custom-domain step fails.
 
-## Wiring EDS push invalidation → Cloudflare
+## Instant updates on publish (publish event → revalidate)
 
-This is the publish→fresh path and is configured on the **EDS** side, not in this repo. Follow
-<https://www.aem.live/docs/setup-byo-cdn-push-invalidation-for-cloudflare>:
+By default a publish appears within ~60s (the `revalidate` window on the `.plain.html` fetch).
+For **instant** updates, an EDS publish event invalidates the page's cache:
 
-1. Set the project's production CDN config to your Cloudflare zone with a purge token.
-2. EDS then purges your Cloudflare cache **by URL and by cache tag** whenever content/code on
-   a `main--…` origin changes. Our `Cache-Tag: page:<slug>` headers make tag purge target the
-   right pages. (Tag-based purge is a Cloudflare Enterprise feature; on lower plans, URL purge
-   still works.)
+```
+author publishes → EDS fires repository_dispatch (resource-published, with the path)
+                 → .github/workflows/revalidate.yaml → POST /api/revalidate
+                 → revalidateTag(page:<slug>) clears the tag cache (KV)
+                 → next request re-renders from fresh EDS content
+```
 
-> **Notes / follow-ups**
-> - Push invalidation fires only for `main` host names, so production must point at
->   `…aem.live` (already the default in `wrangler.jsonc`).
-> - For a CDN without native tag purge (e.g. fronting with Vercel instead), use a relay that
->   receives the publish event and calls `POST /api/revalidate` — that path is already built.
-> - To make EDS's *native* tag purge maximally precise, propagate EDS origin surrogate keys
->   onto the Worker response in addition to the deterministic `page:<slug>` tag. Deferred.
+What's wired in this repo:
+- **Tag cache** — `open-next.config.ts` adds `kvNextTagCache` (binding `NEXT_TAG_CACHE_KV` in
+  `wrangler.jsonc`); without it `revalidateTag` is a no-op.
+- **Endpoint** — `app/api/revalidate/route.js` runs `revalidateTag(page:<slug>)`, guarded by the
+  `x-revalidate-secret` header.
+- **Workflow** — `.github/workflows/revalidate.yaml` maps the published path → slug and POSTs the
+  endpoint.
+
+Setup (account + repo side):
+1. `npx wrangler secret put REVALIDATE_SECRET` — set it on the Worker.
+2. Add the same value as a **repo secret** `REVALIDATE_SECRET` (used by the workflow).
+3. **Enable publish events** from EDS to this repo — see
+   <https://www.aem.live/developer/github-actions>. EDS then sends `resource-published` /
+   `resource-unpublished` `repository_dispatch` events that the workflow listens for.
+
+> Alternative (not used here): BYO-CDN **push invalidation** purges the *CDN* cache by URL/tag on
+> publish — but our lag lives in the Next *data* cache (revalidate), which CDN purge doesn't
+> clear, so the publish-event → `revalidateTag` path above is the fit for this Worker.
