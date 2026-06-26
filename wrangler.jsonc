@@ -33,5 +33,14 @@
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "next-eds-spike-cache"
     }
+  ],
+  // KV namespace backing the OpenNext tag cache, so revalidateTag() works (used by
+  // /api/revalidate for instant-on-publish). Create with:
+  //   npx wrangler kv namespace create next-eds-tag-cache
+  "kv_namespaces": [
+    {
+      "binding": "NEXT_TAG_CACHE_KV",
+      "id": "7c290fe8865d479d8aafb1a8b36e49fc"
+    }
   ]
 }

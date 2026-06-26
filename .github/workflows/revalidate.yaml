@@ -1,0 +1,36 @@
+name: Revalidate on publish
+
+# Edge Delivery sends resource-published / resource-unpublished events to this repo as
+# repository_dispatch. We turn the published path into a page slug and call the Worker's
+# /api/revalidate, which runs revalidateTag(page:<slug>) — clearing that page's cache
+# instantly so the next request re-renders from fresh content.
+on:
+  repository_dispatch:
+    types:
+      - resource-published
+      - resource-published-native
+      - resource-unpublished
+      - resource-unpublished-native
+
+concurrency:
+  group: revalidate-${{ github.event.client_payload.path }}
+  cancel-in-progress: true
+
+jobs:
+  revalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Revalidate the published page
+        env:
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          RESOURCE_PATH: ${{ github.event.client_payload.path }}
+        run: |
+          slug="${RESOURCE_PATH#/}"   # strip leading slash
+          slug="${slug%.md}"          # strip .md (pages)
+          slug="${slug%.json}"        # strip .json (sheets)
+          echo "Revalidating slug: '${slug}' (from '${RESOURCE_PATH}')"
+          curl -sS -X POST "https://nxtjs.page/api/revalidate" \
+            -H "x-revalidate-secret: ${REVALIDATE_SECRET}" \
+            -H "content-type: application/json" \
+            -d "{\"slug\":\"${slug}\"}" \
+            -w "\n[HTTP %{http_code}]\n"
