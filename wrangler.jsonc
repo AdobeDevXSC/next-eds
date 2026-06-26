@@ -11,6 +11,9 @@
     { "pattern": "nxtjs.page", "custom_domain": true },
     { "pattern": "www.nxtjs.page", "custom_domain": true }
   ],
+  // Keep the *.workers.dev URL enabled even though custom routes are defined, so there's
+  // always a working URL independent of custom-domain provisioning.
+  "workers_dev": true,
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -30,13 +33,5 @@
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "next-eds-spike-cache"
     }
-  ],
-  "env": {
-    "preview": {
-      "vars": {
-        // Preview deployment renders sidekick-previewed content from the .page origin.
-        "EDS_ORIGIN": "https://main--next-eds--AdobeDevXSC.aem.page"
-      }
-    }
-  }
+  ]
 }
