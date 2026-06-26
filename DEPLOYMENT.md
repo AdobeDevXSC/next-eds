@@ -1,97 +1,83 @@
-# Deploying the Next.js + EDS static export
+# Deploying the Next.js + EDS spike to Cloudflare
 
-The Next.js app **prerenders to static HTML at build time** (`output: 'export'`) — no runtime
-server. Edge Delivery stays the content + authoring source; the build reads it and emits a
-plain `out/` folder you host anywhere.
+The Next.js RSC app **cannot run on `*.aem.live`** — EDS hosting serves cached document
+content plus the client-side `/scripts` + `/blocks` code; it does not run a Node/RSC server.
+So we invert the relationship: **Cloudflare (your BYO CDN) is the front door and renders Next
+at the edge; EDS is the upstream content origin.**
 
 ```
-Authors (Docs/DA) → EDS → *.aem.page / *.aem.live
-                              │ .plain.html + page <head> metadata
-                              ▼
-                   next build  (output: 'export')
-                     • generateStaticParams → which pages to prerender
-                     • fetch .plain.html → parse → render blocks (RSC, 0 client JS)
-                     • generateMetadata → bake <head> (title, description, canonical, OG)
-                              │
-                              ▼
-                          out/  → static host (Cloudflare Pages, S3, GitHub Pages, …)
+        www.yourdomain.com
+                │
+   ┌────────────▼─────────────┐
+   │ Cloudflare (BYO CDN)      │
+   │  • caches rendered HTML    │   tagged via `Cache-Tag: page:<slug>` (middleware.js)
+   │  • Worker = Next (OpenNext)│   RSC render happens here
+   └────────────┬─────────────┘
+                │ fetch .plain.html
+                ▼
+   main--next-eds--AdobeDevXSC.aem.live      (EDS origin: content)
+                │
+ author publishes (main) ─► EDS push invalidation ─► purges Cloudflare by URL + cache tag
 ```
 
-## Build & preview
+## What's wired in this repo
+
+| Concern | File |
+| --- | --- |
+| Worker build adapter | `open-next.config.ts` (R2-backed incremental/ISR cache) |
+| Worker + bindings + per-env origin | `wrangler.jsonc` |
+| Edge cache tagging (`Cache-Tag: page:<slug>`) | `middleware.js` |
+| On-demand revalidation (Next data cache) | `app/api/revalidate/route.js` |
+| Next data-cache tags (`page:<slug>`) | `lib/eds/fetch.js` |
+| Local dev bindings | `initOpenNextCloudflareForDev()` in `next.config.mjs` |
+
+Tag scheme is consistent end to end: `page:<slug>` is set as the Next fetch tag, the
+Cloudflare `Cache-Tag`, and the revalidate key — so a publish purges the same key everywhere.
+
+## Local commands
 
 ```bash
 nvm use 22
-npm install
-npm run build     # → out/  (static HTML, head baked in)
-npm run serve     # serve out/ locally to check
+npm run dev                       # next dev (fetches .page origin by default)
+npm run preview:cf                # build Worker + run it locally under workerd
+
+# run the built Worker against the preview origin (content not yet on .live):
+npx wrangler dev --var EDS_ORIGIN:https://main--next-eds--AdobeDevXSC.aem.page
 ```
 
-Point the build at a different content origin (defaults to the `main` preview):
+## One-time Cloudflare setup
 
 ```bash
-EDS_ORIGIN=https://main--next-eds--adobedevxsc.aem.page npm run build
+npx wrangler login
+npx wrangler r2 bucket create next-eds-spike-cache   # backs the ISR incremental cache
+npx wrangler secret put REVALIDATE_SECRET            # optional: protects /api/revalidate
 ```
 
-Set `SITE_URL` to your public host so the prerendered pages get a **canonical URL** pointing at
-this surface (resolves the duplicate-content risk with the EDS origin):
+## Deploy
 
 ```bash
-SITE_URL=https://www.yourdomain.com npm run build
+npm run deploy:cf            # production  → renders main--…aem.live
+npm run deploy:cf:preview    # preview env → renders main--…aem.page (sidekick previews)
 ```
 
-## Hosting
+Then route your custom domain at this Worker (Workers Routes / custom domain in the
+Cloudflare dashboard).
 
-Deploy `out/` to any static host (Cloudflare Pages, S3 + CloudFront, Netlify, GitHub Pages).
-No server, no Worker, no Node runtime.
+## Wiring EDS push invalidation → Cloudflare
 
-## Keeping content fresh — rebuild on publish (Cloudflare-native)
+This is the publish→fresh path and is configured on the **EDS** side, not in this repo. Follow
+<https://www.aem.live/docs/setup-byo-cdn-push-invalidation-for-cloudflare>:
 
-Because the HTML is generated at build time, content changes go live by **rebuilding**, not by a
-cache purge. The wired setup is all Cloudflare:
+1. Set the project's production CDN config to your Cloudflare zone with a purge token.
+2. EDS then purges your Cloudflare cache **by URL and by cache tag** whenever content/code on
+   a `main--…` origin changes. Our `Cache-Tag: page:<slug>` headers make tag purge target the
+   right pages. (Tag-based purge is a Cloudflare Enterprise feature; on lower plans, URL purge
+   still works.)
 
-- **Cloudflare Pages** builds (`npm run build`) and hosts `out/`; its Git integration auto-builds
-  on code pushes.
-- A **Cron Trigger Worker** in [`rebuild/`](rebuild/README.md) pokes the Pages **Deploy Hook** on
-  a schedule (default every 15 min) to pick up newly published content.
-
-See [`rebuild/README.md`](rebuild/README.md) for the exact steps. A GitHub Actions
-`repository_dispatch` calling the same Deploy Hook is an equivalent non-Cloudflare alternative.
-
-Trade-off vs. a runtime server: a publish takes a build cycle to appear (the cron interval)
-instead of being instant, in exchange for zero server cost and a purely static surface.
-
-## What pages get built
-
-`generateStaticParams()` (in `app/[[...slug]]/page.js`) lists the pages to prerender. This site
-has no `query-index.json`, so it currently enumerates the index only — a production build would
-read a sitemap / query-index and map its `.data[].path` entries.
-
-## SEO / GEO notes
-
-`generateMetadata()` bakes `<title>`, description, Open Graph, and (with `SITE_URL`) a canonical
-`<link>` into each page's `<head>` — what makes the static surface indexable, shareable, and
-citable.
-
-### Canonical & indexing (resolve the duplicate-surface risk)
-
-The same content is reachable on **two** surfaces: the Cloudflare Pages site (the public front
-door) and the EDS origin (`…aem.live`). Pick the Pages site as the single canonical, indexable
-surface:
-
-1. **Make the Pages site canonical.** Set `SITE_URL` to the public Pages/custom domain in the
-   Pages build env. Then `generateMetadata()` emits `<link rel="canonical" href="https://your-
-   domain/…">` on every page, pointing search and AI engines at this surface.
-2. **Keep the Pages pages indexable.** The build emits no `robots` `noindex` for content pages,
-   so they're crawlable by default — leave it that way. (The `nav`/`footer` fragments keep their
-   own `noindex` and are not standalone pages, which is correct.)
-3. **De-index the EDS origin.** So `…aem.live` doesn't compete as duplicate content, disallow it
-   in the EDS-served `robots.txt` (it's per-host) and/or only ever publicize/link the Pages
-   domain. The `…aem.page` preview host is already non-public.
-
-### Cloudflare Pages build environment
-
-| Variable | Purpose |
-| --- | --- |
-| `NODE_VERSION=22` | Build needs Node 18+ |
-| `EDS_ORIGIN` | Content origin to read at build (defaults to the `main` preview) |
-| `SITE_URL` | Public host — drives the canonical `<link>`; set to the Pages/custom domain |
+> **Notes / follow-ups**
+> - Push invalidation fires only for `main` host names, so production must point at
+>   `…aem.live` (already the default in `wrangler.jsonc`).
+> - For a CDN without native tag purge (e.g. fronting with Vercel instead), use a relay that
+>   receives the publish event and calls `POST /api/revalidate` — that path is already built.
+> - To make EDS's *native* tag purge maximally precise, propagate EDS origin surrogate keys
+>   onto the Worker response in addition to the deterministic `page:<slug>` tag. Deferred.

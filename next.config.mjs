@@ -1,12 +1,14 @@
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+
+// Makes Cloudflare bindings (R2 incremental cache, vars) available during `next dev`.
+initOpenNextCloudflareForDev();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Static export: prerender every page to plain HTML at build time (no runtime server).
-  // The <head> is baked in via generateMetadata; deploy the `out/` folder to any static host.
-  output: 'export',
-  trailingSlash: true,
-  // EDS already delivers optimized <picture> markup; we render it as-is, so disable the
-  // Next image optimizer (which needs a server it won't have in a static export).
-  images: { unoptimized: true },
+  // The Next app is rooted at the repo root, so the colocated React blocks in /blocks are
+  // naturally in compilation scope — no root overrides needed.
+  // EDS optimizes images on its own delivery origin; the spike renders the EDS <picture>
+  // markup as-is, so no remote image config is required.
 };
 
 export default nextConfig;
