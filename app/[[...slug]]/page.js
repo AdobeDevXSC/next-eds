@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { fetchPlainHtml } from '../../lib/eds/fetch.js';
 import { parseEds } from '../../lib/eds/parse.js';
 import { renderNode } from '../../lib/eds/render.js';
@@ -9,6 +10,8 @@ export default async function Page({ params }) {
   const path = (slug ?? []).join('/');
 
   const html = await fetchPlainHtml(path);
+  if (html === null) notFound(); // missing page / non-page request → 404, not 500
+
   const tree = parseEds(html);
 
   return <main>{tree.map((node, i) => renderNode(node, i))}</main>;
