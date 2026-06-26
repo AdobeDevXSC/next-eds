@@ -4,6 +4,11 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-03-25",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  // Custom domain (the zone must already exist in this Cloudflare account). On deploy,
+  // wrangler provisions the DNS record + TLS cert and routes the apex to this Worker.
+  "routes": [
+    { "pattern": "nxtjs.page", "custom_domain": true }
+  ],
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
