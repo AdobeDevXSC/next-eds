@@ -60,8 +60,28 @@ npm run deploy:cf            # production  → renders main--…aem.live
 npm run deploy:cf:preview    # preview env → renders main--…aem.page (sidekick previews)
 ```
 
-Then route your custom domain at this Worker (Workers Routes / custom domain in the
-Cloudflare dashboard).
+The custom domain (`nxtjs.page` + `www`) is wired in `wrangler.jsonc` `routes`.
+
+## CI deploy (GitHub Actions)
+
+`.github/workflows/deploy.yaml` deploys on every push to `main` (and via the **Run workflow**
+button). It runs `opennextjs-cloudflare build && deploy` with a Cloudflare API token.
+
+Add two repo secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Value |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | A scoped API token (see below) |
+| `CLOUDFLARE_ACCOUNT_ID` | The account ID (`wrangler whoami`) |
+
+Create the token from the **"Edit Cloudflare Workers"** template, then add the extras this
+project needs:
+- **Account** → Workers Scripts: Edit, Workers R2 Storage: Edit, Account Settings: Read
+- **Zone** (`nxtjs.page`) → Workers Routes: Edit, Zone: Read, DNS: Edit
+
+The R2 (R2 Storage) and Zone DNS scopes are required for the ISR cache bucket and the custom
+domain, respectively — without them the deploy uploads the Worker but the cache binding or
+custom-domain step fails.
 
 ## Wiring EDS push invalidation → Cloudflare
 
