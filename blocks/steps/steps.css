@@ -4,41 +4,41 @@
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
+  gap: var(--space-s);
 }
 
 .steps .steps-step {
   display: flex;
-  gap: 12px;
+  gap: var(--space-xs);
   align-items: flex-start;
   padding: 20px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: var(--background-color, #fff);
+  border: var(--border-width) solid var(--border-hairline);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
 }
 
 .steps .steps-num {
   flex: 0 0 auto;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
-  background: #e6f1fb;
-  color: #185fa5;
+  border-radius: var(--radius-round);
+  background: var(--accent-blue-soft);
+  color: var(--accent-blue-deep);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: var(--weight-bold);
   font-size: 14px;
 }
 
 .steps .steps-title p {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--weight-bold);
 }
 
 .steps .steps-desc p {
-  margin: 6px 0 0;
-  color: #5f6b7a;
+  margin: var(--space-2xs) 0 0;
+  color: var(--text-muted);
   font-size: 0.9em;
   line-height: 1.5;
 }
