@@ -1,0 +1,47 @@
+/* EDS spacing, radius, shadow & layout tokens.
+   Section rhythm + content widths come from the boilerplate; radii/shadows are
+   distilled from the converted block CSS (cards 12px, steps badge 50%, etc.). */
+
+:root {
+  /* spacing scale */
+  --space-2xs: 6px;
+  --space-xs: 12px;
+  --space-s: 16px;
+  --space-m: 24px;
+  --space-l: 40px;
+  --space-xl: 64px;
+  --space-2xl: 80px;
+
+  /* layout */
+  --content-width: 1200px;
+  --nav-width: 1264px;
+  --nav-height: 64px;
+  --gutter: 24px;
+  --gutter-wide: 32px;
+
+  /* radii */
+  --radius-chip: 6px;
+  --radius-card: 12px;
+  --radius-pill: 2.4em;
+  --radius-round: 50%;
+
+  /* borders */
+  --border-width: 1px;
+  --border-width-emphasis: 2px;
+
+  /* shadows — EDS keeps elevation flat; borders do most of the work */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgb(2 6 23 / 6%);
+  --shadow-card: 0 4px 16px rgb(2 6 23 / 8%);
+  --shadow-pop: 0 12px 32px rgb(2 6 23 / 14%);
+
+  /* hero scrim */
+  --scrim: linear-gradient(to top, rgb(2 6 23 / 92%) 0%, rgb(2 6 23 / 70%) 55%, rgb(2 6 23 / 45%) 100%); /* @kind other */
+
+  /* motion */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --duration-fast: 0.18s; /* @kind other */
+  --duration-base: 0.3s; /* @kind other */
+  --duration-slow: 0.6s; /* @kind other */
+}
