@@ -4,6 +4,7 @@ header .nav-wrapper {
   width: 100%;
   z-index: 2;
   position: fixed;
+  top: 0;
   transition: background-color var(--duration-base) var(--ease-standard),
     backdrop-filter var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard);
