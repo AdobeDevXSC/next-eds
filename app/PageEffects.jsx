@@ -28,10 +28,9 @@ export default function PageEffects() {
       }
     });
 
-    // parallax drift on the hero background image
+    // parallax drift on the hero background image (the transparent-over-hero nav is handled
+    // in CSS via :has(), so there's no flag to set here).
     const pic = document.querySelector('main > .section:first-of-type .hero picture');
-    // flag a hero-first page so the nav can go transparent over it
-    if (pic) root.setAttribute('data-hero-nav', 'on');
     let ticking = false;
     const update = () => {
       if (pic) pic.style.transform = `translate3d(0, ${(window.scrollY * 0.12).toFixed(1)}px, 0)`;
@@ -47,7 +46,6 @@ export default function PageEffects() {
       io.disconnect();
       window.removeEventListener('scroll', onScroll);
       root.removeAttribute('data-effects');
-      root.removeAttribute('data-hero-nav');
     };
   }, []);
 
