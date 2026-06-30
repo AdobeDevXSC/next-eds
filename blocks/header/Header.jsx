@@ -9,6 +9,16 @@ import './header.css';
 export default function SiteHeader({ brand, sections, tools }) {
   const navRef = useRef(null);
 
+  // Sticky-blur: transparent over the hero, solid + blurred once scrolled.
+  useEffect(() => {
+    const wrapper = navRef.current?.closest('.nav-wrapper');
+    if (!wrapper) return undefined;
+    const onScroll = () => wrapper.classList.toggle('is-scrolled', window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return undefined;

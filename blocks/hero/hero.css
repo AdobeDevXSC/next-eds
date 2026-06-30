@@ -8,12 +8,23 @@
   overflow: hidden;
 }
 
+/* full-bleed first hero (homepage): fill the viewport and slide under the fixed nav */
+main > .section:first-of-type:has(.hero) {
+  margin-top: calc(-1 * var(--nav-height));
+}
+
+main > .section:first-of-type .hero {
+  min-height: 92vh;
+  padding-top: calc(var(--space-2xl) + var(--nav-height));
+}
+
 /* picture sits behind everything; the scrim sits between it and the text.
    Selectors target .hero descendants so they work for both the native EDS
-   markup and the React .hero-content structure. */
+   markup and the React .hero-content structure. The negative inset gives the
+   image room to drift for the parallax effect without exposing edges. */
 .hero picture {
   position: absolute;
-  inset: 0;
+  inset: -20% 0;
   z-index: -2;
 }
 
