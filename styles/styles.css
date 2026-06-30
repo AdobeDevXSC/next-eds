@@ -68,3 +68,49 @@ main .section.highlight {
   margin: 0;
   padding: var(--space-l) 0;
 }
+
+/* full-bleed hero — breaks out of the content-width cap above so the background spans the
+   viewport, while padding keeps the content aligned to the centered content column. */
+main > .section > .hero {
+  max-width: none;
+  margin-inline: 0;
+  padding-block: var(--space-xl) var(--space-l);
+  padding-inline: max(var(--gutter), calc((100% - var(--content-width)) / 2));
+}
+
+/* the first hero on the page fills the viewport and slides under the fixed nav */
+main > .section:first-of-type:has(.hero) {
+  margin-top: calc(-1 * var(--nav-height));
+}
+
+main > .section:first-of-type .hero {
+  min-height: 92vh;
+  padding-top: calc(var(--space-2xl) + var(--nav-height));
+}
+
+@media (width >= 900px) {
+  main > .section > .hero {
+    padding-inline: max(var(--gutter-wide), calc((100% - var(--content-width)) / 2));
+  }
+}
+
+/* reveal-on-scroll for sections — applied only once PageEffects sets data-effects, so
+   content stays visible without JS (the JS lives at the page level in app/PageEffects.jsx). */
+html[data-effects="on"] main > .section.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+
+html[data-effects="on"] main > .section.reveal.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-effects="on"] main > .section.reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

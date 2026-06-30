@@ -8,31 +8,9 @@
   overflow: hidden;
 }
 
-/* full-bleed hero: span the viewport instead of the capped content column.
-   styles.css caps section children at --content-width; override that for the hero so the
-   background goes edge-to-edge, and pad the content to stay aligned with the content column. */
-main > .section > .hero {
-  max-width: none;
-  margin-inline: 0;
-  padding-block: var(--space-xl) var(--space-l);
-  padding-inline: max(var(--gutter), calc((100% - var(--content-width)) / 2));
-}
-
-@media (width >= 900px) {
-  main > .section > .hero {
-    padding-inline: max(var(--gutter-wide), calc((100% - var(--content-width)) / 2));
-  }
-}
-
-/* full-bleed first hero (homepage): fill the viewport and slide under the fixed nav */
-main > .section:first-of-type:has(.hero) {
-  margin-top: calc(-1 * var(--nav-height));
-}
-
-main > .section:first-of-type .hero {
-  min-height: 92vh;
-  padding-top: calc(var(--space-2xl) + var(--nav-height));
-}
+/* Full-bleed hero layout (breaking out of the content-width cap, sizing the first hero,
+   sliding it under the nav) lives in styles/styles.css next to the section rules it
+   overrides. This file keeps hero-internal styling only. */
 
 /* picture sits behind everything; the scrim sits between it and the text.
    Selectors target .hero descendants so they work for both the native EDS

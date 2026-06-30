@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import './effects.css';
 
 // Client enhancement for the content homepage: parallax drift on the hero image and
 // reveal-on-scroll for sections. Renders nothing. Progressive — gated behind the
 // data-effects flag so content is fully visible if JS never runs.
+// (The reveal CSS lives in styles/styles.css — it's section-level layout, not block CSS.)
 export default function PageEffects() {
   useEffect(() => {
     const root = document.documentElement;
@@ -16,7 +16,7 @@ export default function PageEffects() {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
-          e.target.classList.add('reveal--in');
+          e.target.classList.add('reveal-in');
           io.unobserve(e.target);
         }
       });
