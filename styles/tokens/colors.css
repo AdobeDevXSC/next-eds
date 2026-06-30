@@ -1,0 +1,39 @@
+/* EDS color system.
+   Base palette mirrors the AEM boilerplate (styles/styles.css); the slate/blue
+   accents are lifted from the converted React blocks (hero, cards, steps, columns). */
+
+:root {
+  /* ---- Base neutrals ---- */
+  --background-color: #fff;
+  --light-color: #f8f8f8;       /* section tint / code blocks */
+  --dark-color: #505050;        /* muted ink, button hover */
+  --text-color: #131313;        /* primary ink */
+
+  /* ---- Brand blue (links + accents) ---- */
+  --link-color: #3b63fb;        /* boilerplate link */
+  --link-hover-color: #1d3ecf;
+  --accent-blue: #2563eb;       /* hero primary CTA */
+  --accent-blue-deep: #185fa5;  /* step numerals, compare border */
+  --accent-blue-soft: #e6f1fb;  /* step badge fill */
+
+  /* ---- Slate scale (block surfaces + muted text) ---- */
+  --slate-950: #020617;         /* hero scrim base */
+  --slate-700: #334155;
+  --slate-500: #5f6b7a;         /* card / step muted body */
+  --slate-200: #e2e8f0;         /* hairline borders */
+  --slate-100: #f1f5f9;         /* metric / code chip fill */
+
+  --border-color: #dadada;      /* default card border */
+
+  /* ---- Semantic aliases ---- */
+  --text-body: var(--text-color);
+  --text-muted: var(--slate-500);
+  --text-inverse: #fff;
+  --surface-page: var(--background-color);
+  --surface-tint: var(--light-color);
+  --surface-card: var(--background-color);
+  --surface-fill: var(--slate-100);
+  --surface-dark: var(--slate-950);
+  --border-hairline: var(--slate-200);
+  --focus-ring: var(--accent-blue);
+}

@@ -23,7 +23,7 @@
   .columns > div {
     align-items: center;
     flex-direction: unset;
-    gap: 24px;
+    gap: var(--space-m);
   }
 
   .columns > div > div {
@@ -32,28 +32,28 @@
   }
 }
 
-/* compare variant — two columns as distinct cards, accent on the second */
+/* compare variant — two columns as distinct cards, deep-blue emphasis on the second */
 .columns.compare > div {
-  gap: 16px;
+  gap: var(--space-s);
 }
 
 .columns.compare > div > div {
   align-self: stretch;
-  padding: 20px 24px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  padding: 20px var(--gutter);
+  border: var(--border-width) solid var(--border-hairline);
+  border-radius: var(--radius-card);
 }
 
 .columns.compare > div > div:last-child {
-  border: 2px solid #185fa5;
+  border: var(--border-width-emphasis) solid var(--accent-blue-deep);
 }
 
 .columns.compare ul {
-  margin: 8px 0 0;
+  margin: var(--space-2xs) 0 0;
   padding-left: 20px;
 }
 
 .columns.compare li {
-  margin: 6px 0;
-  color: #5f6b7a;
+  margin: var(--space-2xs) 0;
+  color: var(--text-muted);
 }
