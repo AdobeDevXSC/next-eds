@@ -18,9 +18,10 @@ header .nav-wrapper.is-scrolled {
   border-bottom-color: var(--slate-200);
 }
 
-/* over a hero (data-hero-nav), the unscrolled nav is transparent (light text rule is at
-   the end of the file so it follows the base link color). */
-html[data-hero-nav] header .nav-wrapper:not(.is-scrolled) {
+/* over a hero, the unscrolled nav is transparent. Detected with :has() so it's correct at
+   first paint (no JS flag, no white flash). Light text rule is at the end of the file so it
+   follows the base link color. */
+body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) {
   background-color: transparent;
 }
 
@@ -313,7 +314,7 @@ header nav .nav-tools {
 }
 
 /* light nav text over the hero (after the base link color, to satisfy specificity order) */
-html[data-hero-nav] header .nav-wrapper:not(.is-scrolled) nav a:any-link {
+body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) nav a:any-link {
   color: #fff;
 }
 
