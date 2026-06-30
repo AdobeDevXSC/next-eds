@@ -8,6 +8,22 @@
   overflow: hidden;
 }
 
+/* full-bleed hero: span the viewport instead of the capped content column.
+   styles.css caps section children at --content-width; override that for the hero so the
+   background goes edge-to-edge, and pad the content to stay aligned with the content column. */
+main > .section > .hero {
+  max-width: none;
+  margin-inline: 0;
+  padding-block: var(--space-xl) var(--space-l);
+  padding-inline: max(var(--gutter), calc((100% - var(--content-width)) / 2));
+}
+
+@media (width >= 900px) {
+  main > .section > .hero {
+    padding-inline: max(var(--gutter-wide), calc((100% - var(--content-width)) / 2));
+  }
+}
+
 /* full-bleed first hero (homepage): fill the viewport and slide under the fixed nav */
 main > .section:first-of-type:has(.hero) {
   margin-top: calc(-1 * var(--nav-height));
