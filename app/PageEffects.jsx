@@ -1,0 +1,55 @@
+'use client';
+
+import { useEffect } from 'react';
+import './effects.css';
+
+// Client enhancement for the content homepage: parallax drift on the hero image and
+// reveal-on-scroll for sections. Renders nothing. Progressive — gated behind the
+// data-effects flag so content is fully visible if JS never runs.
+export default function PageEffects() {
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-effects', 'on');
+
+    // reveal-on-scroll: only sections below the fold animate in (skip the hero, and leave
+    // already-visible sections untouched so there's no flash).
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('reveal--in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    Array.from(document.querySelectorAll('main > .section')).slice(1).forEach((s) => {
+      if (s.getBoundingClientRect().top > window.innerHeight * 0.85) {
+        s.classList.add('reveal');
+        io.observe(s);
+      }
+    });
+
+    // parallax drift on the hero background image
+    const pic = document.querySelector('main > .section:first-of-type .hero picture');
+    // flag a hero-first page so the nav can go transparent over it
+    if (pic) root.setAttribute('data-hero-nav', 'on');
+    let ticking = false;
+    const update = () => {
+      if (pic) pic.style.transform = `translate3d(0, ${(window.scrollY * 0.12).toFixed(1)}px, 0)`;
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      root.removeAttribute('data-effects');
+      root.removeAttribute('data-hero-nav');
+    };
+  }, []);
+
+  return null;
+}

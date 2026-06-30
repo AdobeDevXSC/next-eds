@@ -4,6 +4,23 @@ header .nav-wrapper {
   width: 100%;
   z-index: 2;
   position: fixed;
+  transition: background-color var(--duration-base) var(--ease-standard),
+    backdrop-filter var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard);
+  border-bottom: 1px solid transparent;
+}
+
+/* once scrolled: translucent blurred bar */
+header .nav-wrapper.is-scrolled {
+  background-color: rgb(255 255 255 / 85%);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom-color: var(--slate-200);
+}
+
+/* over a hero (data-hero-nav), the unscrolled nav is transparent (light text rule is at
+   the end of the file so it follows the base link color). */
+html[data-hero-nav] header .nav-wrapper:not(.is-scrolled) {
+  background-color: transparent;
 }
 
 header nav {
@@ -31,10 +48,6 @@ header nav[aria-expanded='true'] {
 }
 
 @media (width >= 900px) {
-  header .nav-wrapper {
-    position: relative;
-  }
-
   header nav {
     display: flex;
     justify-content: space-between;
@@ -269,4 +282,9 @@ header nav .nav-sections ul > li > ul > li {
 /* tools */
 header nav .nav-tools {
   grid-area: tools;
+}
+
+/* light nav text over the hero (after the base link color, to satisfy specificity order) */
+html[data-hero-nav] header .nav-wrapper:not(.is-scrolled) nav a:any-link {
+  color: #fff;
 }
