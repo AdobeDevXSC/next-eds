@@ -29,6 +29,10 @@ export async function POST(request) {
 
   const tag = `page:${slug.replace(/^\/+|\/+$/g, '') || 'index'}`;
   revalidateTag(tag);
+  // Also refresh the query-index feed (cached under the `pages` tag). Publishing a new or
+  // renamed page changes the feed that drives navigation, generateStaticParams, and page
+  // metadata — without this they'd lag until the feed's time-based cache expires.
+  revalidateTag('pages');
 
-  return NextResponse.json({ ok: true, revalidated: tag, now: Date.now() });
+  return NextResponse.json({ ok: true, revalidated: [tag, 'pages'], now: Date.now() });
 }
