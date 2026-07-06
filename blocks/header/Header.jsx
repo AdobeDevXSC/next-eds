@@ -1,13 +1,23 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import './header.css';
 
-// Interactive header — the first 'use client' island in the project. Renders the EDS nav
-// structure (brand / sections / tools) and ports header.js behavior (mobile hamburger,
-// desktop dropdowns, escape + focus-out handling) into a post-hydration effect.
-export default function SiteHeader({ brand, sections, tools }) {
+// Interactive header. Brand and tools come from the EDS nav fragment as HTML; the sections
+// are a structured tree (see lib/eds/nav.js) so items with a submenu render a full-width
+// mega-menu. The menu's left panel features the hovered/focused child's image + description
+// (from query-index.json); the right side lists the child links. Desktop opens on hover/focus;
+// mobile is a full-screen accordion where each child renders as a card.
+export default function SiteHeader({ brand, sections = [], tools }) {
   const navRef = useRef(null);
+  const closeTimer = useRef(null);
+  const [openIndex, setOpenIndex] = useState(null); // which top-level menu is open
+  const [activeChild, setActiveChild] = useState({}); // { [itemIndex]: childIndex } for the feature panel
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const isDesktop = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
 
   // Sticky-blur: transparent over the hero, solid + blurred once scrolled.
   useEffect(() => {
@@ -19,125 +29,149 @@ export default function SiteHeader({ brand, sections, tools }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Lock body scroll while the mobile menu is open.
   useEffect(() => {
-    const nav = navRef.current;
-    if (!nav) return undefined;
-    const isDesktop = window.matchMedia('(min-width: 900px)');
-    const navSections = nav.querySelector('.nav-sections');
-    const button = nav.querySelector('.nav-hamburger button');
+    document.body.style.overflowY = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflowY = ''; };
+  }, [mobileOpen]);
 
-    const toggleAllNavSections = (expanded = false) => {
-      navSections?.querySelectorAll('.default-content-wrapper > ul > li').forEach((s) => {
-        s.setAttribute('aria-expanded', expanded);
-      });
-    };
-
-    const openOnKeydown = (e) => {
-      const focused = document.activeElement;
-      if (focused.className === 'nav-drop' && (e.code === 'Enter' || e.code === 'Space')) {
-        const wasExpanded = focused.getAttribute('aria-expanded') === 'true';
-        toggleAllNavSections();
-        focused.setAttribute('aria-expanded', wasExpanded ? 'false' : 'true');
-      }
-    };
-    const focusNavSection = () => document.activeElement.addEventListener('keydown', openOnKeydown);
-
-    function toggleMenu(forceExpanded = null) {
-      const expanded = forceExpanded !== null
-        ? !forceExpanded
-        : nav.getAttribute('aria-expanded') === 'true';
-      document.body.style.overflowY = expanded || isDesktop.matches ? '' : 'hidden';
-      nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-      toggleAllNavSections(!expanded && !isDesktop.matches);
-      button?.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
-
-      navSections?.querySelectorAll('.nav-drop').forEach((drop) => {
-        if (isDesktop.matches) {
-          if (!drop.hasAttribute('tabindex')) {
-            drop.setAttribute('tabindex', 0);
-            drop.addEventListener('focus', focusNavSection);
-          }
-        } else {
-          drop.removeAttribute('tabindex');
-          drop.removeEventListener('focus', focusNavSection);
-        }
-      });
-
-      // eslint-disable-next-line no-use-before-define
-      if (!expanded || isDesktop.matches) {
-        window.addEventListener('keydown', closeOnEscape);
-        nav.addEventListener('focusout', closeOnFocusLost);
-      } else {
-        // eslint-disable-next-line no-use-before-define
-        window.removeEventListener('keydown', closeOnEscape);
-        // eslint-disable-next-line no-use-before-define
-        nav.removeEventListener('focusout', closeOnFocusLost);
-      }
-    }
-
-    function closeOnEscape(e) {
-      if (e.code !== 'Escape') return;
-      const open = navSections?.querySelector('[aria-expanded="true"]');
-      if (open && isDesktop.matches) {
-        toggleAllNavSections();
-        open.focus();
-      } else if (!isDesktop.matches) {
-        toggleMenu(false);
-        button?.focus();
-      }
-    }
-    function closeOnFocusLost(e) {
-      if (nav.contains(e.relatedTarget)) return;
-      const open = navSections?.querySelector('[aria-expanded="true"]');
-      if (open && isDesktop.matches) toggleAllNavSections(false);
-      else if (!isDesktop.matches) toggleMenu(true);
-    }
-
-    // mark dropdowns + wire desktop click-to-expand
-    const sectionClick = [];
-    navSections?.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((li) => {
-      if (li.querySelector('ul')) li.classList.add('nav-drop');
-      const handler = () => {
-        if (isDesktop.matches) {
-          const wasExpanded = li.getAttribute('aria-expanded') === 'true';
-          toggleAllNavSections();
-          li.setAttribute('aria-expanded', wasExpanded ? 'false' : 'true');
-        }
-      };
-      li.addEventListener('click', handler);
-      sectionClick.push([li, handler]);
-    });
-
-    const onHamburger = () => toggleMenu();
-    button?.addEventListener('click', onHamburger);
-    const onChange = () => toggleMenu(isDesktop.matches);
-    toggleMenu(isDesktop.matches);
-    isDesktop.addEventListener('change', onChange);
-
-    return () => {
-      button?.removeEventListener('click', onHamburger);
-      isDesktop.removeEventListener('change', onChange);
-      window.removeEventListener('keydown', closeOnEscape);
-      nav.removeEventListener('focusout', closeOnFocusLost);
-      sectionClick.forEach(([li, handler]) => li.removeEventListener('click', handler));
-      document.body.style.overflowY = '';
-    };
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
   }, []);
+
+  const openMenu = useCallback((i) => {
+    clearCloseTimer();
+    setOpenIndex(i);
+  }, [clearCloseTimer]);
+
+  // Delay close so the pointer can cross the gap from the trigger to the full-width panel.
+  const scheduleClose = useCallback(() => {
+    clearCloseTimer();
+    closeTimer.current = setTimeout(() => setOpenIndex(null), 120);
+  }, [clearCloseTimer]);
+
+  const setChild = (i, ci) => setActiveChild((m) => (m[i] === ci ? m : { ...m, [i]: ci }));
+
+  // Desktop: hover/focus opens. Mobile: tap toggles the accordion.
+  const onTriggerEnter = (i) => { if (isDesktop()) openMenu(i); };
+  const onItemLeave = () => { if (isDesktop()) scheduleClose(); };
+  const onTriggerFocus = (i) => { if (isDesktop()) openMenu(i); };
+  const onItemBlur = (e) => {
+    if (isDesktop() && !e.currentTarget.contains(e.relatedTarget)) scheduleClose();
+  };
+  const onTriggerClick = (i) => { if (!isDesktop()) setOpenIndex((cur) => (cur === i ? null : i)); };
+
+  const onKeyDown = (e) => {
+    if (e.key === 'Escape' && openIndex !== null) {
+      setOpenIndex(null);
+      if (typeof document !== 'undefined') document.activeElement?.blur?.();
+    }
+  };
+
+  const closeEverything = () => { setOpenIndex(null); setMobileOpen(false); };
 
   return (
     <div className="nav-wrapper">
-      <nav id="nav" ref={navRef} aria-expanded="false">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <nav id="nav" ref={navRef} aria-expanded={mobileOpen} onKeyDown={onKeyDown}>
         <div className="nav-hamburger">
-          <button type="button" aria-controls="nav" aria-label="Open navigation">
+          <button
+            type="button"
+            aria-controls="nav"
+            aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((o) => !o)}
+          >
             <span className="nav-hamburger-icon" />
           </button>
         </div>
+
         {/* eslint-disable-next-line react/no-danger */}
         <div className="nav-brand" dangerouslySetInnerHTML={{ __html: brand }} />
+
         <div className="nav-sections">
-          {/* eslint-disable-next-line react/no-danger */}
-          <div className="default-content-wrapper" dangerouslySetInnerHTML={{ __html: sections }} />
+          <ul className="nav-sections-list">
+            {sections.map((item, i) => {
+              if (!item.children?.length) {
+                return (
+                  <li className="nav-item" key={item.href || item.label}>
+                    <a className="nav-link" href={item.href} onClick={closeEverything}>{item.label}</a>
+                  </li>
+                );
+              }
+              const ai = activeChild[i] ?? 0;
+              const feat = item.children[ai] || item.children[0];
+              const panelId = `mega-${i}`;
+              const open = openIndex === i;
+              return (
+                <li
+                  className="nav-item has-menu"
+                  key={item.href || item.label}
+                  onMouseEnter={() => onTriggerEnter(i)}
+                  onMouseLeave={onItemLeave}
+                  onBlur={onItemBlur}
+                >
+                  <button
+                    type="button"
+                    className="nav-trigger"
+                    aria-haspopup="true"
+                    aria-expanded={open}
+                    aria-controls={panelId}
+                    onClick={() => onTriggerClick(i)}
+                    onFocus={() => onTriggerFocus(i)}
+                  >
+                    {item.label}
+                  </button>
+
+                  <div
+                    id={panelId}
+                    className={`mega${open ? ' is-open' : ''}`}
+                    onMouseEnter={clearCloseTimer}
+                    onMouseLeave={onItemLeave}
+                  >
+                    <div className="mega-inner">
+                      <div className="mega-feature">
+                        {feat?.image && (
+                          <img className="mega-feature-img" src={feat.image} alt="" loading="lazy" />
+                        )}
+                        <h2 className="mega-feature-title">{feat?.title}</h2>
+                        {feat?.description && <p className="mega-feature-desc">{feat.description}</p>}
+                        {feat?.href && (
+                          <a className="mega-feature-link" href={feat.href} onClick={closeEverything}>
+                            Read more
+                          </a>
+                        )}
+                      </div>
+
+                      <ul className="mega-links">
+                        {item.children.map((c, ci) => (
+                          <li key={c.href || c.label}>
+                            <a
+                              className="mega-link"
+                              href={c.href}
+                              onMouseEnter={() => setChild(i, ci)}
+                              onFocus={() => setChild(i, ci)}
+                              onClick={closeEverything}
+                            >
+                              <span className="mega-link-label">{c.label}</span>
+                              <span className="mega-link-card">
+                                {c.image && (
+                                  <img className="mega-link-thumb" src={c.image} alt="" loading="lazy" />
+                                )}
+                                {c.description && <span className="mega-link-desc">{c.description}</span>}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         </div>
+
         {/* eslint-disable-next-line react/no-danger */}
         <div className="nav-tools" dangerouslySetInnerHTML={{ __html: tools }} />
       </nav>
