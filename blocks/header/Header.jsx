@@ -14,7 +14,6 @@ export default function SiteHeader({ brand, sections = [], tools }) {
   const navRef = useRef(null);
   const closeTimer = useRef(null);
   const [openIndex, setOpenIndex] = useState(null); // which top-level menu is open
-  const [activeChild, setActiveChild] = useState({}); // { [itemIndex]: childIndex } for the feature panel
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isDesktop = () => typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches;
@@ -49,8 +48,6 @@ export default function SiteHeader({ brand, sections = [], tools }) {
     clearCloseTimer();
     closeTimer.current = setTimeout(() => setOpenIndex(null), 120);
   }, [clearCloseTimer]);
-
-  const setChild = (i, ci) => setActiveChild((m) => (m[i] === ci ? m : { ...m, [i]: ci }));
 
   // Desktop: hover/focus opens. Mobile: tap toggles the accordion.
   const onTriggerEnter = (i) => { if (isDesktop()) openMenu(i); };
@@ -99,8 +96,6 @@ export default function SiteHeader({ brand, sections = [], tools }) {
                   </li>
                 );
               }
-              const ai = activeChild[i] ?? 0;
-              const feat = item.children[ai] || item.children[0];
               const panelId = `mega-${i}`;
               const open = openIndex === i;
               return (
@@ -129,42 +124,23 @@ export default function SiteHeader({ brand, sections = [], tools }) {
                     onMouseEnter={clearCloseTimer}
                     onMouseLeave={onItemLeave}
                   >
-                    <div className="mega-inner">
-                      <div className="mega-feature">
-                        {feat?.image && (
-                          <img className="mega-feature-img" src={feat.image} alt="" loading="lazy" />
-                        )}
-                        <h2 className="mega-feature-title">{feat?.title}</h2>
-                        {feat?.description && <p className="mega-feature-desc">{feat.description}</p>}
-                        {feat?.href && (
-                          <a className="mega-feature-link" href={feat.href} onClick={closeEverything}>
-                            Read more
+                    {/* each child renders as a 3-column row: image | description | link */}
+                    <ul className="mega-rows">
+                      {item.children.map((c) => (
+                        <li className="mega-row" key={c.href || c.label}>
+                          <a className="mega-row-link" href={c.href} onClick={closeEverything}>
+                            <span className="mega-col mega-col-image">
+                              {c.image && <img className="mega-img" src={c.image} alt="" loading="lazy" />}
+                            </span>
+                            <span className="mega-col mega-col-desc">
+                              <span className="mega-title">{c.title}</span>
+                              {c.description && <span className="mega-desc">{c.description}</span>}
+                            </span>
+                            <span className="mega-col mega-col-cta">{c.label}</span>
                           </a>
-                        )}
-                      </div>
-
-                      <ul className="mega-links">
-                        {item.children.map((c, ci) => (
-                          <li key={c.href || c.label}>
-                            <a
-                              className="mega-link"
-                              href={c.href}
-                              onMouseEnter={() => setChild(i, ci)}
-                              onFocus={() => setChild(i, ci)}
-                              onClick={closeEverything}
-                            >
-                              <span className="mega-link-label">{c.label}</span>
-                              <span className="mega-link-card">
-                                {c.image && (
-                                  <img className="mega-link-thumb" src={c.image} alt="" loading="lazy" />
-                                )}
-                                {c.description && <span className="mega-link-desc">{c.description}</span>}
-                              </span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </li>
               );
