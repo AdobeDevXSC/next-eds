@@ -2,6 +2,15 @@ import { notFound } from 'next/navigation';
 import { fetchPlainHtml, EDS_ORIGIN } from '../../../lib/eds/fetch.js';
 import { parseEds } from '../../../lib/eds/parse.js';
 import { renderNode } from '../../../lib/eds/render.js';
+import { buildMetadata } from '../../../lib/eds/metadata.js';
+
+// Per-page <head> metadata (title, description, Open Graph) from the page's authored Metadata
+// block, read via the query-index feed. Falls back to the root layout defaults when a page
+// isn't indexed.
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  return buildMetadata((slug ?? []).join('/'));
+}
 
 // Pre-render every published page at build time from the EDS query-index feed (SSG). Pages
 // not in the feed (or added later) still resolve on demand via ISR, since dynamicParams
