@@ -6,7 +6,8 @@ name: Revalidate on publish
 # instantly so the next request re-renders from fresh content.
 #
 # workflow_dispatch adds a manual "Run workflow" button (Actions tab) that takes the same
-# path, so you can revalidate a page on demand without an EDS publish or the shared secret.
+# path. Pass a single path to revalidate one page, or `*` (or `/*` / `all`) to revalidate
+# every published page — the latter reads query-index.json and fans out one call per page.
 on:
   repository_dispatch:
     types:
@@ -17,7 +18,7 @@ on:
   workflow_dispatch:
     inputs:
       path:
-        description: 'Resource path to revalidate (e.g. /how-to-build-a-new-block.md or /)'
+        description: 'Path to revalidate — a single page (e.g. /how-to-build-a-new-block.md or /), or `*` for all published pages'
         required: true
         default: '/'
 
@@ -29,17 +30,47 @@ jobs:
   revalidate:
     runs-on: ubuntu-latest
     steps:
-      - name: Revalidate the published page
+      - name: Revalidate page(s)
         env:
           REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
           RESOURCE_PATH: ${{ github.event.client_payload.path || inputs.path }}
+          # Canonical list of published pages. Override via repo/env variable if the
+          # site slug changes; defaults to the live query-index feed.
+          QUERY_INDEX_URL: ${{ vars.QUERY_INDEX_URL || 'https://main--next-eds--adobedevxsc.aem.live/query-index.json' }}
         run: |
-          slug="${RESOURCE_PATH#/}"   # strip leading slash
-          slug="${slug%.md}"          # strip .md (pages)
-          slug="${slug%.json}"        # strip .json (sheets)
-          echo "Revalidating slug: '${slug}' (from '${RESOURCE_PATH}')"
-          curl -sS -X POST "https://nxtjs.page/api/revalidate" \
-            -H "x-revalidate-secret: ${REVALIDATE_SECRET}" \
-            -H "content-type: application/json" \
-            -d "{\"slug\":\"${slug}\"}" \
-            -w "\n[HTTP %{http_code}]\n"
+          set -euo pipefail
+
+          # POST one revalidate call for a resource path; prints the slug and HTTP status.
+          revalidate() {
+            local resource="$1"
+            local slug="${resource#/}"   # strip leading slash
+            slug="${slug%.md}"           # strip .md (pages)
+            slug="${slug%.json}"         # strip .json (sheets)
+            echo "→ revalidating '${slug:-index}' (from '${resource}')"
+            curl -sS -X POST "https://nxtjs.page/api/revalidate" \
+              -H "x-revalidate-secret: ${REVALIDATE_SECRET}" \
+              -H "content-type: application/json" \
+              -d "{\"slug\":\"${slug}\"}" \
+              -w " [HTTP %{http_code}]\n"
+          }
+
+          case "$RESOURCE_PATH" in
+            '*' | '/*' | 'all')
+              echo "Revalidating ALL published pages from ${QUERY_INDEX_URL}"
+              paths="$(curl -fsS "$QUERY_INDEX_URL" | jq -r '.data[].path')"
+              if [ -z "$paths" ]; then
+                echo "query-index returned no pages — nothing to revalidate"
+                exit 1
+              fi
+              count=0
+              while IFS= read -r p; do
+                [ -n "$p" ] || continue
+                revalidate "$p"
+                count=$((count + 1))
+              done <<< "$paths"
+              echo "Revalidated ${count} page(s)."
+              ;;
+            *)
+              revalidate "$RESOURCE_PATH"
+              ;;
+          esac
