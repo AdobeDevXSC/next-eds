@@ -199,12 +199,7 @@ header .mega.is-open {
   padding-bottom: var(--space-s);
 }
 
-/* on mobile the shared feature panel is redundant — each child renders as a card below */
-header .mega-feature {
-  display: none;
-}
-
-header .mega-links {
+header .mega-rows {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -212,36 +207,40 @@ header .mega-links {
   gap: var(--space-m);
 }
 
-header .mega-link {
-  display: block;
+/* mobile: the three columns (image / description / link) stack vertically */
+header .mega-row-link {
+  display: grid;
+  gap: var(--space-2xs);
   color: inherit;
   text-decoration: none;
 }
 
-header .mega-link-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: var(--space-2xs);
-}
-
-header .mega-link-card {
+header .mega-col-desc {
   display: flex;
-  gap: var(--space-s);
-  align-items: flex-start;
+  flex-direction: column;
+  gap: var(--space-2xs);
 }
 
-header .mega-link-thumb {
-  flex: 0 0 auto;
-  width: 96px;
-  height: 64px;
+header .mega-img {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: var(--radius-card);
 }
 
-header .mega-link-desc {
+header .mega-title {
+  font-weight: 600;
+}
+
+header .mega-desc {
   font-size: 0.85rem;
-  font-weight: 400;
   color: var(--slate-500);
+}
+
+header .mega-col-cta {
+  font-weight: 600;
+  color: var(--accent-blue);
 }
 
 /* tools */
@@ -294,51 +293,20 @@ header nav .nav-tools {
     padding: 0;
   }
 
-  header .nav-trigger {
-    padding-right: 16px;
-  }
-
-  /* dropdown caret */
-  header .nav-trigger::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 2px;
-    margin-top: -4px;
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-width: 2px 2px 0 0;
-    transform: rotate(135deg);
-    transition: transform var(--duration-base) var(--ease-standard);
-  }
-
-  header .nav-trigger[aria-expanded='true']::after {
-    margin-top: -1px;
-    transform: rotate(-45deg);
-  }
-
   /* animated underline (grows from left on hover/focus/open) — link uses ::after,
-     trigger uses ::before so it doesn't clash with the caret ::after. */
+     trigger uses ::before. */
   header .nav-link::after,
   header .nav-trigger::before {
     content: '';
     position: absolute;
     left: 0;
+    right: 0;
     bottom: -2px;
     height: 2px;
     background-color: currentcolor;
     transform: scaleX(0);
     transform-origin: right center;
     transition: transform var(--duration-base) var(--ease-standard);
-  }
-
-  header .nav-link::after {
-    right: 0;
-  }
-
-  header .nav-trigger::before {
-    right: 16px;
   }
 
   header .nav-link:hover::after,
@@ -377,59 +345,43 @@ header nav .nav-tools {
     pointer-events: auto;
   }
 
-  header .mega-inner {
+  header .mega-rows {
     max-width: var(--content-width);
     margin: 0 auto;
     padding: var(--space-l) var(--gutter-wide);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    gap: var(--space-2xl);
-    align-items: start;
-    white-space: normal;
-  }
-
-  header .mega-feature {
-    display: block;
-  }
-
-  header .mega-feature-img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: var(--radius-card);
-    margin-bottom: var(--space-s);
-  }
-
-  header .mega-feature-title {
-    margin: 0 0 var(--space-2xs);
-    font-size: var(--heading-font-size-s);
-  }
-
-  header .mega-feature-desc {
-    margin: 0 0 var(--space-s);
-    color: var(--slate-500);
-  }
-
-  header .mega-feature-link {
-    font-weight: 600;
-  }
-
-  header .mega-links {
     display: flex;
     flex-direction: column;
     gap: var(--space-s);
+    white-space: normal;
   }
 
-  header .mega-link {
-    padding: var(--space-2xs) 0;
+  /* each child row: image | description | link */
+  header .mega-row-link {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr) auto;
+    gap: var(--space-2xl);
+    align-items: center;
+    padding: var(--space-s) 0;
   }
 
-  header .mega-link-label {
-    margin: 0;
+  header .mega-img {
+    max-width: none;
   }
 
-  header .mega-link-card {
-    display: none;
+  header .mega-title {
+    font-size: var(--heading-font-size-s);
+  }
+
+  header .mega-desc {
+    font-size: 1rem;
+  }
+
+  header .mega-col-cta {
+    white-space: nowrap;
+  }
+
+  header .mega-row-link:hover .mega-col-cta {
+    text-decoration: underline;
   }
 }
 
@@ -448,7 +400,6 @@ header nav .nav-tools {
 @media (prefers-reduced-motion: reduce) {
   header .nav-link::after,
   header .nav-trigger::before,
-  header .nav-trigger::after,
   header .mega {
     transition: none;
   }
