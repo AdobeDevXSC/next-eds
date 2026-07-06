@@ -11,7 +11,9 @@ import { useEffect, useRef } from 'react';
 // DOM node — the same contract aem.js's loadBlock() provides. Because the inner markup is
 // injected as raw HTML, React treats the subtree as opaque and never reconciles it, so the
 // imperative DOM mutations decorate() makes are safe.
-export default function LegacyBlock({ name, variants = [], rows = [] }) {
+export default function LegacyBlock({
+  name, variants = [], rows = [], html,
+}) {
   const ref = useRef(null);
   const decorated = useRef(false);
 
@@ -46,10 +48,13 @@ export default function LegacyBlock({ name, variants = [], rows = [] }) {
   }, [name]);
 
   const className = [name, ...variants, 'block'].join(' ');
-  // Reproduce the EDS block grid: each row is a <div>, each cell a nested <div>.
-  const inner = rows
-    .map((cells) => `<div>${cells.map((cell) => `<div>${cell.html}</div>`).join('')}</div>`)
-    .join('');
+  // Prefer the block's verbatim inner markup (lossless — preserves any content the row/cell
+  // grid can't model). Fall back to reconstructing the grid from rows if html wasn't provided.
+  const inner = html !== undefined
+    ? html
+    : rows
+      .map((cells) => `<div>${cells.map((cell) => `<div>${cell.html}</div>`).join('')}</div>`)
+      .join('');
 
   return (
     <div className={`${name}-wrapper`}>
