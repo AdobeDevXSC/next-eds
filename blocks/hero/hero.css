@@ -3,6 +3,11 @@
   isolation: isolate;
   display: flex;
   align-items: flex-end;
+
+  /* border-box so min-height (incl. the 92vh first-hero override) is the TOTAL height —
+     otherwise the large top/bottom padding is added on top, making the hero overflow the
+     viewport and clipping the bottom-aligned content. */
+  box-sizing: border-box;
   min-height: 360px;
   padding: var(--space-xl) var(--gutter) var(--space-l);
   overflow: hidden;
