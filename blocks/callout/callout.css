@@ -1,0 +1,40 @@
+.callout {
+  display: flex;
+  gap: var(--space-s);
+  align-items: flex-start;
+  padding: var(--space-m);
+  border-radius: var(--radius-card);
+  border-left: 4px solid var(--slate-500);
+  background-color: var(--light-color);
+}
+
+.callout .callout-icon {
+  flex: 0 0 auto;
+  font-size: 1.25em;
+  line-height: 1.4;
+}
+
+.callout .callout-body {
+  min-width: 0;
+}
+
+.callout .callout-body :first-child {
+  margin-top: 0;
+}
+
+.callout .callout-body :last-child {
+  margin-bottom: 0;
+}
+
+/* variants tint the accent border */
+.callout.info {
+  border-left-color: var(--accent-blue);
+}
+
+.callout.warning {
+  border-left-color: #b7791f;
+}
+
+.callout.success {
+  border-left-color: #2f855a;
+}
