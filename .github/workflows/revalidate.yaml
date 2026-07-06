@@ -4,6 +4,9 @@ name: Revalidate on publish
 # repository_dispatch. We turn the published path into a page slug and call the Worker's
 # /api/revalidate, which runs revalidateTag(page:<slug>) — clearing that page's cache
 # instantly so the next request re-renders from fresh content.
+#
+# workflow_dispatch adds a manual "Run workflow" button (Actions tab) that takes the same
+# path, so you can revalidate a page on demand without an EDS publish or the shared secret.
 on:
   repository_dispatch:
     types:
@@ -11,9 +14,15 @@ on:
       - resource-published-native
       - resource-unpublished
       - resource-unpublished-native
+  workflow_dispatch:
+    inputs:
+      path:
+        description: 'Resource path to revalidate (e.g. /how-to-build-a-new-block.md or /)'
+        required: true
+        default: '/'
 
 concurrency:
-  group: revalidate-${{ github.event.client_payload.path }}
+  group: revalidate-${{ github.event.client_payload.path || inputs.path }}
   cancel-in-progress: true
 
 jobs:
@@ -23,7 +32,7 @@ jobs:
       - name: Revalidate the published page
         env:
           REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
-          RESOURCE_PATH: ${{ github.event.client_payload.path }}
+          RESOURCE_PATH: ${{ github.event.client_payload.path || inputs.path }}
         run: |
           slug="${RESOURCE_PATH#/}"   # strip leading slash
           slug="${slug%.md}"          # strip .md (pages)
