@@ -1,34 +1,40 @@
 import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 
-// On-demand revalidation endpoint.
+// On-demand revalidation endpoint. Clears Next's data cache for a page by its `page:<slug>`
+// tag so the next request re-renders from fresh content.
 //
-// Primary freshness path is EDS push invalidation purging the Cloudflare edge cache by
-// `Cache-Tag` (set in middleware.js) the moment an author publishes on `main`. This route
-// is the belt-and-suspenders layer: it also clears Next's own data cache for the page, and
-// is what you'd call from a relay when fronting with a CDN that lacks native tag purge.
+// Intentionally unauthenticated so the AEM Sidekick can call it from the browser on Preview
+// (a client-side caller can't hold a secret). This only forces a cache refresh — no data is
+// exposed — so the worst case is extra origin fetches. CORS is open for the same reason.
 //
-// Auth: shared secret in the `x-revalidate-secret` header (set REVALIDATE_SECRET in env).
-//
-//   curl -X POST https://<host>/api/revalidate \
-//     -H "x-revalidate-secret: $REVALIDATE_SECRET" \
-//     -H "content-type: application/json" \
-//     -d '{"slug":"index"}'
-export async function POST(request) {
-  const secret = process.env.REVALIDATE_SECRET;
-  if (secret && request.headers.get('x-revalidate-secret') !== secret) {
-    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
-  }
+//   POST /api/revalidate?slug=getting-started      (query param — used by the Sidekick hook)
+//   POST /api/revalidate  { "slug": "getting-started" }   (JSON body — used by the workflow)
 
-  let slug = '';
-  try {
-    ({ slug = '' } = await request.json());
-  } catch {
-    return NextResponse.json({ ok: false, error: 'invalid json body' }, { status: 400 });
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'content-type',
+};
+
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS });
+}
+
+export async function POST(request) {
+  // Prefer the slug from the query string (simple cross-origin POST, no preflight); fall back
+  // to a JSON body for server callers.
+  let slug = new URL(request.url).searchParams.get('slug') ?? '';
+  if (!slug) {
+    try {
+      ({ slug = '' } = await request.json());
+    } catch {
+      // no/invalid body — treat as the index
+    }
   }
 
   const tag = `page:${slug.replace(/^\/+|\/+$/g, '') || 'index'}`;
   revalidateTag(tag);
 
-  return NextResponse.json({ ok: true, revalidated: tag, now: Date.now() });
+  return NextResponse.json({ ok: true, revalidated: tag, now: Date.now() }, { headers: CORS });
 }

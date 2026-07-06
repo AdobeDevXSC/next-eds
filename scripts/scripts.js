@@ -154,6 +154,44 @@ async function loadEager(doc) {
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
+// Production Next.js Worker host. The Sidekick's built-in Preview opens the classic Edge
+// Delivery render (*.aem.page); this opens the same path as rendered by the Worker.
+const NEXT_HOST = 'https://nxtjs.page';
+
+/**
+ * When the Sidekick fires `previewed`, invalidate the Worker's cache for that path via
+ * /api/revalidate, then open the (now fresh) Next.js render. Invalidating first is why the
+ * opened tab reflects the change rather than a stale cached copy.
+ * @param {CustomEvent} e the Sidekick `previewed` event (detail = previewed resource path)
+ */
+async function onSidekickPreviewed(e) {
+  const raw = Array.isArray(e.detail) ? e.detail[0] : e.detail;
+  const path = (typeof raw === 'string' && raw ? raw : window.location.pathname)
+    .replace(/\.md$/, '')
+    .replace(/\/index$/, '/');
+  try {
+    await fetch(`${NEXT_HOST}/api/revalidate?slug=${encodeURIComponent(path)}`, { method: 'POST' });
+  } catch {
+    // best effort — still open the render even if revalidation didn't confirm
+  }
+  window.open(new URL(path, NEXT_HOST).href, 'next-preview');
+}
+
+/**
+ * Wire the Sidekick `previewed` event, whether the Sidekick is already in the DOM or loads
+ * afterward.
+ */
+function wireSidekickNextPreview() {
+  const sk = document.querySelector('aem-sidekick');
+  if (sk) {
+    sk.addEventListener('previewed', onSidekickPreviewed);
+  } else {
+    document.addEventListener('sidekick-ready', () => {
+      document.querySelector('aem-sidekick')?.addEventListener('previewed', onSidekickPreviewed);
+    }, { once: true });
+  }
+}
+
 async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
 
@@ -168,6 +206,8 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  wireSidekickNextPreview();
 }
 
 /**
