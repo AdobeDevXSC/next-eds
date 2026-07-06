@@ -19,3 +19,4 @@ helix-importer-ui
 !CLAUDE.md
 !AGENTS.md
 .claude-plugin/
+.env
