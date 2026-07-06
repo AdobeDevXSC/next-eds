@@ -154,6 +154,38 @@ async function loadEager(doc) {
  * Loads everything that doesn't need to be delayed.
  * @param {Element} doc The container element
  */
+// Production Next.js Worker host. The Sidekick's built-in Preview opens the classic Edge
+// Delivery render (*.aem.page); this opens the same path as rendered by the Worker.
+const NEXT_HOST = 'https://nxtjs.page';
+
+/**
+ * Open the current page on the Next.js Worker when the Sidekick fires `previewed`, so a normal
+ * Preview click also surfaces the real production render. Reuses a single named tab.
+ * @param {CustomEvent} e the Sidekick `previewed` event (detail = previewed resource path)
+ */
+function openNextPreview(e) {
+  const raw = Array.isArray(e.detail) ? e.detail[0] : e.detail;
+  const path = (typeof raw === 'string' && raw ? raw : window.location.pathname)
+    .replace(/\.md$/, '')
+    .replace(/\/index$/, '/');
+  window.open(new URL(path, NEXT_HOST).href, 'next-preview');
+}
+
+/**
+ * Wire the Sidekick `previewed` event to openNextPreview, whether the Sidekick is already in
+ * the DOM or loads afterward.
+ */
+function wireSidekickNextPreview() {
+  const sk = document.querySelector('aem-sidekick');
+  if (sk) {
+    sk.addEventListener('previewed', openNextPreview);
+  } else {
+    document.addEventListener('sidekick-ready', () => {
+      document.querySelector('aem-sidekick')?.addEventListener('previewed', openNextPreview);
+    }, { once: true });
+  }
+}
+
 async function loadLazy(doc) {
   loadHeader(doc.querySelector('header'));
 
@@ -168,6 +200,8 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  wireSidekickNextPreview();
 }
 
 /**
