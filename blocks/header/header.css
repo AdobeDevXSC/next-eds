@@ -18,13 +18,6 @@ header .nav-wrapper.is-scrolled {
   border-bottom-color: var(--slate-200);
 }
 
-/* over a hero, the unscrolled nav is transparent. Detected with :has() so it's correct at
-   first paint (no JS flag, no white flash). Light text rule is at the end of the file so it
-   follows the base link color. */
-body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) {
-  background-color: transparent;
-}
-
 header nav {
   box-sizing: border-box;
   display: grid;
@@ -47,21 +40,6 @@ header nav[aria-expanded='true'] {
     'tools tools' var(--nav-height) / auto 1fr;
   overflow-y: auto;
   min-height: 100dvh;
-}
-
-@media (width >= 900px) {
-  header nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
-  }
-
-  header nav[aria-expanded='true'] {
-    min-height: 0;
-    overflow: visible;
-  }
 }
 
 header nav p {
@@ -87,7 +65,7 @@ header nav .nav-hamburger button {
   border: 0;
   border-radius: 0;
   padding: 0;
-  background-color: var(--background-color);
+  background-color: transparent;
   color: inherit;
   overflow: initial;
   text-overflow: initial;
@@ -168,7 +146,7 @@ header nav .nav-brand img {
   height: auto;
 }
 
-/* sections */
+/* sections wrapper */
 header nav .nav-sections {
   grid-area: sections;
   flex: 1 1 auto;
@@ -182,48 +160,171 @@ header nav[aria-expanded='true'] .nav-sections {
   align-self: start;
 }
 
-header nav .nav-sections ul {
+/* mobile: vertical accordion */
+header .nav-sections-list {
   list-style: none;
-  padding-left: 0;
+  margin: 0;
+  padding: 0;
   font-size: var(--body-font-size-s);
 }
 
-header nav .nav-sections ul > li {
+header .nav-item {
+  border-bottom: 1px solid var(--slate-200);
+}
+
+header .nav-link,
+header .nav-trigger {
+  display: block;
+  width: 100%;
+  padding: var(--space-s) 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
   font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-header nav .nav-sections ul > li > ul {
-  margin-top: 0;
+/* mega panel — hidden until the accordion item opens on mobile */
+header .mega {
+  display: none;
+  color: var(--text-color);
 }
 
-header nav .nav-sections ul > li > ul > li {
+header .mega.is-open {
+  display: block;
+  padding-bottom: var(--space-s);
+}
+
+/* on mobile the shared feature panel is redundant — each child renders as a card below */
+header .mega-feature {
+  display: none;
+}
+
+header .mega-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-m);
+}
+
+header .mega-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+header .mega-link-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-2xs);
+}
+
+header .mega-link-card {
+  display: flex;
+  gap: var(--space-s);
+  align-items: flex-start;
+}
+
+header .mega-link-thumb {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-card);
+}
+
+header .mega-link-desc {
+  font-size: 0.85rem;
   font-weight: 400;
+  color: var(--slate-500);
+}
+
+/* tools */
+header nav .nav-tools {
+  grid-area: tools;
 }
 
 @media (width >= 900px) {
+  header nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 0 32px;
+    max-width: 1264px;
+    padding: 0 32px;
+  }
+
+  header nav[aria-expanded='true'] {
+    min-height: 0;
+    overflow: visible;
+  }
+
   header nav .nav-sections {
     display: block;
     visibility: visible;
+  }
+
+  /* over a hero, the unscrolled desktop nav is transparent with light text. Detected with
+     :has() so it's correct at first paint (no JS flag, no white flash). */
+  body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) {
+    background-color: transparent;
+  }
+
+  header .nav-sections-list {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    margin: 0;
     white-space: nowrap;
   }
 
-  header nav[aria-expanded='true'] .nav-sections {
-    align-self: unset;
+  header .nav-item {
+    position: static;
+    border-bottom: 0;
   }
 
-  /* animated underline on hover/focus — CSS-only port of the Fancy Components
-     "Underline Animation": grows from the left on enter, retracts to the right on
-     leave. Uses currentcolor so it adapts to the light/dark nav states. */
-  header nav .nav-sections a:any-link {
+  header .nav-link,
+  header .nav-trigger {
     position: relative;
-    text-decoration: none;
+    width: auto;
+    padding: 0;
   }
 
-  header nav .nav-sections a:any-link::after {
+  header .nav-trigger {
+    padding-right: 16px;
+  }
+
+  /* dropdown caret */
+  header .nav-trigger::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 2px;
+    margin-top: -4px;
+    width: 6px;
+    height: 6px;
+    border: 2px solid currentcolor;
+    border-width: 2px 2px 0 0;
+    transform: rotate(135deg);
+    transition: transform var(--duration-base) var(--ease-standard);
+  }
+
+  header .nav-trigger[aria-expanded='true']::after {
+    margin-top: -1px;
+    transform: rotate(-45deg);
+  }
+
+  /* animated underline (grows from left on hover/focus/open) — link uses ::after,
+     trigger uses ::before so it doesn't clash with the caret ::after. */
+  header .nav-link::after,
+  header .nav-trigger::before {
     content: '';
     position: absolute;
     left: 0;
-    right: 0;
     bottom: -2px;
     height: 2px;
     background-color: currentcolor;
@@ -232,95 +333,123 @@ header nav .nav-sections ul > li > ul > li {
     transition: transform var(--duration-base) var(--ease-standard);
   }
 
-  header nav .nav-sections a:hover::after,
-  header nav .nav-sections a:focus-visible::after {
+  header .nav-link::after {
+    right: 0;
+  }
+
+  header .nav-trigger::before {
+    right: 16px;
+  }
+
+  header .nav-link:hover::after,
+  header .nav-link:focus-visible::after,
+  header .nav-trigger:hover::before,
+  header .nav-trigger:focus-visible::before,
+  header .nav-trigger[aria-expanded='true']::before {
     transform: scaleX(1);
     transform-origin: left center;
   }
 
-  header nav .nav-sections .nav-drop {
-    position: relative;
-    padding-right: 16px;
-    cursor: pointer;
+  /* full-width overlay */
+  header .mega {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    display: block;
+    padding: 0;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--slate-200);
+    box-shadow: 0 12px 24px rgb(0 0 0 / 8%);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity var(--duration-base) var(--ease-standard),
+      transform var(--duration-base) var(--ease-standard),
+      visibility var(--duration-base);
+    pointer-events: none;
   }
 
-  header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
+  header .mega.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
   }
 
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
+  header .mega-inner {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-l) var(--gutter-wide);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-2xl);
+    align-items: start;
+    white-space: normal;
   }
 
-  header nav .nav-sections ul {
+  header .mega-feature {
+    display: block;
+  }
+
+  header .mega-feature-img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-card);
+    margin-bottom: var(--space-s);
+  }
+
+  header .mega-feature-title {
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--heading-font-size-s);
+  }
+
+  header .mega-feature-desc {
+    margin: 0 0 var(--space-s);
+    color: var(--slate-500);
+  }
+
+  header .mega-feature-link {
+    font-weight: 600;
+  }
+
+  header .mega-links {
     display: flex;
-    gap: 24px;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  header .mega-link {
+    padding: var(--space-2xs) 0;
+  }
+
+  header .mega-link-label {
     margin: 0;
   }
 
-  header nav .nav-sections .default-content-wrapper > ul > li {
-    flex: 0 1 auto;
-    position: relative;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul {
+  header .mega-link-card {
     display: none;
-    position: relative;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] > ul {
-    display: block;
-    position: absolute;
-    left: -24px;
-    width: 200px;
-    top: 150%;
-    padding: 16px;
-    background-color: var(--light-color);
-    white-space: initial;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 16px;
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--light-color);
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
-    padding: 8px 0;
   }
 }
 
-/* tools */
-header nav .nav-tools {
-  grid-area: tools;
+/* light desktop nav text over the hero — top-level bar only (the mega panel stays dark on
+   its own light background). Placed after the base color rules to satisfy specificity order. */
+@media (width >= 900px) {
+  body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-brand a,
+  body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-tools a,
+  body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-link,
+  body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-trigger {
+    color: #fff;
+  }
 }
 
-/* light nav text over the hero (after the base link color, to satisfy specificity order) */
-body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) nav a:any-link {
-  color: #fff;
-}
-
-/* the underline appears instantly (no sweep) when motion is reduced */
+/* respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  header nav .nav-sections a:any-link::after {
+  header .nav-link::after,
+  header .nav-trigger::before,
+  header .nav-trigger::after,
+  header .mega {
     transition: none;
   }
 }
