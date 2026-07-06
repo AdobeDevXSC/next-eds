@@ -159,29 +159,35 @@ async function loadEager(doc) {
 const NEXT_HOST = 'https://nxtjs.page';
 
 /**
- * Open the current page on the Next.js Worker when the Sidekick fires `previewed`, so a normal
- * Preview click also surfaces the real production render. Reuses a single named tab.
+ * When the Sidekick fires `previewed`, invalidate the Worker's cache for that path via
+ * /api/revalidate, then open the (now fresh) Next.js render. Invalidating first is why the
+ * opened tab reflects the change rather than a stale cached copy.
  * @param {CustomEvent} e the Sidekick `previewed` event (detail = previewed resource path)
  */
-function openNextPreview(e) {
+async function onSidekickPreviewed(e) {
   const raw = Array.isArray(e.detail) ? e.detail[0] : e.detail;
   const path = (typeof raw === 'string' && raw ? raw : window.location.pathname)
     .replace(/\.md$/, '')
     .replace(/\/index$/, '/');
+  try {
+    await fetch(`${NEXT_HOST}/api/revalidate?slug=${encodeURIComponent(path)}`, { method: 'POST' });
+  } catch {
+    // best effort — still open the render even if revalidation didn't confirm
+  }
   window.open(new URL(path, NEXT_HOST).href, 'next-preview');
 }
 
 /**
- * Wire the Sidekick `previewed` event to openNextPreview, whether the Sidekick is already in
- * the DOM or loads afterward.
+ * Wire the Sidekick `previewed` event, whether the Sidekick is already in the DOM or loads
+ * afterward.
  */
 function wireSidekickNextPreview() {
   const sk = document.querySelector('aem-sidekick');
   if (sk) {
-    sk.addEventListener('previewed', openNextPreview);
+    sk.addEventListener('previewed', onSidekickPreviewed);
   } else {
     document.addEventListener('sidekick-ready', () => {
-      document.querySelector('aem-sidekick')?.addEventListener('previewed', openNextPreview);
+      document.querySelector('aem-sidekick')?.addEventListener('previewed', onSidekickPreviewed);
     }, { once: true });
   }
 }
