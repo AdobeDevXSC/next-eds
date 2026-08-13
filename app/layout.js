@@ -13,7 +13,16 @@ export default function RootLayout({ children }) {
   // Header/footer live in the (site) layout so bespoke routes (e.g. /showcase) can opt out.
   return (
     <html lang="en">
-      <body className="appear">{children}</body>
+      <body className="appear">
+        <link
+          rel="preload"
+          href="/fonts/bricolage-grotesque-variable.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        {children}
+      </body>
     </html>
   );
 }

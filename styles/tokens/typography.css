@@ -1,12 +1,12 @@
 /* Stacked — typography.
    Bricolage Grotesque (constructed display) + Hanken Grotesk (friendly body).
-   Both must be self-hosted (see styles/tokens/fonts.css); the stacks fall back to
-   system-ui until the faces are added. See DESIGN.md for the hierarchy of record. */
+   Both are self-hosted (see styles/tokens/fonts.css); the stacks fall back to
+   system-ui if a face fails to load. See DESIGN.md for the hierarchy of record. */
 
 :root {
   /* families */
-  --body-font-family: 'Hanken Grotesk', 'Hanken Grotesk Fallback', system-ui, -apple-system, sans-serif;
-  --heading-font-family: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', system-ui, -apple-system, sans-serif;
+  --body-font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --heading-font-family: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
   --fixed-font-family: 'JetBrains Mono', menlo, consolas, monospace;
 
   /* body sizes (desktop) */
