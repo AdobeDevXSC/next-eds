@@ -1,0 +1,18 @@
+/* Stacked — home page "today's picks" strip (MenuHighlight). Reuses .menu-card styles from
+   menu.css; only the section/grid wrapper is defined here. */
+
+.menu-highlight h2 {
+  margin-bottom: var(--space-m);
+}
+
+.menu-highlight-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-m);
+}
+
+@media (width >= 600px) {
+  .menu-highlight-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
