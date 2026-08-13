@@ -392,7 +392,7 @@ header nav .nav-tools {
   body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-tools a,
   body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-link,
   body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) .nav-trigger {
-    color: #fff;
+    color: var(--text-inverse);
   }
 }
 
