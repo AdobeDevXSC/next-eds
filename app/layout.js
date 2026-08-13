@@ -1,6 +1,7 @@
 // EDS global styles: design tokens, fonts, typography, and section layout. Without these the
 // page has only per-block CSS and looks unstyled.
 import '../styles/styles.css';
+import ServiceWorkerRegister from './ServiceWorkerRegister.jsx';
 
 export const metadata = {
   title: 'Stacked',
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
