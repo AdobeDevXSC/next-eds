@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "title": "Design System: Stacked",
+  "extensions": {
+    "colorMeta": {
+      "punch":   { "role": "primary",  "displayName": "Punch",   "canonical": "#ff5a2c", "tonalRamp": ["#4a1405","#7a2409","#a83410","#d5471a","#ff5a2c","#ff8360","#ffb096","#ffe6dc"] },
+      "grape":   { "role": "secondary","displayName": "Grape",   "canonical": "#7a3ff2", "tonalRamp": ["#1e0a4a","#331470","#4a1fa0","#5e27d0","#7a3ff2","#a074f6","#c6aefa","#ece3fe"] },
+      "berry":   { "role": "secondary","displayName": "Berry",   "canonical": "#ff3d8a", "tonalRamp": ["#4a0a26","#7a1240","#a81d5a","#d52e74","#ff3d8a","#ff77ac","#ffaccb","#ffe4ee"] },
+      "zest":    { "role": "tertiary", "displayName": "Zest",    "canonical": "#c6f24e", "tonalRamp": ["#26340a","#445c12","#66881c","#8bb52a","#c6f24e","#d7f77e","#e7fbac","#f5fedb"] },
+      "sky":     { "role": "tertiary", "displayName": "Sky",     "canonical": "#34c3e8", "tonalRamp": ["#06323c","#0a5566","#0f7d94","#1aa3c2","#34c3e8","#6fd6ef","#a6e6f5","#dcf6fb"] },
+      "sun":     { "role": "tertiary", "displayName": "Sun",     "canonical": "#ffc53d", "tonalRamp": ["#3a2a00","#6b4e07","#997010","#cc9a1e","#ffc53d","#ffd873","#ffe8aa","#fff6dd"] },
+      "counter": { "role": "neutral",  "displayName": "Counter", "canonical": "#f8f7f4", "tonalRamp": ["#1a1714","#3a342e","#615c54","#8f897f","#b9b3a8","#d7d2c8","#efece4","#f8f7f4"] },
+      "char":    { "role": "neutral",  "displayName": "Char",    "canonical": "#1a1714", "tonalRamp": ["#100e0c","#1a1714","#3a342e","#615c54","#8f897f","#b9b3a8","#e4dfd5","#f8f7f4"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Hero headlines and the wordmark; one per view. Bricolage, tight and heavy." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title":    { "displayName": "Title",    "purpose": "Brick/card titles and sandwich names." },
+      "body":     { "displayName": "Body",     "purpose": "Running text; 65-75ch measure. Hanken Grotesk." },
+      "label":    { "displayName": "Label",    "purpose": "UI labels and prices, sentence case." }
+    },
+    "shadows": [
+      { "name": "shadow-brick",         "value": "0 5px 0 -2px rgba(26,23,20,.07), 0 14px 26px -10px rgba(26,23,20,.20)", "purpose": "Resting depth for every brick, card, and menu — thickness ledge plus soft drop." },
+      { "name": "shadow-brick-pressed", "value": "0 2px 0 -1px rgba(26,23,20,.08), 0 5px 12px -6px rgba(26,23,20,.22)",  "purpose": "The compressed shadow a brick settles into on :active." },
+      { "name": "shadow-pop",           "value": "0 22px 50px -14px rgba(26,23,20,.28)",                                  "purpose": "Overlays, popovers, cart drawer." }
+    ],
+    "motion": [
+      { "name": "ease-snap",     "value": "cubic-bezier(0.2, 0.9, 0.3, 1.3)", "purpose": "Springy overshoot — the signature snap-settle on press and on placing an ingredient." },
+      { "name": "ease-out",      "value": "cubic-bezier(0.16, 1, 0.3, 1)",    "purpose": "Reveal-on-scroll and general exits." },
+      { "name": "duration-snap", "value": "0.24s",                            "purpose": "Duration of the snap-settle." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "600px" },
+      { "name": "md", "value": "900px" },
+      { "name": "lg", "value": "1200px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one loud action per view: Punch fill, dark ink, and a snap-settle on press.",
+      "html": "<button class=\"ds-btn-primary\">Add to cart</button>",
+      "css": ".ds-btn-primary{background:#ff5a2c;color:#1a1714;border:none;border-radius:20px;padding:0.7em 1.4em;font:600 15px/1.2 'Hanken Grotesk',system-ui,sans-serif;letter-spacing:.01em;cursor:pointer;box-shadow:0 5px 0 -2px rgba(26,23,20,.07),0 14px 26px -10px rgba(26,23,20,.20);transition:background .16s ease,box-shadow .24s cubic-bezier(.2,.9,.3,1.3),transform .24s cubic-bezier(.2,.9,.3,1.3)}.ds-btn-primary:hover{background:#e23f16}.ds-btn-primary:active{transform:translateY(3px);box-shadow:0 2px 0 -1px rgba(26,23,20,.08),0 5px 12px -6px rgba(26,23,20,.22)}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 3px #7a3ff2}"
+    },
+    {
+      "name": "Ingredient Brick",
+      "kind": "chip",
+      "refersTo": "ingredient-brick",
+      "description": "A selectable ingredient. Selected bricks raise onto the stack shadow and show a filled stud + check.",
+      "html": "<span class=\"ds-brick\">Sourdough</span> <span class=\"ds-brick ds-brick--on\"><span class=\"ds-stud\"><svg width=\"10\" height=\"10\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#c6f24e\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12l5 5L20 6\"/></svg></span>Avocado +$1.50</span>",
+      "css": ".ds-brick{display:inline-flex;align-items:center;gap:8px;background:#fff;color:#1a1714;border:1px solid #e4dfd5;border-radius:10px;padding:0.5em 0.9em;font:500 14px/1.2 'Hanken Grotesk',system-ui,sans-serif;cursor:pointer;transition:box-shadow .24s cubic-bezier(.2,.9,.3,1.3),transform .24s cubic-bezier(.2,.9,.3,1.3)}.ds-brick:hover{transform:translateY(-1px);box-shadow:0 5px 0 -2px rgba(26,23,20,.07),0 14px 26px -10px rgba(26,23,20,.20)}.ds-brick--on{background:#c6f24e;border-color:transparent;color:#22300a;box-shadow:0 5px 0 -2px rgba(26,23,20,.07),0 14px 26px -10px rgba(26,23,20,.20)}.ds-stud{width:16px;height:16px;border-radius:50%;background:#1a1714;display:inline-flex;align-items:center;justify-content:center}"
+    },
+    {
+      "name": "Card Brick",
+      "kind": "card",
+      "refersTo": "card-brick",
+      "description": "The default surface: a white brick a step brighter than the counter, resting on the stack shadow.",
+      "html": "<div class=\"ds-card\"><h3>The Italian Stack</h3><p>Salami, capicola, provolone, hot peppers on ciabatta.</p></div>",
+      "css": ".ds-card{background:#fff;border-radius:20px;padding:1rem 1.25rem;box-shadow:0 5px 0 -2px rgba(26,23,20,.07),0 14px 26px -10px rgba(26,23,20,.20);font-family:'Hanken Grotesk',system-ui,sans-serif;color:#1a1714}.ds-card h3{margin:0 0 4px;font:700 18px/1.15 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em}.ds-card p{margin:0;color:#615c54;font-size:14px;line-height:1.5}"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "White fill, 12px radius, hairline border; focus shifts to a Grape ring with no glow.",
+      "html": "<input class=\"ds-field\" placeholder=\"name@company.com\" />",
+      "css": ".ds-field{width:100%;box-sizing:border-box;background:#fff;color:#1a1714;border:1px solid #e4dfd5;border-radius:12px;padding:0.65em 0.9em;font:400 15px/1.3 'Hanken Grotesk',system-ui,sans-serif}.ds-field::placeholder{color:#8f897f}.ds-field:focus-visible{outline:none;border-color:#7a3ff2;box-shadow:0 0 0 2px #7a3ff2}"
+    },
+    {
+      "name": "Loyalty Studs",
+      "kind": "custom",
+      "refersTo": "loyalty",
+      "description": "Loyalty is counted in studs — filled Berry for earned, hollow for remaining.",
+      "html": "<span class=\"ds-loyalty\"><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"on\"></i><i class=\"off\"></i><i class=\"off\"></i></span>",
+      "css": ".ds-loyalty{display:inline-flex;gap:6px;align-items:center}.ds-loyalty i{width:16px;height:16px;border-radius:50%;display:inline-block}.ds-loyalty .on{background:#ff3d8a}.ds-loyalty .off{background:transparent;box-shadow:inset 0 0 0 2px #f4c0d5}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Sandwich Construction Set",
+    "overview": "Stacked treats lunch like a modular building system. Every ingredient is a brick, every screen is assembled from bricks that stack, snap, and settle, and building your own sandwich is the same tactile joy as clicking parts together. The feeling is a well-made designer construction set — precise, colorful, satisfying to handle — not a children's toy. The energy comes from color and motion, not clutter: one hero color (Punch) owns large fields and the primary action, depth is literal with a soft two-layer stack shadow, and type is built rather than decorative. It deliberately rejects the category defaults: warm-cream-plus-serif artisanal food, kindergarten primary-only toy palettes, chalkboard-deli clichés, and neobrutalist hard shadows.",
+    "keyCharacteristics": [
+      "Modular grid; everything snaps to an 8px brick unit.",
+      "Chunky rounded brick forms with one consistent corner family.",
+      "One hero color at page scale; the rest of the palette is earned, not sprinkled.",
+      "Dark ink on bright bricks — the confident, accessible, modern reading.",
+      "Real soft-stack depth with a springy press-settle as the single signature motion.",
+      "Installable PWA, themed to the brand down to the browser chrome."
+    ],
+    "rules": [
+      { "name": "The One-Loud-Brick Rule", "body": "Punch owns the big fields and the single primary action on a screen. The rest of the palette appears only as ingredient bricks, selections, and states — a few at a time, never a page-wide rainbow.", "section": "colors" },
+      { "name": "The Dark-Ink-On-Bright Rule", "body": "Every bright brick (Punch, Berry, Zest, Sky, Sun) takes Char ink, not white. It passes contrast and reads more confident and modern. Grape is the sole exception that carries white.", "section": "colors" },
+      { "name": "The Constructed-Headline Rule", "body": "Bricolage carries every heading; Hanken carries everything read in running text. Never swap them, never add a third display face, never letterspace Bricolage open.", "section": "typography" },
+      { "name": "The Stack-Shadow Rule", "body": "Bricks always rest on the two-layer stack shadow, and pressing settles them (translateY(3px) + pressed shadow). No flat zero-blur block shadows, no zero-offset colored halos.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do let Punch own whole fields and the single primary action; keep other colors meaning-bearing.",
+      "Do put dark Char ink on every bright brick (Grape is the only white-text exception).",
+      "Do give bricks the two-layer stack shadow and the translateY(3px) snap-settle on press.",
+      "Do snap every element to the 8px brick unit and the 1200px content grid.",
+      "Do author real, appetizing sandwich imagery and label synthetic content.",
+      "Do theme the PWA and browser surfaces to the palette."
+    ],
+    "donts": [
+      "Don't fall back to warm-cream grounds, serif display, or chalkboard-deli cliches.",
+      "Don't use a primary-only kindergarten palette or literal LEGO trademarks.",
+      "Don't use hard zero-blur block shadows or zero-offset colored halos for depth.",
+      "Don't use gradient text, glass/blur decoration, or empty soft-shadowed rounded rectangles as content.",
+      "Don't add an eyebrow/kicker label above headings, or letterspace Bricolage open.",
+      "Don't scatter the snap motion across every hover — it is one authored moment per interaction."
+    ]
+  }
+}

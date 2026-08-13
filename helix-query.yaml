@@ -6,6 +6,7 @@ indices:
       - '/**'
     exclude:
       - '/drafts/**'
+      - '/config/**'
       - '/nav'
       - '/footer'
     target: /query-index.json
@@ -21,6 +22,37 @@ indices:
         value: attribute(el, 'content')
       robots:
         select: head > meta[name="robots"]
+        value: attribute(el, 'content')
+      lastModified:
+        select: none
+        value: parseTimestamp(headers('last-modified'), 'ddd, DD MMM YYYY hh:mm:ss GMT')
+  # Scoped catalog index for menu items authored as content pages under /menu/*.
+  # Custom properties come from each page's Metadata table (see docs/content-schema.md).
+  menu:
+    include:
+      - '/menu/**'
+    target: /menu/query-index.json
+    properties:
+      name:
+        select: head > meta[property="og:title"]
+        value: attribute(el, 'content')
+      description:
+        select: head > meta[name="description"]
+        value: attribute(el, 'content')
+      image:
+        select: head > meta[property="og:image"]
+        value: attribute(el, 'content')
+      price:
+        select: head > meta[name="price"]
+        value: attribute(el, 'content')
+      category:
+        select: head > meta[name="category"]
+        value: attribute(el, 'content')
+      tags:
+        select: head > meta[name="tags"]
+        value: attribute(el, 'content')
+      special:
+        select: head > meta[name="special"]
         value: attribute(el, 'content')
       lastModified:
         select: none
