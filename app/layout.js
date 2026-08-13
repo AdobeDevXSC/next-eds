@@ -3,8 +3,18 @@
 import '../styles/styles.css';
 
 export const metadata = {
-  title: 'next-eds spike',
-  description: 'Rendering EDS content via Next.js RSC',
+  title: 'Stacked',
+  description: 'Build your lunch, brick by brick.',
+  applicationName: 'Stacked',
+  appleWebApp: { capable: true, title: 'Stacked', statusBarStyle: 'default' },
+  icons: {
+    icon: '/icons/icon-192.png',
+    apple: '/icons/apple-touch-icon.png',
+  },
+};
+
+export const viewport = {
+  themeColor: '#ff5a2c',
 };
 
 export default function RootLayout({ children }) {
