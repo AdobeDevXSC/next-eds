@@ -1,0 +1,172 @@
+/* Stacked — /build route styles: "The Stack" signature component (see docs/DESIGN.md). Brand
+   tokens only. The right-hand stack is the build's signature: adding an ingredient drops a
+   brick into place with the snap-settle motion (a plain CSS mount animation — no JS needed,
+   since React mounts a new DOM node per added ingredient). */
+
+.build-page h1 {
+  margin-bottom: var(--space-m);
+}
+
+.build-empty {
+  color: var(--text-muted);
+}
+
+.build-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-l);
+  align-items: start;
+}
+
+@media (width >= 900px) {
+  .build-columns {
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+}
+
+.build-group {
+  margin-bottom: var(--space-m);
+}
+
+.build-group-label {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--body-font-size-s);
+  font-weight: var(--weight-bold);
+}
+
+.build-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.build-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-card);
+  border: var(--border-width) solid var(--border-hairline);
+  border-radius: var(--radius-chip);
+  padding: 0.5em 0.9em;
+  font: inherit;
+  font-size: var(--body-font-size-s);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: transform var(--duration-snap) var(--ease-snap),
+              box-shadow var(--duration-snap) var(--ease-snap),
+              background-color var(--duration-fast) var(--ease-standard);
+}
+
+.build-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-brick);
+}
+
+.build-chip-on {
+  background: var(--brand-zest);
+  border-color: transparent;
+  color: var(--on-zest);
+  box-shadow: var(--shadow-brick);
+}
+
+.build-chip-stud {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--text-color);
+  display: inline-block;
+}
+
+.build-stack-panel {
+  background: var(--surface-card);
+  border-radius: var(--radius-brick);
+  box-shadow: var(--shadow-brick);
+  padding: var(--space-s) var(--space-m);
+}
+
+.build-stack-title {
+  margin: 0 0 var(--space-xs);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.build-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.build-slab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding: 0.6em 0.9em;
+  border-radius: var(--radius-input);
+  font-size: var(--body-font-size-s);
+  font-weight: var(--weight-medium);
+  color: var(--text-color);
+  background: var(--surface-tint);
+  animation: build-slab-drop var(--duration-snap) var(--ease-snap);
+}
+
+.build-slab-bread {
+  background: var(--brand-sun);
+  color: var(--on-sun);
+}
+
+.build-slab-protein {
+  background: var(--brand-punch-soft);
+  color: var(--text-color);
+}
+
+.build-slab-cheese {
+  background: var(--brand-sky);
+  color: var(--on-sky);
+}
+
+.build-slab-veg {
+  background: var(--brand-zest);
+  color: var(--on-zest);
+}
+
+.build-slab-sauce {
+  background: var(--surface-tint);
+  color: var(--text-color);
+}
+
+.build-slab-extra {
+  background: var(--brand-grape);
+  color: var(--on-grape);
+}
+
+@keyframes build-slab-drop {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .build-slab {
+    animation: none;
+  }
+}
+
+.build-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+  padding-top: var(--space-xs);
+  border-top: var(--border-width) solid var(--border-hairline);
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+}
