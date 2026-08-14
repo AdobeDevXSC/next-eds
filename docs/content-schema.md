@@ -65,16 +65,16 @@ How the catalog is authored as **EDS structured content** — not spreadsheets �
 ```
 
 ## 3. Consumption & caching (`lib/catalog.js`)
-- `getMenu()` → fetch `/menu/query-index.json` (generalize `lib/eds/queryIndex.js` to accept a feed path), coerce/validate → `MenuItem[]`.
+- `getMenu()` → discover paths via `/menu/query-index.json` (path/lastModified only), then fetch and parse each page's `menu-item` block directly, coerce/validate → `MenuItem[]`.
 - `getIngredients()` → fetch `/config/ingredients.plain.html`, parse the `Ingredients` block → grouped palette.
 - Both cached with ISR + a `catalog` revalidation tag. `/api/revalidate` busts `catalog` when any `/menu/**` page or `/config/ingredients` publishes.
 - Orders capture a **price/build snapshot** at order time, so later catalog edits never rewrite history.
 
 ## 4. helix-query.yaml
-A scoped `menu` index (target `/menu/query-index.json`) carries the fields above; `/config/**` is excluded from the default index so the ingredients page isn't a browsable result. The custom properties (`price`, `category`, `tags`, `special`) read from the `<meta name="…">` tags EDS emits from each page's Metadata table.
+The scoped `menu` index (target `/menu/query-index.json`) exists purely for path discovery — it declares no custom properties beyond `lastModified`, since menu-item fields live in a body block, not `<meta>` tags (see §1). `/config/**` is excluded from the default index so the ingredients page isn't a browsable result.
 
 ## 5. Authoring workflow
-- **Add / edit a sandwich:** create or edit `/menu/<slug>`, fill the Metadata table (`price`, `category`, `tags`, `special`), add the description + image, preview, publish → it appears in `/menu/query-index.json` → live.
+- **Add / edit a sandwich:** create or edit `/menu/<slug>` in DA using the `menu-item` schema, fill in its fields (name, description, price, category, tags, special), add a photo, preview, publish → the page appears under `/menu/query-index.json`'s paths → `getMenu()` picks it up.
 - **Edit ingredients / prices:** edit the `Ingredients` block rows on `/config/ingredients`, publish → the builder updates.
 - All menu and ingredient content is **synthetic demonstration data**; label it as such wherever a visitor could mistake it for real.
 
