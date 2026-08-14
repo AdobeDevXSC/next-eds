@@ -1,0 +1,81 @@
+.signin-page {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-s);
+}
+
+.signin-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface-card);
+  border-radius: var(--radius-brick-lg);
+  box-shadow: var(--shadow-brick);
+  padding: var(--space-l) var(--space-m);
+}
+
+.signin-card h1 {
+  margin-top: 0;
+}
+
+.signin-lede {
+  color: var(--text-muted);
+  margin-bottom: var(--space-m);
+}
+
+.signin-personas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+.signin-persona {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--surface-tint);
+  border-radius: var(--radius-card);
+  padding: var(--space-xs) var(--space-s);
+}
+
+.signin-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--radius-round);
+  background: var(--brand-sun);
+  color: var(--on-sun);
+  font-weight: var(--weight-bold);
+}
+
+.signin-persona-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.signin-persona-name {
+  font-weight: var(--weight-bold);
+}
+
+.signin-persona-meta {
+  font-size: var(--body-font-size-xs);
+  color: var(--text-muted);
+}
+
+.signin-persona-btn {
+  flex: none;
+}
+
+@media (width < 600px) {
+  .signin-persona {
+    flex-wrap: wrap;
+  }
+
+  .signin-persona-btn {
+    width: 100%;
+  }
+}
