@@ -2,42 +2,27 @@
 
 How the catalog is authored as **EDS structured content** — not spreadsheets — and how the app consumes it. There are two content types: **menu items** (indexed content pages) and **ingredients** (a structured block). Companion to the [demo spec](superpowers/specs/2026-08-13-stacked-demo-design.md).
 
-## 1. Menu item — an indexed content page
+## 1. Menu item — a DA schema-authored page
 
 - **Location:** one page per sandwich under `/menu/<slug>` (e.g. `/menu/italian-stack`).
-- **Authoring:** a normal EDS document. The page body holds the rich description (and can render as a detail view at `/menu/<slug>`). Structured fields live in the page's **Metadata** table, which EDS emits as `<meta>` tags.
-- **Indexing:** `helix-query.yaml` indexes `/menu/**` into a scoped feed `/menu/query-index.json`; the app reads the feed (one request, paged) rather than fetching each page.
+- **Authoring:** created in DA using the `menu-item` **schema** (DA's structured-content feature, distinct from the classic Metadata-block/meta-tag convention this project's other pages use). The schema form's fields render into a `<div class="menu-item">` body block — one row per field, each `<h3>label</h3>` paired with a value cell — not into page `<meta>` tags. `og:title`/`og:image`/etc. on these pages are generic placeholders and are never read by the app.
+- **Discovery:** a scoped index (`helix-query.yaml`'s `menu` index, target `/menu/query-index.json`) lists every path under `/menu/**` for cheap enumeration. It declares no custom properties beyond `lastModified` — the real fields are never in the feed, only the path is used from it.
+- **Extraction:** `lib/catalog.js`'s `getMenu()` discovers paths from the feed, then fetches and parses each page's `.plain.html` directly, finds its `menu-item` block, and reads each row as a `label → value` pair.
 
-### Fields
-| Field | Source | Type | Required | Notes |
-|---|---|---|---|---|
-| `name` | `meta[property="og:title"]` | string | yes | display name |
-| `description` | `meta[name="description"]` | string | yes | short menu blurb |
-| `image` | `meta[property="og:image"]` | URL | yes | author-uploaded photo (auto-optimized) |
-| `price` | `meta[name="price"]` | number (USD) | yes | e.g. `11` or `11.00` |
-| `category` | `meta[name="category"]` | enum: `signature` \| `classic` \| `veg` \| `seasonal` | yes | grouping + filter |
-| `tags` | `meta[name="tags"]` | comma-list | no | e.g. `spicy, pork` |
-| `special` | `meta[name="special"]` | boolean (`true`) | no | featured / sandwich of the week |
-
-### Feed row shape (`/menu/query-index.json` → `.data[]`)
-```json
-{
-  "path": "/menu/italian-stack",
-  "name": "The Italian Stack",
-  "description": "Salami, capicola, provolone, hot peppers on ciabatta.",
-  "image": "/menu/media_...jpg",
-  "price": "11",
-  "category": "signature",
-  "tags": "spicy, pork",
-  "special": "true",
-  "lastModified": "..."
-}
-```
-query-index values are strings; the app coerces `price` → integer cents and `special` → boolean.
+### Fields (rows inside the `menu-item` block)
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `name` | string | yes | display name |
+| `description` | string | yes | short menu blurb |
+| `image` | URL | yes | author-uploaded photo, an absolute `content.da.live` or media URL |
+| `price` | number (USD) | yes | e.g. `11` or `11.5` |
+| `category` | enum: `signature` \| `classic` \| `veg` \| `seasonal` | yes | grouping + filter |
+| `tags` | comma-list | no | e.g. `spicy, pork` |
+| `special` | boolean (`true`) | no | featured / sandwich of the week |
 
 ### App validation (`lib/catalog.js`)
-- Require `name`, `price`, `image`; drop and log rows missing them (degrade gracefully — never 500 the menu).
-- Coerce `price` to cents; clamp negative/NaN to skip. Default `category` to `signature` if absent/unknown.
+- Require `name`, `price`, `image`; drop rows missing them — a page missing a required field, or with no `menu-item` block at all, is silently excluded (never a thrown error).
+- Coerce `price` to cents; a non-numeric or negative price drops the row. Default `category` to `signature` if absent/unknown. Decode HTML entities in field text (schema-authored copy can contain `&amp;` etc., e.g. "Roasted Turkey & Swiss").
 
 ## 2. Ingredients — a structured block
 
