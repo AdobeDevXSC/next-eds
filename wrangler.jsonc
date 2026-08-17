@@ -44,19 +44,18 @@
     },
     {
       "binding": "APP_KV",
-      "id": "00000000000000000000000000000001"
+      "id": "e11089ec5e4340feab497508d90f1866"
     }
   ],
   // App data: users, saved sandwiches, orders, loyalty (Stacked persistence — see
-  // docs/superpowers/specs/2026-08-13-stacked-demo-design.md §4). The database_id below is a
-  // placeholder for local dev, which persists to .wrangler/state regardless of the ID's
-  // validity. Before deploying to production, run `npx wrangler d1 create stacked-db` and
-  // replace database_id with the real UUID it prints.
+  // docs/superpowers/specs/2026-08-13-stacked-demo-design.md §4). Local dev still persists to
+  // .wrangler/state regardless of this ID (see initOpenNextCloudflareForDev in
+  // next.config.mjs); this is the real, provisioned production database.
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "stacked-db",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "9cfbaf01-e0ef-4890-bed0-6de863cb1d19",
       "migrations_dir": "migrations"
     }
   ]
