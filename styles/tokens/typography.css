@@ -1,54 +1,60 @@
-/* Stacked — typography.
-   Bricolage Grotesque (constructed display) + Hanken Grotesk (friendly body).
-   Both are self-hosted (see styles/tokens/fonts.css); the stacks fall back to
-   system-ui if a face fails to load. See DESIGN.md for the hierarchy of record. */
+/* Stacked redesign — typography. Two families only: Spectral (content/display) and DM Sans
+   (chrome/UI), self-hosted via next/font/google (see app/layout.js → --font-spectral /
+   --font-dm-sans). Mono annotations use the system mono stack. Roles NEVER swap. Legacy
+   --*-font-family names are re-pointed so existing pages inherit the new families. */
 
 :root {
-  /* families */
-  --body-font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-  --heading-font-family: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
-  --fixed-font-family: 'JetBrains Mono', menlo, consolas, monospace;
+  /* families — content = Spectral, chrome = DM Sans, mono = system */
+  --font-content: var(--font-spectral), Georgia, 'Times New Roman', serif;
+  --font-chrome: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', ui-monospace, menlo, consolas, monospace;
+
+  /* legacy names re-pointed: heading/display = content, body/UI = chrome */
+  --body-font-family: var(--font-chrome);
+  --heading-font-family: var(--font-content);
+  --fixed-font-family: var(--font-mono);
 
   /* body sizes (desktop) */
-  --body-font-size-m: 18px;
-  --body-font-size-s: 16px;
-  --body-font-size-xs: 14px;
+  --body-font-size-m: 15px;
+  --body-font-size-s: 14px;
+  --body-font-size-xs: 13px;
 
   /* heading sizes (desktop) */
-  --heading-font-size-xxl: 64px;   /* display / hero */
-  --heading-font-size-xl: 40px;
-  --heading-font-size-l: 30px;
-  --heading-font-size-m: 24px;
-  --heading-font-size-s: 20px;
+  --heading-font-size-xxl: 128px;  /* wordmark hero */
+  --heading-font-size-xl: 34px;    /* section heading */
+  --heading-font-size-l: 30px;     /* card / row title */
+  --heading-font-size-m: 25px;     /* lede */
+  --heading-font-size-s: 21px;
   --heading-font-size-xs: 18px;
 
-  /* weights */
+  /* weights (imported faces: Spectral 400/600, DM Sans 400/500/600/700) */
   --weight-regular: 400;
   --weight-medium: 500;
+  --weight-semibold: 600;
   --weight-bold: 700;
-  --weight-black: 800;             /* Bricolage display */
+  --weight-black: 700;
 
   /* line heights */
   --leading-tight: 1.02;
-  --leading-heading: 1.12;
+  --leading-heading: 1.1;
   --leading-body: 1.6;
 
-  /* tracking — Bricolage is set tight; never letterspace it open */
-  --tracking-display: -0.03em;
+  /* tracking */
+  --tracking-display: -0.045em;   /* Spectral italic wordmark */
   --tracking-heading: -0.02em;
   --tracking-tight: -0.01em;
-  --tracking-label: 0.01em;
+  --tracking-label: 0.14em;       /* overline */
 }
 
 @media (width < 900px) {
   :root {
-    --body-font-size-m: 19px;
-    --body-font-size-s: 17px;
-    --body-font-size-xs: 15px;
-    --heading-font-size-xxl: 46px;
-    --heading-font-size-xl: 34px;
-    --heading-font-size-l: 27px;
-    --heading-font-size-m: 22px;
+    --body-font-size-m: 15px;
+    --body-font-size-s: 14px;
+    --body-font-size-xs: 13px;
+    --heading-font-size-xxl: 54px;   /* mobile wordmark */
+    --heading-font-size-xl: 26px;    /* mobile section heading */
+    --heading-font-size-l: 21px;
+    --heading-font-size-m: 18px;
     --heading-font-size-s: 19px;
     --heading-font-size-xs: 17px;
   }

@@ -1,18 +1,3 @@
-/* Stacked webfonts — Bricolage Grotesque (display) + Hanken Grotesk (body).
-   Self-hosted variable woff2 in /public/fonts (served at /fonts/...). */
-
-@font-face {
-  font-family: 'Bricolage Grotesque';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url('/fonts/bricolage-grotesque-variable.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Hanken Grotesk';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/hanken-grotesk-variable.woff2') format('woff2');
-}
+/* Fonts are loaded and self-hosted by next/font/google in app/layout.js (Spectral + DM Sans),
+   which injects @font-face and exposes them as --font-spectral / --font-dm-sans on <html>.
+   styles/tokens/typography.css maps those onto the family tokens. Nothing to declare here. */
