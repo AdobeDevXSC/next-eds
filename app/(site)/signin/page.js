@@ -2,6 +2,10 @@ import { getPersonas } from '../../../lib/db.js';
 import './signin.css';
 
 export const metadata = { title: 'Sign in — Stacked' };
+// getPersonas() calls getCloudflareContext(), which only resolves inside a real request —
+// force this route to render per-request rather than let Next try to prerender it statically
+// at build time (where no Cloudflare binding context exists yet).
+export const dynamic = 'force-dynamic';
 
 export default async function SignInPage() {
   const personas = await getPersonas();
