@@ -63,7 +63,12 @@ export default function AppShell({ children }) {
   const pathname = usePathname() || '/';
   const active = activeTab(pathname);
   const { orderCount } = useOrder();
-  const { action } = useDockSlot();
+  const { action, chromeless } = useDockSlot();
+
+  // Focused flows (the builder) render their own header + docked bar; the shell steps aside.
+  if (chromeless) {
+    return <div className="app-shell app-shell-bare">{children}</div>;
+  }
 
   return (
     <div className="app-shell">
