@@ -26,11 +26,12 @@ indices:
       lastModified:
         select: none
         value: parseTimestamp(headers('last-modified'), 'ddd, DD MMM YYYY hh:mm:ss GMT')
-  # Scoped catalog index for menu items authored as content pages under /menu/*. Used only for
-  # path discovery + lastModified — menu items are authored via DA's schema feature
-  # (x-schema-name: menu-item), which renders fields into a body block, not page <meta> tags,
-  # so no custom meta-based properties are declared here. lib/catalog.js's getMenu() reads the
-  # real fields by parsing each page's menu-item block directly. See docs/content-schema.md.
+  # Scoped catalog index for menu items authored as content pages under /menu/*. Menu items are
+  # authored via DA's schema feature (x-schema-name: menu-item), which renders fields into a
+  # .menu-item body block (not page <meta> tags), so each field below is selected directly out of
+  # that block. Selectors are anchored to the field's real `id` attribute (e.g. h3#name) via
+  # hast-util-select's :has() + adjacent-sibling combinator, so reordering fields in DA's schema
+  # editor won't break extraction. See docs/content-schema.md.
   menu:
     include:
       - '/menu/**'
@@ -39,3 +40,24 @@ indices:
       lastModified:
         select: none
         value: parseTimestamp(headers('last-modified'), 'ddd, DD MMM YYYY hh:mm:ss GMT')
+      name:
+        select: .menu-item > div > div:has(> h3#name) + div
+        value: textContent(el)
+      description:
+        select: .menu-item > div > div:has(> h3#description) + div
+        value: textContent(el)
+      image:
+        select: .menu-item > div > div:has(> h3#image) + div
+        value: textContent(el)
+      price:
+        select: .menu-item > div > div:has(> h3#price) + div
+        value: textContent(el)
+      category:
+        select: .menu-item > div > div:has(> h3#category) + div
+        value: textContent(el)
+      tags:
+        select: .menu-item > div > div:has(> h3#tags) + div
+        value: textContent(el)
+      special:
+        select: .menu-item > div > div:has(> h3#special) + div
+        value: textContent(el)
