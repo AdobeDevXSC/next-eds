@@ -178,6 +178,61 @@
 
 .app-shell .tab-active .tab-label { color: var(--text-primary); }
 
+/* ---- Shared buttons (home CTAs, docked action row, builder) ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 22px;
+  border: var(--hairline) solid transparent;
+  border-radius: var(--radius-button);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--duration-hover) var(--ease-standard),
+    border-color var(--duration-hover) var(--ease-standard),
+    color var(--duration-hover) var(--ease-standard),
+    transform var(--duration-hover) var(--ease-standard);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  background-image: linear-gradient(rgb(255 255 255 / 14%), transparent);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-press);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-ghost {
+  background-color: var(--surface);
+  border-color: var(--border-strong);
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+}
+
+/* button colors — beat the global teal a:any-link */
+.app-shell .btn-primary { color: var(--primary-text-on); }
+
+.app-shell .btn-ghost { color: var(--text-primary); }
+
+.app-shell .btn-ghost:hover { color: var(--accent); }
+
+.app-shell .btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-shadow);
+}
+
 /* ---- Focus rings on all interactive shell elements ---- */
 .app-shell .brand:focus-visible,
 .app-shell a.header-nav-link:focus-visible,
