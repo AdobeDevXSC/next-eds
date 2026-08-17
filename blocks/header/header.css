@@ -136,8 +136,10 @@ header nav[aria-expanded='true'] .nav-hamburger-icon::after {
 header .nav-brand {
   grid-area: brand;
   flex-basis: 128px;
+  font-family: var(--heading-font-family);
   font-size: var(--heading-font-size-s);
   font-weight: 700;
+  letter-spacing: var(--tracking-heading);
   line-height: 1;
 }
 
@@ -243,9 +245,46 @@ header .mega-col-cta {
   color: var(--accent-blue);
 }
 
-/* tools */
+/* tools — authored as a plain link (DA strips class attributes from raw-authored anchors),
+   so the button look is applied structurally here rather than depending on a `.button`
+   class surviving authoring. Punch, dark ink, brick radius, matching every other primary
+   action in the system. */
 header nav .nav-tools {
   grid-area: tools;
+}
+
+header nav .nav-tools p {
+  margin: 0;
+}
+
+header nav .nav-tools a {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-brick);
+  padding: 0.55em 1.2em;
+  background-color: var(--brand-punch);
+  color: var(--on-punch);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  box-shadow: var(--shadow-brick);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-snap) var(--ease-snap),
+    transform var(--duration-snap) var(--ease-snap);
+}
+
+header nav .nav-tools a:hover {
+  background-color: var(--brand-punch-deep);
+}
+
+header nav .nav-tools a:active {
+  transform: translateY(3px);
+  box-shadow: var(--shadow-brick-pressed);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  header nav .nav-tools a:active {
+    transform: none;
+  }
 }
 
 @media (width >= 900px) {
@@ -294,7 +333,7 @@ header nav .nav-tools {
   }
 
   /* animated underline (grows from left on hover/focus/open) — link uses ::after,
-     trigger uses ::before. */
+     trigger uses ::before. Punch, not currentColor: the one loud brand touch in the header. */
   header .nav-link::after,
   header .nav-trigger::before {
     content: '';
@@ -303,7 +342,8 @@ header nav .nav-tools {
     right: 0;
     bottom: -2px;
     height: 2px;
-    background-color: currentcolor;
+    border-radius: 2px;
+    background-color: var(--brand-punch);
     transform: scaleX(0);
     transform-origin: right center;
     transition: transform var(--duration-base) var(--ease-standard);
