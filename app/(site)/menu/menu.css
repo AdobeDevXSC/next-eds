@@ -1,0 +1,106 @@
+/* Stacked — /menu route styles. Card + page layout, following the blocks/ convention of a
+   component owning its own stylesheet (imported directly by MenuCard.jsx and page.js), even
+   though this isn't an EDS block. Brand tokens only — see docs/DESIGN.md. */
+
+.menu-page h1 {
+  margin-bottom: var(--space-m);
+}
+
+.menu-empty {
+  color: var(--text-muted);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-m);
+}
+
+@media (width >= 600px) {
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border-radius: var(--radius-brick);
+  box-shadow: var(--shadow-brick);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--duration-snap) var(--ease-snap),
+              box-shadow var(--duration-snap) var(--ease-snap);
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pop);
+  text-decoration: none;
+}
+
+.menu-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--surface-tint);
+}
+
+.menu-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-card-badge {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  background: var(--brand-sun);
+  color: var(--on-sun);
+  font-size: var(--body-font-size-xs);
+  font-weight: var(--weight-medium);
+  padding: 0.2em 0.7em;
+  border-radius: var(--radius-pill);
+}
+
+.menu-card-body {
+  padding: var(--space-s) var(--space-m);
+}
+
+.menu-card-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.menu-card-name {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-heading);
+}
+
+.menu-card-price {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+.menu-card-description {
+  margin: var(--space-2xs) 0 0;
+  color: var(--text-muted);
+  font-size: var(--body-font-size-s);
+  line-height: var(--leading-body);
+}

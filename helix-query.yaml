@@ -6,6 +6,7 @@ indices:
       - '/**'
     exclude:
       - '/drafts/**'
+      - '/config/**'
       - '/nav'
       - '/footer'
     target: /query-index.json
@@ -22,6 +23,19 @@ indices:
       robots:
         select: head > meta[name="robots"]
         value: attribute(el, 'content')
+      lastModified:
+        select: none
+        value: parseTimestamp(headers('last-modified'), 'ddd, DD MMM YYYY hh:mm:ss GMT')
+  # Scoped catalog index for menu items authored as content pages under /menu/*. Used only for
+  # path discovery + lastModified — menu items are authored via DA's schema feature
+  # (x-schema-name: menu-item), which renders fields into a body block, not page <meta> tags,
+  # so no custom meta-based properties are declared here. lib/catalog.js's getMenu() reads the
+  # real fields by parsing each page's menu-item block directly. See docs/content-schema.md.
+  menu:
+    include:
+      - '/menu/**'
+    target: /menu/query-index.json
+    properties:
       lastModified:
         select: none
         value: parseTimestamp(headers('last-modified'), 'ddd, DD MMM YYYY hh:mm:ss GMT')

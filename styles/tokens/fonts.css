@@ -1,48 +1,18 @@
-/* EDS webfonts — Roboto (body) + Roboto Condensed (headings).
-   Served from /public/fonts (so the Worker serves them at /fonts/...).
-   Roboto ships 400/500/700; Condensed ships 700. */
+/* Stacked webfonts — Bricolage Grotesque (display) + Hanken Grotesk (body).
+   Self-hosted variable woff2 in /public/fonts (served at /fonts/...). */
 
 @font-face {
-  font-family: roboto;
+  font-family: 'Bricolage Grotesque';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 800;
   font-display: swap;
-  src: url('/fonts/roboto-regular.woff2') format('woff2');
+  src: url('/fonts/bricolage-grotesque-variable.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: roboto;
+  font-family: 'Hanken Grotesk';
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400 700;
   font-display: swap;
-  src: url('/fonts/roboto-medium.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: roboto;
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/roboto-bold.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: roboto-condensed;
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/roboto-condensed-bold.woff2') format('woff2');
-}
-
-/* Metric-matched fallbacks so swap doesn't reflow (from the EDS boilerplate). */
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 99.529%;
-  src: local('Arial');
-}
-
-@font-face {
-  font-family: roboto-condensed-fallback;
-  size-adjust: 88.82%;
-  src: local('Arial');
+  src: url('/fonts/hanken-grotesk-variable.woff2') format('woff2');
 }

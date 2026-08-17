@@ -1,8 +1,10 @@
-/* EDS spacing, radius, shadow & layout tokens.
-   Section rhythm + content widths come from the boilerplate; radii/shadows are
-   distilled from the converted block CSS (cards 12px, steps badge 50%, etc.). */
+/* Stacked — spacing, radius, elevation & motion.
+   Brick Stack: a modular 8px grid, one chunky radius family, soft two-layer "stack" depth,
+   and a springy snap-settle as the single signature motion. See DESIGN.md. */
 
 :root {
+  --brick-unit: 8px;             /* modular grid base — everything snaps to it */
+
   /* spacing scale */
   --space-2xs: 6px;
   --space-xs: 12px;
@@ -10,38 +12,46 @@
   --space-m: 24px;
   --space-l: 40px;
   --space-xl: 64px;
-  --space-2xl: 80px;
+  --space-2xl: 96px;
 
   /* layout */
   --content-width: 1200px;
   --nav-width: 1264px;
-  --nav-height: 64px;
+  --nav-height: 68px;
   --gutter: 24px;
   --gutter-wide: 32px;
 
-  /* radii */
-  --radius-chip: 6px;
-  --radius-card: 12px;
-  --radius-pill: 2.4em;
+  /* radii — the brick family */
+  --radius-chip: 10px;
+  --radius-input: 12px;
+  --radius-card: 20px;           /* the brick */
+  --radius-brick: 20px;
+  --radius-brick-lg: 28px;       /* large bricks / hero panels */
+  --radius-pill: 999px;          /* tags, avatar — genuinely pill only */
   --radius-round: 50%;
 
   /* borders */
   --border-width: 1px;
   --border-width-emphasis: 2px;
+  --border-brick: 2px;
 
-  /* shadows — EDS keeps elevation flat; borders do most of the work */
+  /* elevation — the stack shadow: thin thickness ledge + soft diffuse drop */
   --shadow-none: none;
-  --shadow-sm: 0 1px 2px rgb(2 6 23 / 6%);
-  --shadow-card: 0 4px 16px rgb(2 6 23 / 8%);
-  --shadow-pop: 0 12px 32px rgb(2 6 23 / 14%);
+  --shadow-sm: 0 1px 0 -0.5px rgb(26 23 20 / 6%), 0 3px 8px -4px rgb(26 23 20 / 14%);
+  --shadow-brick: 0 5px 0 -2px rgb(26 23 20 / 7%), 0 14px 26px -10px rgb(26 23 20 / 20%);
+  --shadow-brick-pressed: 0 2px 0 -1px rgb(26 23 20 / 8%), 0 5px 12px -6px rgb(26 23 20 / 22%);
+  --shadow-card: var(--shadow-brick);   /* legacy alias -> brick depth */
+  --shadow-pop: 0 22px 50px -14px rgb(26 23 20 / 28%);
 
-  /* hero scrim */
-  --scrim: linear-gradient(to top, rgb(2 6 23 / 92%) 0%, rgb(2 6 23 / 70%) 55%, rgb(2 6 23 / 45%) 100%); /* @kind other */
+  /* hero scrim — dark, for legibility over imagery */
+  --scrim: linear-gradient(to top, rgb(26 23 20 / 92%) 0%, rgb(26 23 20 / 70%) 55%, rgb(26 23 20 / 42%) 100%); /* @kind other */
 
   /* motion */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
-  --duration-fast: 0.18s; /* @kind other */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1.3); /* @kind other — springy overshoot 'settle' */
+  --duration-fast: 0.16s; /* @kind other */
+  --duration-snap: 0.24s; /* @kind other */
   --duration-base: 0.3s; /* @kind other */
   --duration-slow: 0.6s; /* @kind other */
 }

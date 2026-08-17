@@ -32,9 +32,9 @@
 }
 
 .callout.warning {
-  border-left-color: #b7791f;
+  border-left-color: var(--brand-sun);
 }
 
 .callout.success {
-  border-left-color: #2f855a;
+  border-left-color: var(--brand-zest);
 }

@@ -20,4 +20,14 @@ module.exports = {
     'linebreak-style': ['error', 'unix'], // enforce unix linebreaks
     'no-param-reassign': [2, { props: false }], // allow modifying properties of param
   },
+  overrides: [
+    {
+      // Service worker: runs in ServiceWorkerGlobalScope, where `self` (not `window`) is the
+      // correct global. Airbnb's no-restricted-globals flags `self` as a "confusing browser
+      // global", but there's no window/self ambiguity in this scope.
+      files: ['public/sw.js'],
+      env: { serviceworker: true },
+      rules: { 'no-restricted-globals': 'off' },
+    },
+  ],
 };

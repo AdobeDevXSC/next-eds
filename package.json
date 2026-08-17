@@ -11,7 +11,7 @@
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "deploy:cf:preview": "opennextjs-cloudflare build && wrangler deploy --env preview",
     "lint:js": "eslint .",
-    "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\"",
+    "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\" \"app/**/*.css\"",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix"
   },
@@ -33,10 +33,13 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "7.29.7",
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
+    "@fontsource-variable/hanken-grotesk": "^5.3.0",
     "@opennextjs/cloudflare": "^1.20.0",
     "eslint": "8.57.1",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.32.0",
+    "sharp": "^0.35.3",
     "stylelint": "17.13.0",
     "stylelint-config-standard": "40.0.0",
     "wrangler": "^4.105.0"

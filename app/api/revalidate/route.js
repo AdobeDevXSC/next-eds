@@ -33,8 +33,17 @@ export async function POST(request) {
     }
   }
 
-  const tag = `page:${slug.replace(/^\/+|\/+$/g, '') || 'index'}`;
+  const normalized = slug.replace(/^\/+|\/+$/g, '');
+  const tag = `page:${normalized || 'index'}`;
   revalidateTag(tag);
 
-  return NextResponse.json({ ok: true, revalidated: tag, now: Date.now() }, { headers: CORS });
+  // The catalog (menu items + the ingredients block) is cached under its own tag so both
+  // /menu and the builder pick up a publish without waiting for their own ISR window.
+  const tags = [tag];
+  if (normalized === 'config/ingredients' || normalized.startsWith('menu/')) {
+    revalidateTag('catalog');
+    tags.push('catalog');
+  }
+
+  return NextResponse.json({ ok: true, revalidated: tags, now: Date.now() }, { headers: CORS });
 }

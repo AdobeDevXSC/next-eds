@@ -41,6 +41,23 @@
     {
       "binding": "NEXT_TAG_CACHE_KV",
       "id": "7c290fe8865d479d8aafb1a8b36e49fc"
+    },
+    {
+      "binding": "APP_KV",
+      "id": "00000000000000000000000000000001"
+    }
+  ],
+  // App data: users, saved sandwiches, orders, loyalty (Stacked persistence — see
+  // docs/superpowers/specs/2026-08-13-stacked-demo-design.md §4). The database_id below is a
+  // placeholder for local dev, which persists to .wrangler/state regardless of the ID's
+  // validity. Before deploying to production, run `npx wrangler d1 create stacked-db` and
+  // replace database_id with the real UUID it prints.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "stacked-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
     }
   ]
 }

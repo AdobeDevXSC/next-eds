@@ -70,8 +70,8 @@ button.button {
   max-width: 100%;
   margin: 0;
   border: var(--border-width-emphasis) solid transparent;
-  border-radius: var(--radius-pill);
-  padding: 0.5em 1.2em;
+  border-radius: var(--radius-brick);
+  padding: 0.7em 1.4em;
   font: inherit;
   font-weight: var(--weight-medium);
   line-height: 1.25;
@@ -82,18 +82,30 @@ button.button {
   white-space: nowrap;
   transition: background-color var(--duration-fast) var(--ease-standard),
               border-color var(--duration-fast) var(--ease-standard),
-              color var(--duration-fast) var(--ease-standard);
+              color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-snap) var(--ease-snap),
+              transform var(--duration-snap) var(--ease-snap);
 }
 
 a.button.primary, button.button.primary {
-  border-color: var(--text-color);
-  background-color: var(--text-color);
-  color: var(--background-color);
+  border-color: transparent;
+  background-color: var(--brand-punch);
+  color: var(--on-punch);
+  box-shadow: var(--shadow-brick);
 }
 
 a.button.primary:hover, button.button.primary:hover {
-  border-color: var(--dark-color);
-  background-color: var(--dark-color);
+  background-color: var(--brand-punch-deep);
+}
+
+/* the snap-settle: the brick drops into its compressed shadow on press */
+a.button.primary:active, button.button.primary:active {
+  transform: translateY(3px);
+  box-shadow: var(--shadow-brick-pressed);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.button.primary:active, button.button.primary:active { transform: none; }
 }
 
 a.button.secondary, button.button.secondary {
@@ -133,4 +145,7 @@ a.button[aria-disabled="true"], button.button:disabled {
   width: 24px;
 }
 
-.icon img { height: 100%; width: 100%; }
+.icon img {
+  height: 100%;
+  width: 100%;
+}

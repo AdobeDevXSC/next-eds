@@ -4,6 +4,8 @@ import { fetchQueryIndex } from '../../../lib/eds/queryIndex.js';
 import { parseEds } from '../../../lib/eds/parse.js';
 import { renderNode } from '../../../lib/eds/render.js';
 import { buildMetadata } from '../../../lib/eds/metadata.js';
+import { getMenu } from '../../../lib/catalog.js';
+import MenuHighlight from '../menu/MenuHighlight.jsx';
 
 // Per-page <head> metadata (title, description, Open Graph) from the page's authored Metadata
 // block, read via the query-index feed. Falls back to the root layout defaults when a page
@@ -33,6 +35,12 @@ export default async function Page({ params }) {
   if (html === null) notFound(); // missing page / non-page request → 404, not 500
 
   const tree = parseEds(html);
+  const highlight = path === '' ? await getMenu() : null;
 
-  return <main>{tree.map((node, i) => renderNode(node, i))}</main>;
+  return (
+    <main>
+      {tree.map((node, i) => renderNode(node, i))}
+      {highlight && <MenuHighlight items={highlight} />}
+    </main>
+  );
 }
