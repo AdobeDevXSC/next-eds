@@ -1,57 +1,73 @@
-/* Stacked — spacing, radius, elevation & motion.
-   Brick Stack: a modular 8px grid, one chunky radius family, soft two-layer "stack" depth,
-   and a springy snap-settle as the single signature motion. See DESIGN.md. */
+/* Stacked redesign — spacing, layout, radius, elevation & motion.
+   4px grid. Hairlines 0.5px. Radii: bricks 3–5px · buttons 8–10px · cards 14px · wells 16–20px
+   · pills 9999px. See design_handoff_stacked_home/README.md. Legacy names re-pointed. */
 
 :root {
-  --brick-unit: 8px;             /* modular grid base — everything snaps to it */
+  --brick-unit: 4px;             /* modular grid base */
 
-  /* spacing scale */
-  --space-2xs: 6px;
-  --space-xs: 12px;
-  --space-s: 16px;
-  --space-m: 24px;
-  --space-l: 40px;
-  --space-xl: 64px;
-  --space-2xl: 96px;
+  /* spacing scale (4px grid) */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-s: 12px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
 
   /* layout */
-  --content-width: 1200px;
-  --nav-width: 1264px;
-  --nav-height: 68px;
-  --gutter: 24px;
-  --gutter-wide: 32px;
+  --shell-max: 1280px;           /* desktop home column */
+  --shell-gutter: 64px;          /* desktop L/R page padding */
+  --content-width: 1152px;       /* legacy alias (shell-max minus gutters) */
+  --nav-width: 1280px;
+  --nav-height: 52px;            /* mobile app header; desktop header is 44px in the shell */
+  --header-height-desktop: 44px;
+  --gutter: 22px;
+  --gutter-wide: 64px;
+  --hairline: 0.5px;
 
-  /* radii — the brick family */
+  /* radii */
+  --radius-brick-sm: 3px;
+  --radius-brick: 4px;           /* a brick */
+  --radius-brick-lg: 5px;
+  --radius-button: 8px;
   --radius-chip: 10px;
-  --radius-input: 12px;
-  --radius-card: 20px;           /* the brick */
-  --radius-brick: 20px;
-  --radius-brick-lg: 28px;       /* large bricks / hero panels */
-  --radius-pill: 999px;          /* tags, avatar — genuinely pill only */
+  --radius-input: 10px;
+  --radius-card: 14px;
+  --radius-well: 16px;
+  --radius-well-lg: 20px;
+  --radius-pill: 9999px;
   --radius-round: 50%;
+  --radius-screen: 34px;         /* phone screen inside a 44px bezel (frame prop) */
 
   /* borders */
-  --border-width: 1px;
-  --border-width-emphasis: 2px;
-  --border-brick: 2px;
+  --border-width: 0.5px;
+  --border-width-emphasis: 1px;
+  --border-brick: 0.5px;
 
-  /* elevation — the stack shadow: thin thickness ledge + soft diffuse drop */
+  /* elevation */
   --shadow-none: none;
-  --shadow-sm: 0 1px 0 -0.5px rgb(26 23 20 / 6%), 0 3px 8px -4px rgb(26 23 20 / 14%);
-  --shadow-brick: 0 5px 0 -2px rgb(26 23 20 / 7%), 0 14px 26px -10px rgb(26 23 20 / 20%);
-  --shadow-brick-pressed: 0 2px 0 -1px rgb(26 23 20 / 8%), 0 5px 12px -6px rgb(26 23 20 / 22%);
-  --shadow-card: var(--shadow-brick);   /* legacy alias -> brick depth */
-  --shadow-pop: 0 22px 50px -14px rgb(26 23 20 / 28%);
-
-  /* hero scrim — dark, for legibility over imagery */
-  --scrim: linear-gradient(to top, rgb(26 23 20 / 92%) 0%, rgb(26 23 20 / 70%) 55%, rgb(26 23 20 / 42%) 100%); /* @kind other */
+  --shadow-card: 0 8px 28px rgba(60, 45, 25, 0.07);
+  --shadow-card-hover: 0 8px 28px rgba(60, 45, 25, 0.09);
+  --shadow-brick-lift: 0 1px 4px rgba(60, 45, 25, 0.10);
+  --shadow-brick-base: 0 5px 14px rgba(60, 45, 25, 0.14);
+  --shadow-primary: 0 4px 14px rgba(255, 122, 0, 0.28);
+  --shadow-square-glow: 0 2px 8px rgba(255, 122, 0, 0.35);
+  /* legacy aliases */
+  --shadow-sm: var(--shadow-brick-lift);
+  --shadow-brick: var(--shadow-card);
+  --shadow-brick-pressed: var(--shadow-brick-lift);
+  --shadow-pop: var(--shadow-card-hover);
 
   /* motion */
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
-  --ease-snap: cubic-bezier(0.2, 0.9, 0.3, 1.3); /* @kind other — springy overshoot 'settle' */
-  --duration-fast: 0.16s; /* @kind other */
-  --duration-snap: 0.24s; /* @kind other */
-  --duration-base: 0.3s; /* @kind other */
-  --duration-slow: 0.6s; /* @kind other */
+  --ease-standard: ease;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-land: cubic-bezier(0.34, 1.56, 0.64, 1);  /* a brick landing on the stack */
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-hover: 0.12s;
+  --duration-state: 0.18s;
+  --duration-land: 0.22s;
+  --duration-fast: 0.12s;
+  --duration-snap: 0.18s;
+  --duration-base: 0.18s;
+  --duration-slow: 0.4s;
 }

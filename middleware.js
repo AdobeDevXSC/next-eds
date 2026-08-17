@@ -5,10 +5,11 @@ import { NextResponse } from 'next/server';
 // so EDS push invalidation (purge-by-cache-tag on the BYO Cloudflare CDN) and the
 // /api/revalidate endpoint both target the same key when an author publishes.
 //
-// Also guards /account and /order: a request with no session cookie is redirected to
-// /signin. This checks cookie PRESENCE only (Middleware runs in the Edge runtime, where a KV
-// lookup per request would add latency to every navigation) — the guarded routes themselves
-// call getCurrentUser() for full validation. See
+// Also guards /account: a request with no session cookie is redirected to /signin. This checks
+// cookie PRESENCE only (Middleware runs in the Edge runtime, where a KV lookup per request would
+// add latency to every navigation) — the guarded routes themselves call getCurrentUser() for full
+// validation. /order is intentionally NOT guarded: in the redesign the order is a client-side
+// local cart (see lib/order/OrderProvider.jsx) viewable without signing in. See
 // docs/superpowers/specs/2026-08-13-stacked-demo-design.md §3.2.
 //
 // SESSION_COOKIE is duplicated from lib/session.js rather than imported: that module pulls in
@@ -16,7 +17,7 @@ import { NextResponse } from 'next/server';
 // that kind of import to break the bundle even when nothing in it is actually called. Keep
 // this literal in sync with lib/session.js's SESSION_COOKIE export.
 const SESSION_COOKIE = 'stacked_session'; // keep in sync with lib/session.js
-const GUARDED_PREFIXES = ['/account', '/order'];
+const GUARDED_PREFIXES = ['/account'];
 
 export function middleware(request) {
   // Canonicalize www → apex (301), preserving path and query.

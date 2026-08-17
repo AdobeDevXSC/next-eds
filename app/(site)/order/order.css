@@ -1,0 +1,205 @@
+/* Stacked order view — the "Add to order" destination and Order tab. Not a specced handoff
+   screen; built in the redesign's visual language to complete the order flow. */
+
+.order {
+  color: var(--text-primary);
+}
+
+.order-inner {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 28px 22px;
+}
+
+.order-title {
+  margin: 0 0 16px;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.order-empty,
+.order-confirm {
+  font-family: var(--font-chrome);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.order-empty-ctas {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.order-again {
+  margin-top: 16px;
+}
+
+/* items */
+.order-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.order-item {
+  padding: 14px 0;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.order-item-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.order-item-name {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.order-item-price {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.order-item-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  padding: 2px;
+}
+
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-chrome);
+  font-size: 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.qty-val {
+  min-width: 20px;
+  text-align: center;
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.order-remove {
+  border: 0;
+  background: none;
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* pickup */
+.order-pickup {
+  margin-top: 24px;
+}
+
+.order-pickup-label {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--text-primary);
+}
+
+.order-pickup-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pickup-chip {
+  min-height: 40px;
+  padding: 0 14px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color var(--duration-state) var(--ease-standard),
+    border-color var(--duration-state) var(--ease-standard);
+}
+
+.pickup-chip-on {
+  background-color: var(--primary-tint);
+  border-color: var(--primary-tint-border);
+  color: var(--primary-deep);
+}
+
+/* summary + place */
+.order-summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.order-summary-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.order-summary-total {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--text-primary);
+}
+
+.order-place {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 16px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* qty/remove/pickup are buttons (not anchors) so no a:any-link override needed. */
+.order .qty-btn:focus-visible,
+.order .order-remove:focus-visible,
+.order .pickup-chip:focus-visible,
+.order .order-place:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-shadow);
+}

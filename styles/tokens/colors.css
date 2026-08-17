@@ -1,59 +1,72 @@
-/* Stacked — "The Sandwich Construction Set" color system.
-   Brick Stack world: one hero color (Punch) owns big fields; a curated block palette
-   carries ingredients, selections, and states; warm-neutral counter + char ink.
-   Legacy EDS/boilerplate variable NAMES are preserved and re-pointed to brand values,
-   so existing blocks reskin without renaming. See DESIGN.md for the system of record. */
+/* Stacked redesign color system — warm-neutral light palette (design_handoff_stacked_home).
+   New semantic tokens drive the redesigned surfaces; the legacy EDS/boilerplate names are
+   re-pointed to the new values so existing pages (/menu, /signin, EDS content) reskin without
+   renaming. Hairlines are 0.5px, not 1px. Orange fires ONCE per view. */
 
 :root {
-  /* ---- Brand block palette ---- */
-  --brand-punch: #ff5a2c;        /* hero color — big fields, primary action, PWA theme */
-  --brand-punch-deep: #e23f16;   /* pressed / hover */
-  --brand-punch-soft: #ffe6dc;   /* punch tint fill */
-  --brand-grape: #7a3ff2;        /* build affordances, links, focus (carries white text) */
-  --brand-grape-deep: #5e27d0;
-  --brand-berry: #ff3d8a;        /* loyalty, playful highlights */
-  --brand-zest: #c6f24e;         /* fresh / veg accent (light — dark ink) */
-  --brand-sky: #34c3e8;          /* cool / info accent (light — dark ink) */
-  --brand-sun: #ffc53d;          /* loyalty stamps / warm accent (light — dark ink) */
+  /* ---- Redesign palette ---- */
+  --bg: #ece8e0;                       /* page canvas (warm ecru) */
+  --surface: #fcfaf6;                  /* cards, chips, panels */
+  --surface-raised: #f3efe8;           /* lede band, illustration wells, footer */
+  --nav-bg: rgba(241, 237, 230, 0.96); /* header (blurred 12px) */
 
-  /* text ON brand fills — dark ink on brights, white only on grape (see DESIGN.md) */
-  --on-punch: #1a1714;
-  --on-grape: #fff;
-  --on-berry: #1a1714;
-  --on-zest: #22300a;
-  --on-sky: #06323c;
-  --on-sun: #3a2a00;
+  --text-primary: #2a2520;             /* headings, body */
+  --text-secondary: #7a7065;           /* descriptions, mono ingredient labels */
+  --text-tertiary: #a89e90;            /* mono prices, footnotes, inactive tab labels */
 
-  /* ---- Neutrals: counter (paper) + char (ink) ---- */
-  --background-color: #f8f7f4;   /* Counter — bright, barely-warm ground */
-  --light-color: #efece4;        /* Board — section tint / soft surface */
-  --dark-color: #3a342e;         /* muted ink / hover */
-  --text-color: #1a1714;         /* Char — primary ink */
+  --border: rgba(60, 45, 25, 0.10);        /* hairlines, card borders */
+  --border-strong: rgba(60, 45, 25, 0.16); /* secondary button / chip borders */
 
-  /* warm-neutral scale (legacy slate-* names, re-pointed to brand neutrals) */
-  --slate-950: #1a1714;          /* dark surface / hero scrim base */
+  --primary: #ff7a00;                  /* THE one orange action + 3px accent strip */
+  --primary-text-on: #ffffff;          /* label on orange */
+  --primary-deep: #c25e00;             /* orange text on light (overlines, Special, ✓) */
+  --primary-press: #e56d00;            /* orange button darken on press */
+  --primary-tint: rgba(255, 122, 0, 0.10);        /* selected chip / badge fill */
+  --primary-tint-border: rgba(255, 122, 0, 0.34); /* badge / selected chip border */
+
+  --accent: #0e7c6f;                   /* links, inline → affordances */
+  --accent-hover: #0a6357;
+
+  --dot-grid: rgba(60, 40, 20, 0.07);  /* illustration well dots */
+
+  --focus-ring-shadow: 0 0 0 3px rgba(255, 122, 0, 0.30);
+
+  /* ---- Legacy EDS/boilerplate names re-pointed to the new palette ---- */
+  --background-color: var(--bg);
+  --light-color: var(--surface-raised);
+  --dark-color: #3a342e;
+  --text-color: var(--text-primary);
+
+  --slate-950: #2a2520;
   --slate-700: #3a342e;
-  --slate-500: #615c54;          /* muted body (>=4.5:1 on Counter) */
-  --slate-200: #e4dfd5;          /* hairline borders */
-  --slate-100: #efece4;          /* fill */
-  --border-color: #e4dfd5;
+  --slate-500: var(--text-secondary);
+  --slate-200: var(--border);
+  --slate-100: var(--surface-raised);
+  --border-color: var(--border);
 
-  /* ---- Brand accents mapped onto legacy block hooks ---- */
-  --link-color: var(--brand-grape);
-  --link-hover-color: var(--brand-grape-deep);
-  --accent-blue: var(--brand-punch);        /* legacy name = hero primary CTA */
-  --accent-blue-deep: var(--brand-punch-deep);
-  --accent-blue-soft: var(--brand-punch-soft);
+  --link-color: var(--accent);
+  --link-hover-color: var(--accent-hover);
+  --accent-blue: var(--primary);
+  --accent-blue-deep: var(--primary-press);
+  --accent-blue-soft: var(--primary-tint);
+
+  /* brand-* hooks used by existing blocks — re-pointed to orange primary */
+  --brand-punch: var(--primary);
+  --brand-punch-deep: var(--primary-press);
+  --brand-punch-soft: var(--primary-tint);
+  --brand-sun: var(--primary);
+  --on-punch: var(--primary-text-on);
+  --on-sun: var(--primary-text-on);
 
   /* ---- Semantic aliases ---- */
-  --text-body: var(--text-color);
-  --text-muted: var(--slate-500);
-  --text-inverse: #fff;
-  --surface-page: var(--background-color);
-  --surface-tint: var(--light-color);
-  --surface-card: #fff;                      /* bricks sit a step brighter than the counter */
-  --surface-fill: var(--slate-100);
-  --surface-dark: var(--slate-950);
-  --border-hairline: var(--slate-200);
-  --focus-ring: var(--brand-grape);
+  --text-body: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --text-inverse: #ffffff;
+  --surface-page: var(--bg);
+  --surface-tint: var(--surface-raised);
+  --surface-card: var(--surface);
+  --surface-fill: var(--surface-raised);
+  --surface-dark: #2a2520;
+  --border-hairline: var(--border);
+  --focus-ring: var(--primary);
 }

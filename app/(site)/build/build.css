@@ -1,172 +1,289 @@
-/* Stacked — /build route styles: "The Stack" signature component (see docs/DESIGN.md). Brand
-   tokens only. The right-hand stack is the build's signature: adding an ingredient drops a
-   brick into place with the snap-settle motion (a plain CSS mount animation — no JS needed,
-   since React mounts a new DOM node per added ingredient). */
+/* Stacked builder (3b) — assemble a sandwich; the stack, count, and running total update with
+   every tap. Mobile-first; centered column on desktop. See design_handoff README 3b. */
 
-.build-page h1 {
-  margin-bottom: var(--space-m);
+.builder {
+  min-height: 100dvh;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
-.build-empty {
-  color: var(--text-muted);
+/* ---- Header ---- */
+.builder-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: env(safe-area-inset-top);
+  background: var(--nav-bg);
+  backdrop-filter: saturate(160%) blur(12px);
 }
 
-.build-columns {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-l);
-  align-items: start;
-}
-
-@media (width >= 900px) {
-  .build-columns {
-    grid-template-columns: minmax(0, 1fr) 320px;
-  }
-}
-
-.build-group {
-  margin-bottom: var(--space-m);
-}
-
-.build-group-label {
-  margin: 0 0 var(--space-xs);
-  font-size: var(--body-font-size-s);
-  font-weight: var(--weight-bold);
-}
-
-.build-chips {
+.builder-header-inner {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-xs);
+  align-items: center;
+  height: 52px;
+  padding: 0 14px;
 }
 
-.build-chip {
+.builder-back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--surface-card);
-  border: var(--border-width) solid var(--border-hairline);
-  border-radius: var(--radius-chip);
-  padding: 0.5em 0.9em;
-  font: inherit;
-  font-size: var(--body-font-size-s);
-  color: var(--text-color);
+  justify-content: center;
+  width: 32px;
+  height: 44px;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.builder-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.builder-clear {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--accent);
   cursor: pointer;
-  transition: transform var(--duration-snap) var(--ease-snap),
-              box-shadow var(--duration-snap) var(--ease-snap),
-              background-color var(--duration-fast) var(--ease-standard);
 }
 
-.build-chip:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-brick);
+/* ---- Live stack preview (sticky under header) ---- */
+.builder-preview {
+  position: sticky;
+  top: calc(52px + env(safe-area-inset-top));
+  z-index: 10;
+  padding: 20px 22px 14px;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border-bottom: var(--hairline) solid var(--border);
 }
 
-.build-chip-on {
-  background: var(--brand-zest);
-  border-color: transparent;
-  color: var(--on-zest);
-  box-shadow: var(--shadow-brick);
-}
-
-.build-chip-stud {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--text-color);
-  display: inline-block;
-}
-
-.build-stack-panel {
-  background: var(--surface-card);
-  border-radius: var(--radius-brick);
-  box-shadow: var(--shadow-brick);
-  padding: var(--space-s) var(--space-m);
-}
-
-.build-stack-title {
-  margin: 0 0 var(--space-xs);
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-font-size-m);
-  font-weight: var(--weight-bold);
-  letter-spacing: var(--tracking-tight);
-}
-
-.build-stack {
+.stack-preview {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-
-.build-slab {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-xs);
-  padding: 0.6em 0.9em;
-  border-radius: var(--radius-input);
-  font-size: var(--body-font-size-s);
-  font-weight: var(--weight-medium);
-  color: var(--text-color);
-  background: var(--surface-tint);
-  animation: build-slab-drop var(--duration-snap) var(--ease-snap);
+  gap: 3px;
+  min-height: 90px;
+  justify-content: flex-end;
 }
 
-.build-slab-bread {
-  background: var(--brand-sun);
-  color: var(--on-sun);
+.stack-brick {
+  width: var(--brick-w);
+  height: 15px;
+  background-color: var(--brick-color);
+  border-radius: 7px;
+  transform: rotate(var(--brick-rot));
+  animation: brick-land var(--duration-land) var(--ease-land) both;
 }
 
-.build-slab-protein {
-  background: var(--brand-punch-soft);
-  color: var(--text-color);
+.stack-brick-base {
+  height: 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-brick-base);
 }
 
-.build-slab-cheese {
-  background: var(--brand-sky);
-  color: var(--on-sky);
+.stack-brick:first-child {
+  height: 20px;
+  border-radius: 10px;
 }
 
-.build-slab-veg {
-  background: var(--brand-zest);
-  color: var(--on-zest);
-}
-
-.build-slab-sauce {
-  background: var(--surface-tint);
-  color: var(--text-color);
-}
-
-.build-slab-extra {
-  background: var(--brand-grape);
-  color: var(--on-grape);
-}
-
-@keyframes build-slab-drop {
+@keyframes brick-land {
   from {
-    transform: translateY(-8px);
     opacity: 0;
+    transform: translateY(6px) rotate(var(--brick-rot));
   }
 
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0) rotate(var(--brick-rot));
   }
 }
 
+.preview-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.preview-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.preview-total {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+/* ---- Ingredient groups ---- */
+.ing-group {
+  padding: 20px 22px 8px;
+}
+
+.ing-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.ing-group-label {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--text-primary);
+}
+
+.ing-group-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.ing-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 11px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: background-color var(--duration-state) var(--ease-standard),
+    border-color var(--duration-state) var(--ease-standard);
+}
+
+.pill-on {
+  background-color: var(--primary-tint);
+  border-color: var(--primary-tint-border);
+}
+
+.pill-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background-color: var(--brick-color);
+}
+
+.pill-name {
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.pill-price {
+  font-family: var(--font-chrome);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.pill-check {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--primary-deep);
+}
+
+/* ---- Docked total + Add to order ---- */
+.builder-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px 10px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  background: var(--nav-bg);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-top: var(--hairline) solid var(--border);
+}
+
+.dock-total {
+  display: flex;
+  flex-direction: column;
+}
+
+.dock-total-cap {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.dock-total-val {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--text-primary);
+}
+
+.dock-add {
+  flex: 1.2;
+  min-height: 52px;
+  margin-left: auto;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* ---- Color overrides (beat global teal a:any-link) ---- */
+.builder a.builder-back { color: var(--text-primary); }
+
+.builder .builder-back:focus-visible,
+.builder .builder-clear:focus-visible,
+.builder .pill:focus-visible,
+.builder .dock-add:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-shadow);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .build-slab {
+  .stack-brick {
     animation: none;
   }
 }
 
-.build-total {
-  display: flex;
-  justify-content: space-between;
-  margin-top: var(--space-xs);
-  padding-top: var(--space-xs);
-  border-top: var(--border-width) solid var(--border-hairline);
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-font-size-m);
-  font-weight: var(--weight-bold);
+/* ---- Desktop: centered column ---- */
+@media (width >= 640px) {
+  .builder {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .builder-dock {
+    padding-inline: max(22px, calc((100% - 560px) / 2));
+  }
 }
