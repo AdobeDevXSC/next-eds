@@ -12,7 +12,9 @@ export const metadata = {
 // hero-stack illustration come from content/home.json. See the redesign spec.
 export default function HomePage() {
   const c = getHomeContent();
-  const { heroStack, twoWays, todaysPicks: picks, howItWorks: hiw, ctas, footer } = c;
+  const {
+    heroStack, twoWays, todaysPicks: picks, howItWorks: hiw, ctas,
+  } = c;
 
   return (
     <main className="home">
@@ -125,15 +127,6 @@ export default function HomePage() {
           ))}
         </ol>
       </section>
-
-      <footer className="home-footer">
-        <span className="foot-copy">{footer.copyright}</span>
-        <nav className="foot-links" aria-label="Legal">
-          {footer.links.map((l) => (
-            <a className="foot-link" key={l.label} href={l.href}>{l.label}</a>
-          ))}
-        </nav>
-      </footer>
 
       <HomeDockCtas
         shopHref={ctas.shop.href}

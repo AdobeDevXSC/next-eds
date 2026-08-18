@@ -1,0 +1,364 @@
+/* Stacked global footer — mobile-first (1b accordions), 2-col at >=640, full 1a at >=1101.
+   See design_handoff_footer/README.md. Content parsed from the DA /footer fragment. */
+
+.site-footer {
+  --footer-label-ink: #6b6156;
+  --footer-slash: #c7bfb2;
+
+  background-color: var(--surface-raised);
+  border-top: var(--hairline) solid var(--border);
+}
+
+.footer-strip {
+  height: 3px;
+  background-color: var(--primary);
+}
+
+/* ---- Signup ---- */
+.footer-signup {
+  padding: 28px 22px 24px;
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 20px;
+}
+
+.footer-brand-word {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.footer-headline {
+  margin: 0 0 10px;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.footer-signup-body {
+  margin: 0 0 22px;
+  max-width: 38ch;
+  font-family: var(--font-chrome);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.footer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-input {
+  min-height: 52px;
+  padding: 0 14px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: 10px;
+  background-color: var(--surface);
+  font-family: var(--font-chrome);
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.footer-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.footer-input:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: var(--focus-ring-shadow);
+}
+
+.footer-submit {
+  min-height: 52px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.footer-fineprint {
+  margin: 12px 0 0;
+  max-width: 40ch;
+  font-family: var(--font-chrome);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--footer-label-ink);
+}
+
+/* ---- Link groups (mobile accordions) ---- */
+.footer-group {
+  border-top: var(--hairline) solid var(--border);
+}
+
+.footer-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 56px;
+  padding: 0 22px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.footer-group-label {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--footer-label-ink);
+}
+
+.footer-group-glyph {
+  font-family: var(--font-chrome);
+  font-size: 18px;
+  color: var(--text-tertiary);
+}
+
+.footer-group-links {
+  list-style: none;
+  margin: 0;
+  padding: 4px 22px 18px;
+}
+
+.footer-group-links li {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.footer-link {
+  font-family: var(--font-chrome);
+  font-size: 14px;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+/* hours card */
+.footer-hours {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 22px 18px;
+  padding: 12px 14px;
+  background-color: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: 10px;
+}
+
+.footer-hours-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--footer-label-ink);
+}
+
+.footer-hours-value {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+/* ---- Legal bar ---- */
+.footer-legal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 22px 24px;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.footer-copy {
+  font-family: var(--font-chrome);
+  font-size: 11px;
+  color: var(--footer-label-ink);
+}
+
+.footer-legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-legal-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-legal-link {
+  font-family: var(--font-chrome);
+  font-size: 12px;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.footer-slash {
+  color: var(--footer-slash);
+}
+
+/* ---- Anchor colors (beat global teal a:any-link) ---- */
+.site-footer .footer-link { color: var(--text-primary); }
+
+.site-footer .footer-link:hover { color: var(--accent); }
+
+.site-footer .footer-legal-link { color: var(--text-secondary); }
+
+.site-footer .footer-legal-link:hover { color: var(--text-primary); }
+
+.site-footer .footer-fineprint a { color: var(--accent); }
+
+.site-footer .footer-link:focus-visible,
+.site-footer .footer-legal-link:focus-visible,
+.site-footer .footer-group-head:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring-shadow);
+  border-radius: var(--radius-button);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- >=640: static columns (no accordion), horizontal form ---- */
+@media (width >= 640px) {
+  .footer-signup {
+    padding: 40px 40px 8px;
+  }
+
+  .footer-headline {
+    font-size: 30px;
+    line-height: 1.1;
+  }
+
+  .footer-signup-body {
+    font-size: 14px;
+  }
+
+  .footer-form {
+    flex-direction: row;
+    gap: 8px;
+    max-width: 480px;
+  }
+
+  .footer-input {
+    flex: 1;
+    min-height: 48px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .footer-submit {
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  .footer-columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    padding: 24px 40px 8px;
+  }
+
+  .footer-group {
+    border-top: 0;
+  }
+
+  .footer-group-head {
+    height: auto;
+    padding: 0 0 14px;
+    margin-bottom: 14px;
+    border-bottom: var(--hairline) solid var(--border);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .footer-group-glyph {
+    display: none;
+  }
+
+  .footer-group-links {
+    display: block;
+    padding: 0;
+  }
+
+  .footer-group-links li {
+    min-height: 0;
+    margin-bottom: 11px;
+  }
+
+  .footer-link {
+    font-size: 13px;
+  }
+
+  .footer-hours {
+    margin: 18px 0 0;
+  }
+
+  .footer-legal {
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+  }
+
+  .footer-copy {
+    font-size: 12px;
+  }
+
+  .footer-legal-links {
+    gap: 14px;
+  }
+}
+
+/* ---- >=1101: full desktop 1a (signup left, 4 columns right) ---- */
+@media (width >= 1101px) {
+  .footer-main {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 80px;
+    max-width: var(--shell-max);
+    margin: 0 auto;
+    padding: 56px 64px 8px;
+  }
+
+  .footer-signup {
+    padding: 0;
+  }
+
+  .footer-columns {
+    grid-template-columns: repeat(4, 1fr);
+    padding: 0;
+  }
+
+  .footer-legal {
+    max-width: var(--shell-max);
+    margin: 0 auto;
+    padding: 20px 64px;
+  }
+}

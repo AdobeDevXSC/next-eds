@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useOrder } from '../../lib/order/OrderProvider.jsx';
 import { useDockSlot } from './DockSlot.jsx';
+import SiteFooter from './SiteFooter.jsx';
 import './shell.css';
 
 // Desktop: sticky top header (wordmark + nav links + Sign in) with a 3px orange accent strip.
@@ -59,7 +60,7 @@ function activeTab(pathname) {
   return '';
 }
 
-export default function AppShell({ children }) {
+export default function AppShell({ children, footerModel }) {
   const pathname = usePathname() || '/';
   const active = activeTab(pathname);
   const { orderCount } = useOrder();
@@ -87,7 +88,10 @@ export default function AppShell({ children }) {
         <div className="accent-strip" aria-hidden="true" />
       </header>
 
-      <div className={`app-scroll${action ? ' app-scroll-docked' : ''}`}>{children}</div>
+      <div className={`app-scroll${action ? ' app-scroll-docked' : ''}`}>
+        {children}
+        <SiteFooter model={footerModel} />
+      </div>
 
       <div className="docked-bar" role="presentation">
         {action ? <div className="docked-action">{action}</div> : null}
