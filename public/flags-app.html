@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stacked — Feature Flags</title>
+  <style>
+    body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #2a2520; background: #f3efe8; }
+    h1 { font-size: 20px; margin: 0 0 4px; }
+    p { color: #6b6156; margin: 0 0 20px; }
+    .key { display: block; width: 100%; max-width: 420px; padding: 10px 12px; margin-bottom: 20px; border: 1px solid rgba(60,45,25,0.16); border-radius: 8px; }
+    .flag { display: flex; align-items: center; justify-content: space-between; max-width: 420px; padding: 14px 16px; margin-bottom: 10px; background: #fcfaf6; border: 1px solid rgba(60,45,25,0.1); border-radius: 10px; }
+    .flag-name { font-weight: 600; }
+    .status { font-size: 13px; color: #6b6156; }
+    button { font: inherit; font-weight: 600; padding: 8px 16px; border: 0; border-radius: 8px; background: #ff7a00; color: #fff; cursor: pointer; }
+    button[aria-pressed="false"] { background: #e9e3d8; color: #2a2520; }
+    .msg { max-width: 420px; margin-top: 16px; font-size: 13px; color: #b4232f; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <h1>Feature Flags</h1>
+  <p>Toggle features for Stacked. Enter the admin key once; it's kept for this tab only.</p>
+  <input class="key" id="key" type="password" placeholder="Admin key" autocomplete="off" />
+  <div id="flags"></div>
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  <script>
+    var KNOWN = ['loyalty'];
+    var keyEl = document.getElementById('key');
+    var msgEl = document.getElementById('msg');
+    keyEl.value = sessionStorage.getItem('flagsKey') || '';
+    keyEl.addEventListener('change', function () { sessionStorage.setItem('flagsKey', keyEl.value); });
+
+    function render(state) {
+      var box = document.getElementById('flags');
+      box.innerHTML = '';
+      KNOWN.forEach(function (name) {
+        var on = state[name] === true;
+        var row = document.createElement('div');
+        row.className = 'flag';
+        row.innerHTML = '<span><span class="flag-name">' + name + '</span><br><span class="status">' + (on ? 'On' : 'Off') + '</span></span>';
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('aria-pressed', String(on));
+        btn.textContent = on ? 'Turn off' : 'Turn on';
+        btn.addEventListener('click', function () { toggle(name, !on); });
+        row.appendChild(btn);
+        box.appendChild(row);
+      });
+    }
+
+    function load() {
+      fetch('/api/flags').then(function (r) { return r.json(); }).then(render).catch(function () {
+        msgEl.textContent = 'Could not load flags.';
+      });
+    }
+
+    function toggle(name, enabled) {
+      msgEl.textContent = '';
+      fetch('/api/flags', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', authorization: 'Bearer ' + keyEl.value },
+        body: JSON.stringify({ name: name, enabled: enabled }),
+      }).then(function (r) {
+        if (r.status === 401) { msgEl.textContent = 'Wrong or missing admin key.'; return null; }
+        return r.json();
+      }).then(function (state) { if (state) render(state); }).catch(function () {
+        msgEl.textContent = 'Update failed — try again.';
+      });
+    }
+
+    load();
+  </script>
+</body>
+</html>
