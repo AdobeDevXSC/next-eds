@@ -39,7 +39,19 @@ export function contentToMjml(html) {
     } else if (isButtonPara(node)) {
       flush();
       node.querySelectorAll('a').forEach((a) => {
-        out.push(`<mj-button href="${escapeAttr(a.getAttribute('href') || '#')}">${escapeText(a.textContent.trim())}</mj-button>`);
+        const href = escapeAttr(a.getAttribute('href') || '#');
+        const label = a.textContent.trim();
+        const img = a.querySelector('img');
+        if (!label && img) {
+          // A linked image with no visible text (e.g. an EDS "linked image" CTA) — render
+          // the image itself, as a clickable mj-image (mj-image supports its own `href`),
+          // rather than an empty, label-less <mj-button> that would drop the image.
+          out.push(`<mj-image src="${escapeAttr(img.getAttribute('src') || '')}" href="${href}" alt="${escapeAttr(img.getAttribute('alt') || '')}" />`);
+        } else if (label) {
+          out.push(`<mj-button href="${href}">${escapeText(label)}</mj-button>`);
+        }
+        // else: an <a> with neither visible text nor an image has nothing to render —
+        // skip rather than emit an empty, useless <mj-button></mj-button>.
       });
     } else {
       buffer.push(node.outerHTML);

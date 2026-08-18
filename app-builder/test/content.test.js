@@ -62,3 +62,16 @@ test('bare top-level text nodes are entity-escaped before landing in mj-text', (
   assert.doesNotMatch(scriptOut, /<script>/);
   assert.match(scriptOut, /<mj-text>&lt;script&gt;<\/mj-text>/);
 });
+
+// isButtonPara's textContent-equality fallback matches a <p> whose only link has no
+// visible text (e.g. a linked image) because both sides trim to ''. Without a guard, that
+// paragraph is misclassified as a CTA and rendered as an empty, label-less <mj-button>,
+// and the image is dropped entirely. The image must survive — as a clickable mj-image,
+// since mj-image supports its own `href` — and no empty mj-button may be emitted.
+test('linked image with no visible text renders as a clickable mj-image, not an empty button', () => {
+  const out = contentToMjml('<p><a href="https://x/promo"><img src="https://x/banner.png" alt="Promo"></a></p>');
+  assert.doesNotMatch(out, /<mj-button/);
+  assert.match(out, /<mj-image[^>]*src="https:\/\/x\/banner\.png"[^>]*\/>/);
+  assert.match(out, /<mj-image[^>]*href="https:\/\/x\/promo"[^>]*\/>/);
+  assert.match(out, /<mj-image[^>]*alt="Promo"[^>]*\/>/);
+});
