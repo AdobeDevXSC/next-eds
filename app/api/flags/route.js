@@ -10,12 +10,16 @@ import { FLAGS_KEY, FLAGS_TAG } from '../../../lib/flags.js';
 // aem.live/aem.page hosts (and da.live). POST stays key-gated, so cross-origin access is not a
 // security hole — the admin key is the real gate.
 
-// Exact-match allowlist plus the site's aem preview/live hosts (main + branch previews).
+// Exact-match allowlist plus the site's hosts. The DA app loads this tool in an iframe served
+// from a DA proxy origin — `<ref>--next-eds--adobedevxsc.preview.da.live` — NOT the aem.live
+// origin, so the regex must cover the site's `*.da.live` proxy subdomains as well as its
+// aem.live/aem.page preview/live hosts. It stays site-scoped (must contain
+// `--next-eds--adobedevxsc`), so it is not open to arbitrary origins.
 const ALLOWED_ORIGINS = new Set([
   'https://da.live',
   'http://localhost:3000',
 ]);
-const ALLOWED_ORIGIN_RE = /^https:\/\/[a-z0-9-]+--next-eds--adobedevxsc\.aem\.(?:live|page)$/i;
+const ALLOWED_ORIGIN_RE = /^https:\/\/[a-z0-9-]+--next-eds--adobedevxsc\.(?:aem\.(?:live|page)|[a-z0-9-]+\.da\.live)$/i;
 
 function corsHeaders(request) {
   const origin = request.headers.get('origin');
