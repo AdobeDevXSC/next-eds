@@ -40,6 +40,47 @@ main img {
   height: auto;
 }
 
+/* call-to-action buttons — a standalone emphasized link in default content becomes a button,
+   decorated server-side in lib/eds/buttons.js (**bold** → primary, *italic* → secondary).
+   Mirrors the hero CTA look; hover darkens the orange rather than shifting hue. */
+.button-wrapper {
+  margin: var(--space-m) 0;
+}
+
+a.button {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.7em 1.5em;
+  border-radius: var(--radius-pill);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+a.button.primary,
+a.button.accent {
+  background-color: var(--primary);
+  color: var(--primary-text-on);
+}
+
+a.button.primary:hover,
+a.button.accent:hover {
+  background-color: var(--primary-press);
+}
+
+a.button.secondary {
+  background-color: transparent;
+  color: var(--primary);
+  border: var(--border-width) solid var(--border-strong);
+}
+
+a.button.secondary:hover {
+  border-color: var(--primary);
+}
+
 /* sections */
 main > .section {
   margin: var(--space-l) 0;
