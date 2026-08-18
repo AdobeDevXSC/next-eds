@@ -19,21 +19,52 @@
 </head>
 <body>
   <h1>Feature Flags</h1>
-  <p>Toggle production features for Stacked. Enter the admin key once; it's kept for this tab only.</p>
+  <p id="lede">Toggle production features for Stacked.</p>
   <input class="key" id="key" type="password" placeholder="Admin key" autocomplete="off" />
   <div id="flags"></div>
   <div class="msg" id="msg" role="status" aria-live="polite"></div>
   <script>
-    // This DA app is served from the AEM origin (/tools/feat-flags) but the flags API lives on the
-    // Stacked Worker, a different origin — so calls are absolute and cross-origin (the Worker
-    // allowlists this origin for CORS; POST is admin-key gated). Override with ?api=<origin> when
-    // pointing at a non-prod Worker.
+    // The flags API lives on the Stacked Worker (a different origin than this AEM-served tool), so
+    // calls are absolute + cross-origin (the Worker allowlists this origin for CORS; POST is
+    // admin-key gated). Override the API origin with ?api=<origin> for non-prod.
     var API_BASE = new URLSearchParams(location.search).get('api') || 'https://nxtjs.page';
     var KNOWN = ['loyalty'];
     var keyEl = document.getElementById('key');
     var msgEl = document.getElementById('msg');
+    var ledeEl = document.getElementById('lede');
+    var MANUAL_LEDE = "Toggle production features for Stacked. Enter the admin key once; it's kept for this tab only.";
     keyEl.value = sessionStorage.getItem('flagsKey') || '';
     keyEl.addEventListener('change', function () { sessionStorage.setItem('flagsKey', keyEl.value); });
+
+    // When loaded inside DA, read the admin key from the auth-gated .da/keys sheet using the DA
+    // user's token (via the DA app SDK) — so an admin never pastes it. Falls back to the manual
+    // input when not in DA, when the SDK doesn't resolve, or when the sheet read fails.
+    function loadKeyFromDA() {
+      return import('https://da.live/nx/utils/sdk.js').then(function (mod) {
+        return Promise.race([
+          mod.default,
+          new Promise(function (_, rej) { setTimeout(function () { rej(new Error('not in DA')); }, 1500); }),
+        ]);
+      }).then(function (sdk) {
+        var token = sdk && sdk.token;
+        var ctx = (sdk && sdk.context) || {};
+        if (!token) return false;
+        var org = ctx.org || 'adobedevxsc';
+        var repo = ctx.repo || 'next-eds';
+        return fetch('https://content.da.live/' + org + '/' + repo + '/.da/keys.json', {
+          headers: { authorization: 'Bearer ' + token },
+        }).then(function (r) { return r.ok ? r.json() : null; }).then(function (sheet) {
+          var rows = (sheet && sheet.data) || [];
+          var row = rows.find(function (x) { return x.key === 'FLAGS_ADMIN_KEY'; });
+          if (row && row.value) {
+            keyEl.value = row.value;
+            sessionStorage.setItem('flagsKey', row.value);
+            return true;
+          }
+          return false;
+        });
+      }).catch(function () { return false; });
+    }
 
     function render(state) {
       var box = document.getElementById('flags');
@@ -73,7 +104,15 @@
       });
     }
 
-    load();
+    loadKeyFromDA().then(function (auto) {
+      if (auto) {
+        keyEl.style.display = 'none';
+        ledeEl.textContent = 'Toggle production features for Stacked. Admin key loaded from DA.';
+      } else {
+        ledeEl.textContent = MANUAL_LEDE;
+      }
+      load();
+    });
   </script>
 </body>
 </html>
