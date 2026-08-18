@@ -1,0 +1,16 @@
+application:
+  runtimeManifest:
+    packages:
+      email:
+        license: Apache-2.0
+        actions:
+          convert-email:
+            function: actions/convert-email/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              EDS_ORIGIN_PREVIEW: https://main--next-eds--AdobeDevXSC.aem.page
+              EDS_ORIGIN_LIVE: https://main--next-eds--AdobeDevXSC.aem.live
+            annotations:
+              require-adobe-auth: false
+              final: true
