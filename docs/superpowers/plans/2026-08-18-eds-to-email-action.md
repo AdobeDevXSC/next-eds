@@ -12,7 +12,7 @@
 
 - **Node 20, ESM.** `app-builder/package.json` has `"type": "module"`. Every relative import includes the `.js` extension (matches AGENTS.md).
 - **Dependencies limited to `mjml` + `node-html-parser`.** No other runtime deps. Tests use `node:test`/`node:assert` only.
-- **Reuse `lib/eds/parse.js` read-only.** Import `parseEds` from `../../../../lib/eds/parse.js` (relative from `actions/convert-email/`). Do **not** modify it or anything under `app/` or `lib/`.
+- **Reuse `lib/eds/parse.js` read-only.** Import `parseEds` from `../../../lib/eds/parse.js` (relative from `actions/convert-email/`). Do **not** modify it or anything under `app/` or `lib/`.
 - **Unknown or malformed blocks never throw.** They are skipped and recorded in `warnings[]`.
 - **Email invariants:** 600px body width; all asset/link URLs absolute; no `<script>` in output.
 - **Entity-encoding:** dynamic values (URLs, `alt`, text) interpolated into any markup string MUST be HTML entity-encoded via the shared `escape.js` (`escapeAttr`/`escapeText`). Every stage that serializes to a string escapes, because every parse stage (`node-html-parser`, then `mjml2html`) decodes — so escaping once per serialization is balanced and does not double-encode. Verify `node-html-parser`'s decode-on-parse behavior empirically and cover the `&`-in-URL and `&`-in-`alt` cases with tests. Applies to Tasks 3, 5, 6–9.
@@ -1024,7 +1024,7 @@ git commit -m "feat(email): compile MJML to Outlook-safe HTML"
 - Test: `app-builder/test/pipeline.test.js`
 
 **Interfaces:**
-- Consumes: `fetchPlainHtml`, `resolveOrigin` (Task 2); `parseEds` from `../../../../lib/eds/parse.js`; `normalizeTree` (Task 3); `renderDocument` (Task 10); `compile` (Task 11).
+- Consumes: `fetchPlainHtml`, `resolveOrigin` (Task 2); `parseEds` from `../../../lib/eds/parse.js`; `normalizeTree` (Task 3); `renderDocument` (Task 10); `compile` (Task 11).
 - Produces: `async convert({ path, env, origins, preheader, subject }) → { html, subject, preheader, warnings, blocksRendered }`. Returns `null` if the page is a 404. `warnings` merges render + compile warnings. Phase 1: `subject`/`preheader` are pass-through only (default empty).
 
 - [ ] **Step 1: Create the fixture `app-builder/test/fixtures/sample.plain.html`**
@@ -1101,7 +1101,7 @@ Expected: FAIL — export not defined.
 - [ ] **Step 4: Write minimal implementation**
 
 ```js
-import { parseEds } from '../../../../lib/eds/parse.js';
+import { parseEds } from '../../../lib/eds/parse.js';
 import { fetchPlainHtml, resolveOrigin } from './fetch.js';
 import { normalizeTree } from './normalize.js';
 import { renderDocument } from './render/index.js';
