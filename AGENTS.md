@@ -105,6 +105,26 @@ Use `curl` and `console.log` to inspect the HTML delivered by the backend and th
 
 Each block should be self-contained and re-useable, with CSS and JS files following the naming convention: `blockname.css`, `blockname.js`. Blocks should be responsive and accessible by default.
 
+### Block tiers
+
+This repo also renders content through Next.js/RSC alongside the classic EDS pipeline described
+above — see `docs/architecture/blocks-and-rsc.md` for the full convention. Every renderable thing
+is exactly one of two tiers, decided by one question: **does it need server data, sessions, DB/KV,
+or app-level state?**
+
+- **Tier 1 — portable presentation block.** No server data; authored, presentation-only content.
+  Implement as a vanilla OOTB block: `blocks/<name>/<name>.js` exporting `default function
+  decorate(block)` + `<name>.css`. No `.jsx` file, and the block JS must not import its own CSS —
+  both the raw EDS `aem.js` and the Next `LegacyBlock` bridge load it for you. This is the default;
+  use it unless the feature clearly needs Tier 2.
+- **Tier 2 — RSC app feature.** Needs server data, auth, persistence, or app-level state (for
+  example: cart, menu, sign-in, the sandwich builder, feature flags). Implement as React/RSC under
+  `app/` (routes/components) + `lib/` (data access) instead of as a block.
+
+`lib/registry.js` is an intentionally empty escape hatch for the rare case where one specific block
+needs server-rendered (RSC) content instead of the vanilla-plus-`LegacyBlock` path; read the
+architecture doc before adding an entry to it.
+
 ### Auto-Blocking
 
 Auto-blocking is the process of creating blocks that aren't explicitly authored into the page based on patterns in the content. See the `buildAutoBlocks` function in `scripts.js`.
