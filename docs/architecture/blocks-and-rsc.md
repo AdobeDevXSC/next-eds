@@ -46,14 +46,15 @@ the design spec for why.
 
 ### Tier 1 — current blocks
 
-Every directory under `blocks/` is Tier 1 today: `hero`, `cards`, `columns`, `steps`, `callout`,
-`tabs` (converted to vanilla by the refactor this doc describes), plus the already-conforming
-`accordion`, `carousel`, `embed`, `form`, `fragment`, `quote`, `search`, `table`, `video`. Each is a
-`<name>.js`/`<name>.css` pair with no `.jsx` and no self-import of its own CSS. `header` and `footer`
-are also Tier-1 blocks (native `header.js`/`footer.js` + CSS) that decorate the raw-EDS site chrome.
+Every directory under `blocks/` except `modal` is a Tier-1 block today: `hero`, `cards`, `columns`,
+`steps`, `callout`, `tabs` (converted to vanilla by the refactor this doc describes), plus the
+already-conforming `accordion`, `carousel`, `embed`, `form`, `fragment`, `quote`, `search`, `table`,
+`video`. Each is a `<name>.js`/`<name>.css` pair with no `.jsx` and no self-import of its own CSS.
+`header` and `footer` are also Tier-1 blocks (native `header.js`/`footer.js` + CSS) that decorate the
+raw-EDS site chrome. `modal` is the one exception — see below.
 
 **`blocks/modal` is not a renderable block.** It has no `decorate` export — it's a utility
-(`createModal(contentNodes)` / `openModal(...)`) that other blocks import to build a `<dialog>` on
+(`createModal(contentNodes)` / `openModal(...)`) that other code can import to build a `<dialog>` on
 demand. Don't expect it to appear via `LegacyBlock` or the registry; it's invoked directly from code.
 
 ### Tier 2 — current app features
@@ -63,8 +64,9 @@ Already built, RSC under `app/` + `lib/`: auth/session/persona (`lib/session.js`
 `app/api/cart`, `app/api/order/place`, `app/(site)/order`), menu/catalog (`lib/catalog.js`,
 `lib/eds/queryIndex.js`, `app/(site)/menu`), the sandwich builder (`app/(site)/build`), feature flags
 (`lib/flags.js`, `app/api/flags`), and the app shell/dock (`app/(site)/AppShell.jsx`,
-`DockSlot.jsx`, `layout.js`). The home page (`/`) is also a bespoke React route rather than a block,
-and stays that way (see `docs/superpowers/specs/2026-08-17-stacked-redesign.md`).
+`app/(site)/DockSlot.jsx`, `app/(site)/layout.js`). The home page (`/`) is also a bespoke React
+route rather than a block, and stays that way (see
+`docs/superpowers/specs/2026-08-17-stacked-redesign.md`).
 
 ## The `LegacyBlock` bridge
 
