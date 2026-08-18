@@ -15,6 +15,7 @@
 - **Reuse `lib/eds/parse.js` read-only.** Import `parseEds` from `../../../../lib/eds/parse.js` (relative from `actions/convert-email/`). Do **not** modify it or anything under `app/` or `lib/`.
 - **Unknown or malformed blocks never throw.** They are skipped and recorded in `warnings[]`.
 - **Email invariants:** 600px body width; all asset/link URLs absolute; no `<script>` in output.
+- **Entity-encoding:** dynamic values (URLs, `alt`, text) interpolated into any markup string MUST be HTML entity-encoded via the shared `escape.js` (`escapeAttr`/`escapeText`). Every stage that serializes to a string escapes, because every parse stage (`node-html-parser`, then `mjml2html`) decodes — so escaping once per serialization is balanced and does not double-encode. Verify `node-html-parser`'s decode-on-parse behavior empirically and cover the `&`-in-URL and `&`-in-`alt` cases with tests. Applies to Tasks 3, 5, 6–9.
 - **EDS origin defaults** mirror `lib/eds/fetch.js`: preview `https://main--next-eds--AdobeDevXSC.aem.page`, live `https://main--next-eds--AdobeDevXSC.aem.live`.
 - **`app-builder/` is outside the repo's root lint globs** (`blocks/**`, `styles/*`, `app/**`) by design — it has its own toolchain. Match the repo's JS style anyway (ES6+, LF line endings, single quotes).
 - **All commits end with the trailer:** `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
@@ -30,6 +31,7 @@ app-builder/
   app.config.yaml                  # Task 1  — Adobe I/O Runtime action manifest
   actions/convert-email/
     fetch.js                       # Task 2  — resolveOrigin, fetchPlainHtml
+    escape.js                      # Task 3  — escapeAttr, escapeText (shared HTML entity-encoding)
     normalize.js                   # Task 3  — normalizeHtml, normalizeTree
     render/
       shell.js                     # Task 4  — renderShell (full MJML doc)
@@ -241,14 +243,20 @@ git commit -m "feat(email): fetch .plain.html with env origin selection"
 ## Task 3: `normalize.js` — email-safe HTML + tree normalization
 
 **Files:**
+- Create: `app-builder/actions/convert-email/escape.js` (shared HTML entity-encoding)
 - Create: `app-builder/actions/convert-email/normalize.js`
+- Test: `app-builder/test/escape.test.js`
 - Test: `app-builder/test/normalize.test.js`
 
 **Interfaces:**
-- Consumes: `parse` from `node-html-parser`.
+- Consumes: `parse` from `node-html-parser`; `escapeAttr` from `./escape.js`.
 - Produces:
-  - `normalizeHtml(html, origin) → string` — collapse `<picture>`→`<img>`, strip `<script>`, absolutize `src`/`href`.
-  - `normalizeTree(tree, origin) → tree` — apply `normalizeHtml` to every html-bearing field of a `parseEds` tree (returns the same tree, mutated).
+  - `escapeAttr(str) → string` — entity-encode `&<>"` for use in an HTML attribute value.
+  - `escapeText(str) → string` — entity-encode `&<>` for use in HTML text content.
+  - `normalizeHtml(html, origin) → string` — collapse `<picture>`→`<img>`, strip `<script>`, absolutize `src`/`href`. All values interpolated into markup (the collapsed `<img>`'s `src`/`alt`, and absolutized attribute values) are entity-encoded via `escapeAttr`, so the returned string is valid HTML and survives re-parsing without `&`-corruption.
+  - `normalizeTree(tree, origin) → tree` — apply `normalizeHtml` to `default.html` and each `block.rows[][].html` (returns the same tree, mutated). Does not rewrite raw `block.html` (never rendered downstream).
+
+**Encoding requirement (added after Task 3 review — Global Constraint "Entity-encoding"):** `normalizeHtml` must not emit a raw `&` into an attribute value, and must not let a legacy entity in author text (e.g. `alt="Acme&reg Widget"`) be silently decoded. Add tests: a URL with ≥2 query params → `&amp;` in output; an `alt`/href value containing `&reg`/`&copy` round-trips through `normalizeHtml` (and a second `parse`) without becoming `®`/`©`. Confirm no double-encoding (no `&amp;amp;`).
 
 - [ ] **Step 1: Write the failing test**
 
@@ -455,9 +463,9 @@ git commit -m "feat(email): MJML document shell (width, fonts, preheader)"
 - Test: `app-builder/test/content.test.js`
 
 **Interfaces:**
-- Consumes: `parse` from `node-html-parser`.
+- Consumes: `parse` from `node-html-parser`; `escapeAttr`, `escapeText` from `../../escape.js` (Task 3).
 - Produces:
-  - `contentToMjml(html) → string` — a sequence of `<mj-text>` / `<mj-button>` / `<mj-image>` fragments (NOT wrapped in section/column). Used by every block renderer. Images (already `<img>` after normalize) → `mj-image`; CTA paragraphs (a `<p class="button-container">` or a `<p>` whose text is entirely links) → one `mj-button` per link; everything else accrues into `mj-text`.
+  - `contentToMjml(html) → string` — a sequence of `<mj-text>` / `<mj-button>` / `<mj-image>` fragments (NOT wrapped in section/column). Used by every block renderer. Images (already `<img>` after normalize) → `mj-image`; CTA paragraphs (a `<p class="button-container">` or a `<p>` whose text is entirely links) → one `mj-button` per link; everything else accrues into `mj-text`. All extracted attribute values (`src`, `href`, `alt`) are wrapped in `escapeAttr` and button link text in `escapeText` when interpolated into the MJML strings (Global Constraint "Entity-encoding"). Add a test that a value with `&` (e.g. a UTM `href` or a multi-param image `src`) run through the full `normalizeHtml → parse → contentToMjml` path is singly-encoded in the output (a `&amp;`, never a raw `&` and never `&amp;amp;`).
   - `renderDefault(node) → string` — `node = { kind:'default', html }` wrapped in `<mj-section><mj-column>…</mj-column></mj-section>`.
 
 - [ ] **Step 1: Write the failing test**
@@ -501,6 +509,7 @@ Expected: FAIL — exports not defined.
 `render/blocks/content.js`:
 ```js
 import { parse } from 'node-html-parser';
+import { escapeAttr, escapeText } from '../../escape.js';
 
 // A CTA paragraph: explicit button-container, or a <p> whose entire text is links.
 function isButtonPara(el) {
@@ -532,12 +541,12 @@ export function contentToMjml(html) {
       flush();
       const img = tag === 'IMG' ? node : node.querySelector('img');
       const src = img?.getAttribute('src') || '';
-      const alt = (img?.getAttribute('alt') || '').replace(/"/g, '&quot;');
-      out.push(`<mj-image src="${src}" alt="${alt}" />`);
+      const alt = img?.getAttribute('alt') || '';
+      out.push(`<mj-image src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" />`);
     } else if (isButtonPara(node)) {
       flush();
       node.querySelectorAll('a').forEach((a) => {
-        out.push(`<mj-button href="${a.getAttribute('href') || '#'}">${a.textContent.trim()}</mj-button>`);
+        out.push(`<mj-button href="${escapeAttr(a.getAttribute('href') || '#')}">${escapeText(a.textContent.trim())}</mj-button>`);
       });
     } else {
       buffer.push(node.outerHTML);

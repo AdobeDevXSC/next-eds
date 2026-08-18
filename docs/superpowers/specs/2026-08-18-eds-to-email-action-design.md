@@ -177,6 +177,7 @@ Email requires absolute, static assets:
 - **Absolutize** every `src`/`srcset`/`href` against the EDS origin (extends the `./`-rewrite
   `fetchPlainHtml` already does — but for all links, not just relative image sources).
 - **Strip** `<script>` and interactive attributes.
+- **Entity-encode** every dynamic value (URLs, `alt`, text) at each point it is interpolated into a markup string, via a shared `escape.js` (`escapeAttr`/`escapeText`). Each pipeline stage serializes to a string and the next stage re-parses (decoding), so escaping once per serialization is balanced — it keeps output valid (e.g. a multi-param URL renders `&amp;`, not a raw `&`) without double-encoding. Without this, common EDS image URLs and UTM-tagged CTAs emit invalid markup and legacy entities in `alt` text (`Acme&reg`) get silently decoded.
 
 ### 7. Error handling
 
