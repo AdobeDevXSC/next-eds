@@ -60,7 +60,7 @@ function activeTab(pathname) {
   return '';
 }
 
-export default function AppShell({ children, footerModel }) {
+export default function AppShell({ children, footerModel, user, flags }) {
   const pathname = usePathname() || '/';
   const active = activeTab(pathname);
   const { orderCount } = useOrder();
@@ -83,7 +83,22 @@ export default function AppShell({ children, footerModel }) {
             <Link href="/menu" className="header-nav-link">Menu</Link>
             <Link href="/build" className="header-nav-link">Build your own</Link>
           </nav>
-          <Link href="/signin" className="signin-pill">Sign in</Link>
+          {user ? (
+            <div className="shell-account">
+              {flags?.loyalty && (
+                <span className="shell-loyalty" title={`${user.loyalty_stamps} loyalty stamps`}>
+                  {`★ ${user.loyalty_stamps}`}
+                </span>
+              )}
+              <span className="shell-avatar" aria-hidden="true">{user.avatar_initials}</span>
+              <span className="shell-user-name">{user.name.split(' ')[0]}</span>
+              <form action="/api/auth/signout" method="POST" className="shell-signout-form">
+                <button type="submit" className="shell-signout">Sign out</button>
+              </form>
+            </div>
+          ) : (
+            <Link href="/signin" className="signin-pill">Sign in</Link>
+          )}
         </div>
         <div className="accent-strip" aria-hidden="true" />
       </header>
