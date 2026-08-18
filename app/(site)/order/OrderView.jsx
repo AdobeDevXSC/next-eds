@@ -50,8 +50,18 @@ export default function OrderView() {
     );
   }
 
-  const placeOrder = () => {
-    setPlaced({ total: orderTotalCents, pickupTime });
+  const placeOrder = async () => {
+    const total = orderTotalCents;
+    try {
+      await fetch('/api/order/place', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ pickupTime }),
+      });
+    } catch {
+      // simulated placement still succeeds for the demo
+    }
+    setPlaced({ total, pickupTime });
     clear();
   };
 
