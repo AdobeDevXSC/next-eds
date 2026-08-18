@@ -15,6 +15,9 @@ helix-importer-ui
 .dev.vars
 .env*.local
 
+# Superpowers SDD scratch (ledger, briefs, review packages)
+.superpowers/
+
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
