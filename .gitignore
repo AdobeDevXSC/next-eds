@@ -20,3 +20,8 @@ helix-importer-ui
 !AGENTS.md
 .claude-plugin/
 .env
+
+# App Builder
+app-builder/node_modules
+app-builder/dist
+app-builder/.env
