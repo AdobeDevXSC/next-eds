@@ -71,8 +71,10 @@ earn-on-order write is also skipped).
 Replace the redesign's client `OrderProvider` (localStorage) with a server-backed cart:
 
 - `lib/cart.js` (exists) stores items in KV, namespaced `cart:user:<id>` / `cart:guest:<id>`, with
-  `mergeGuestCartIntoUser(userId)` on sign-in. Guest identity is a `stacked_guest` cookie (uuid,
-  created on first cart write; httpOnly).
+  `mergeGuestCartIntoUser(userId)` on sign-in. Guest identity is the existing `CART_COOKIE`
+  (`'stacked_cart'`, uuid, created on first cart write in a Route Handler; httpOnly). Cart line
+  items keep the current shape `{ id, name, unitPriceCents, qty }` so `useOrder` consumers are
+  unchanged.
 - **`app/api/cart/route.js`** — `GET` returns the current cart (user cart if signed in, else guest
   cart); `POST` `{ name, unitPriceCents, qty? }` adds/increments; `PATCH` `{ id, qty }` sets qty
   (0 removes); `DELETE` `{ id }` removes; `DELETE` with no body clears. All resolve the cart key
