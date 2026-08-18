@@ -63,6 +63,38 @@ test('href containing a literal ampersand-entity-like sequence survives normaliz
   assert.doesNotMatch(reparsed, /©/);
 });
 
+test('strips onclick attribute from anchor while preserving element and href', () => {
+  const out = normalizeHtml('<a onclick="x()" href="/a">t</a>', ORIGIN);
+  assert.doesNotMatch(out, /onclick/i);
+  assert.match(out, /<a[^>]+href="https:\/\/eds\.example\/a"/);
+  assert.match(out, />t<\/a>/);
+});
+
+test('strips onerror attribute from img while preserving element and src', () => {
+  const out = normalizeHtml('<img onerror="x()" src="/a.png">', ORIGIN);
+  assert.doesNotMatch(out, /onerror/i);
+  assert.match(out, /<img[^>]+src="https:\/\/eds\.example\/a\.png"/);
+});
+
+test('strips assorted on* handlers case-insensitively across multiple elements', () => {
+  const out = normalizeHtml(
+    '<div OnMouseOver="x()"><a onclick="y()" href="/a">a</a><img ONLOAD="z()" src="/b.png"></div>',
+    ORIGIN,
+  );
+  assert.doesNotMatch(out, /onmouseover/i);
+  assert.doesNotMatch(out, /onclick/i);
+  assert.doesNotMatch(out, /onload/i);
+  // Elements and their safe attributes remain.
+  assert.match(out, /<a[^>]+href="https:\/\/eds\.example\/a"/);
+  assert.match(out, /<img[^>]+src="https:\/\/eds\.example\/b\.png"/);
+});
+
+test('javascript: URLs are defanged by absolutize (documents existing behavior)', () => {
+  const out = normalizeHtml('<a href="javascript:alert(1)">go</a>', ORIGIN);
+  assert.doesNotMatch(out, /href="javascript:/i);
+  assert.match(out, /href="https:\/\/eds\.example\/javascript:alert\(1\)"/);
+});
+
 test('normalizeTree rewrites default nodes and block cells', () => {
   const tree = [{
     kind: 'section',
