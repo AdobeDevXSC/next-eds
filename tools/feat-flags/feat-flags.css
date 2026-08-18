@@ -1,0 +1,75 @@
+:host {
+  display: block;
+  padding: 24px;
+  font-family: system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #2a2520;
+  background: #f3efe8;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.lede {
+  margin: 0 0 20px;
+  color: #6b6156;
+}
+
+.key {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid rgb(60 45 25 / 16%);
+  border-radius: 8px;
+}
+
+.flag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 420px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: #fcfaf6;
+  border: 1px solid rgb(60 45 25 / 10%);
+  border-radius: 10px;
+}
+
+.flag-name {
+  font-weight: 600;
+}
+
+.status {
+  font-size: 13px;
+  color: #6b6156;
+}
+
+button {
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: #ff7a00;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button[aria-pressed="false"] {
+  color: #2a2520;
+  background: #e9e3d8;
+}
+
+.msg {
+  min-height: 18px;
+  max-width: 420px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: #b4232f;
+}
