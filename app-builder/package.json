@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Adobe I/O Runtime action: EDS page → email HTML",
   "scripts": {
-    "test": "node --test"
+    "test": "node --experimental-detect-module --test"
   },
   "dependencies": {
     "mjml": "^4.15.3",
