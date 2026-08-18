@@ -10,3 +10,6 @@ next.config.mjs
 open-next.config.ts
 .next
 .open-next
+
+# App Builder sub-project (own ESM toolchain; not linted by the EDS airbnb config)
+app-builder
