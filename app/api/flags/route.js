@@ -31,7 +31,7 @@ export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { body = null; }
   const name = body && typeof body.name === 'string' ? body.name : null;
-  const enabled = body ? body.enabled === true : null;
+  const enabled = body && typeof body.enabled === 'boolean' ? body.enabled : null;
   if (!name || enabled === null) {
     return NextResponse.json({ error: 'Expected { name: string, enabled: boolean }' }, { status: 400 });
   }
