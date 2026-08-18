@@ -4,6 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Stacked — Feature Flags</title>
+  <link rel="icon" href="data:," />
+  <!-- DA App SDK: loaded early so the postMessage handshake is ready when DA opens this app. -->
+  <script src="https://da.live/nx/utils/sdk.js" type="module"></script>
   <style>
     body { font: 15px/1.5 system-ui, sans-serif; margin: 0; padding: 24px; color: #2a2520; background: #f3efe8; }
     h1 { font-size: 20px; margin: 0 0 4px; }
@@ -37,8 +40,8 @@
     keyEl.addEventListener('change', function () { sessionStorage.setItem('flagsKey', keyEl.value); });
 
     // When loaded inside DA, read the admin key from the auth-gated .da/keys sheet using the DA
-    // user's token (via the DA app SDK) — so an admin never pastes it. Falls back to the manual
-    // input when not in DA, when the SDK doesn't resolve, or when the sheet read fails.
+    // user's token (via the DA App SDK) — so an admin never pastes it. Falls back to the manual
+    // input when not in DA, when the SDK doesn't resolve (1.5s timeout), or when the read fails.
     function loadKeyFromDA() {
       return import('https://da.live/nx/utils/sdk.js').then(function (mod) {
         return Promise.race([
