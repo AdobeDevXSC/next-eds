@@ -1,4 +1,6 @@
 // The one place that owns the cross-cutting email frame: width, fonts, colors, preheader.
+import { escapeText } from '../escape.js';
+
 const FONT_STACK = "Helvetica, Arial, sans-serif";
 
 export function renderShell({ body = '', preheader = '' } = {}) {
@@ -12,7 +14,7 @@ export function renderShell({ body = '', preheader = '' } = {}) {
     <mj-style>a { color: #1a1a1a; }</mj-style>
   </mj-head>
   <mj-body width="600px" background-color="#ffffff">
-    <mj-raw><div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}</div></mj-raw>
+    <mj-raw><div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${escapeText(preheader)}</div></mj-raw>
     ${body}
   </mj-body>
 </mjml>`;

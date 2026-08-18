@@ -16,3 +16,11 @@ test('defaults preheader to empty and still produces a valid shell', () => {
   assert.match(doc, /<mj-body/);
   assert.match(doc, /<\/mj-body>/);
 });
+
+test('entity-encodes a hostile preheader (script tag + ampersand)', () => {
+  const doc = renderShell({ body: '', preheader: '<script>alert(1)</script> & Co' });
+  assert.ok(!doc.includes('<script>alert(1)</script> & Co'));
+  assert.doesNotMatch(doc, /<script>alert\(1\)<\/script>/);
+  assert.match(doc, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(doc, /&amp; Co/);
+});
