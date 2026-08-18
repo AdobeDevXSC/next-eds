@@ -28,3 +28,24 @@ test('fetchPlainHtml maps empty path to index and 404 to null', async () => {
     assert.equal(await fetchPlainHtml('', { env: 'preview', origins: ORIGINS }), null);
   } finally { globalThis.fetch = orig; }
 });
+
+test('empty path maps to index.plain.html', async () => {
+  let called = '';
+  const orig = globalThis.fetch;
+  globalThis.fetch = async (url) => { called = url; return new Response('<i></i>', { status: 200 }); };
+  try {
+    await fetchPlainHtml('', { env: 'preview', origins: ORIGINS });
+    assert.equal(called, 'https://p.example/index.plain.html');
+  } finally { globalThis.fetch = orig; }
+});
+
+test('non-ok status rejects with error', async () => {
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response('', { status: 500 });
+  try {
+    await assert.rejects(
+      () => fetchPlainHtml('/x', { env: 'preview', origins: ORIGINS }),
+      /EDS fetch failed: 500/,
+    );
+  } finally { globalThis.fetch = orig; }
+});
