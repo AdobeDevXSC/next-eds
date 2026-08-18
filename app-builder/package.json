@@ -9,7 +9,7 @@
     "preview": "node --experimental-detect-module preview.mjs"
   },
   "dependencies": {
-    "mjml": "^4.15.3",
+    "mjml-browser": "^4.15.3",
     "node-html-parser": "7.0.1"
   }
 }
