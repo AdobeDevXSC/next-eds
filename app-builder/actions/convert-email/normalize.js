@@ -1,4 +1,5 @@
 import { parse } from 'node-html-parser';
+import { escapeAttr } from './escape.js';
 
 function absolutize(url, origin) {
   if (!url) return url;
@@ -17,17 +18,20 @@ export function normalizeHtml(html, origin) {
   root.querySelectorAll('picture').forEach((pic) => {
     const img = pic.querySelector('img');
     const src = absolutize(img?.getAttribute('src') || '', origin);
-    const alt = (img?.getAttribute('alt') || '').replace(/"/g, '&quot;');
-    pic.insertAdjacentHTML('afterend', `<img src="${src}" alt="${alt}" />`);
+    const alt = img?.getAttribute('alt') || '';
+    pic.insertAdjacentHTML('afterend', `<img src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" />`);
     pic.remove();
   });
 
   // Strip scripts.
   root.querySelectorAll('script').forEach((s) => s.remove());
 
-  // Absolutize remaining src/href.
-  root.querySelectorAll('[src]').forEach((el) => el.setAttribute('src', absolutize(el.getAttribute('src'), origin)));
-  root.querySelectorAll('[href]').forEach((el) => el.setAttribute('href', absolutize(el.getAttribute('href'), origin)));
+  // Absolutize remaining src/href. getAttribute() returns the decoded value, and
+  // toString() does not encode on the way out, so re-entity-encode before writing back
+  // (escapeAttr) or a literal & (e.g. a multi-param query string) serializes as invalid,
+  // unescaped HTML.
+  root.querySelectorAll('[src]').forEach((el) => el.setAttribute('src', escapeAttr(absolutize(el.getAttribute('src'), origin))));
+  root.querySelectorAll('[href]').forEach((el) => el.setAttribute('href', escapeAttr(absolutize(el.getAttribute('href'), origin))));
 
   return root.toString();
 }
