@@ -20,3 +20,16 @@ helix-importer-ui
 !AGENTS.md
 .claude-plugin/
 .env
+
+# App Builder
+app-builder/node_modules
+app-builder/dist
+app-builder/.env
+app-builder/.aio
+
+# Adobe Console workspace/credential downloads — NEVER commit. Ignore any top-level
+# JSON under app-builder/ (e.g. 691AmberHorse-4191536-Stage.json, console.json) except
+# the package manifests.
+app-builder/*.json
+!app-builder/package.json
+!app-builder/package-lock.json
