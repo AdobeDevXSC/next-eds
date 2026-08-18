@@ -8,13 +8,14 @@ Components** instead of the native client-side `aem.js` decoration. EDS remains 
 content/authoring source (Docs/DA, sidekick, `.page`/`.live` unchanged); a Cloudflare Worker
 fronts EDS and renders at the edge. See [DEPLOYMENT.md](./DEPLOYMENT.md) for the full picture.
 
-- Blocks live in `/blocks/<name>/`: `Name.jsx` (the React component) + `name.js` (entry shim)
-  + `name.css`. The registry in [`lib/registry.js`](lib/registry.js) maps block name → component.
+- Content blocks are portable, vanilla OOTB blocks — `blocks/<name>/<name>.js` (`decorate()`) +
+  `<name>.css`, no `.jsx`. They render natively via `aem.js` on the raw EDS URL, and via the
+  `LegacyBlock` bridge in Next; the registry in [`lib/registry.js`](lib/registry.js) is an
+  intentionally empty escape hatch. App features (auth, cart, menu, builder, flags) are RSC under
+  `app/` + `lib/`. See [`docs/architecture/blocks-and-rsc.md`](docs/architecture/blocks-and-rsc.md)
+  for the full two-tier convention.
 - The EDS parse layer is in [`lib/eds/`](lib/eds) (fetch → parse → render).
 - Requires Node 18+ (`nvm use 22`). Run locally with `npm run dev`; deploy with `npm run deploy:cf`.
-
-> Status: spike — `hero`, `cards`, and `columns` are converted. Other blocks still have their
-> native `aem.js` decorate functions and render as placeholders until ported.
 
 ## Environments
 - Preview: https://main--{repo}--{owner}.aem.page/
