@@ -10,3 +10,6 @@ next.config.mjs
 open-next.config.ts
 .next
 .open-next
+
+# vendored/generated bundles (no build step at serve time)
+deps
