@@ -19,11 +19,16 @@
 </head>
 <body>
   <h1>Feature Flags</h1>
-  <p>Toggle features for Stacked. Enter the admin key once; it's kept for this tab only.</p>
+  <p>Toggle production features for Stacked. Enter the admin key once; it's kept for this tab only.</p>
   <input class="key" id="key" type="password" placeholder="Admin key" autocomplete="off" />
   <div id="flags"></div>
   <div class="msg" id="msg" role="status" aria-live="polite"></div>
   <script>
+    // This DA app is served from the AEM origin (/tools/feat-flags) but the flags API lives on the
+    // Stacked Worker, a different origin — so calls are absolute and cross-origin (the Worker
+    // allowlists this origin for CORS; POST is admin-key gated). Override with ?api=<origin> when
+    // pointing at a non-prod Worker.
+    var API_BASE = new URLSearchParams(location.search).get('api') || 'https://nxtjs.page';
     var KNOWN = ['loyalty'];
     var keyEl = document.getElementById('key');
     var msgEl = document.getElementById('msg');
@@ -49,14 +54,14 @@
     }
 
     function load() {
-      fetch('/api/flags').then(function (r) { return r.json(); }).then(render).catch(function () {
+      fetch(API_BASE + '/api/flags').then(function (r) { return r.json(); }).then(render).catch(function () {
         msgEl.textContent = 'Could not load flags.';
       });
     }
 
     function toggle(name, enabled) {
       msgEl.textContent = '';
-      fetch('/api/flags', {
+      fetch(API_BASE + '/api/flags', {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: 'Bearer ' + keyEl.value },
         body: JSON.stringify({ name: name, enabled: enabled }),
