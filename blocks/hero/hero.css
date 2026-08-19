@@ -38,7 +38,15 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--scrim);
+
+  /* Dark scrim so the bottom-aligned hero text stays legible over the picture.
+     Bottom-weighted (text sits at the bottom) so the vibrant image stays bright up top. */
+  background: linear-gradient(
+    to top,
+    rgb(26 23 20 / 82%) 0%,
+    rgb(26 23 20 / 45%) 42%,
+    rgb(26 23 20 / 8%) 100%
+  );
 }
 
 .hero-content {
@@ -55,7 +63,10 @@
 .hero p {
   margin: var(--space-xs) 0 0;
   max-width: 560px;
-  color: var(--slate-200);
+
+  /* Light text on the dark scrim. (--slate-200 was remapped to a faint border fill in the
+     redesigned palette, which rendered this tagline invisible.) */
+  color: rgb(255 255 255 / 88%);
   line-height: 1.5;
 }
 

@@ -55,6 +55,7 @@
   --brand-punch-deep: var(--primary-press);
   --brand-punch-soft: var(--primary-tint);
   --brand-sun: var(--primary);
+  --brand-zest: #c6f24e; /* success/zest accent (callout.success) — missed in the palette re-point */
   --on-punch: var(--primary-text-on);
   --on-sun: var(--primary-text-on);
 
