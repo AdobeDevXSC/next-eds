@@ -1,20 +1,81 @@
 footer {
   background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  color: var(--text-color);
+  font-size: var(--body-font-size-s);
 }
 
 footer .footer > div {
   margin: auto;
-  max-width: 1200px;
-  padding: 40px 24px 24px;
+  max-width: var(--content-width, 1200px);
+  padding: var(--space-2xl) var(--gutter) var(--space-l);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
 }
 
 footer .footer p {
   margin: 0;
 }
 
+/* headings */
+footer .footer h2 {
+  margin: 0 0 var(--space-2xs);
+  font-size: var(--heading-font-size-s);
+  line-height: var(--leading-tight);
+}
+
+footer .footer h3 {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--body-font-size-s);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-heading);
+  text-transform: uppercase;
+}
+
+/* link lists — no bullets */
+footer .footer ul {
+  list-style: none;
+  margin: 0 0 var(--space-m);
+  padding: 0;
+}
+
+footer .footer li {
+  margin: 0 0 var(--space-2xs);
+}
+
+footer .footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+footer .footer a:hover {
+  color: var(--text-color);
+  text-decoration: underline;
+}
+
+/* the link-group section (h3 + ul, repeated) flows into responsive columns.
+   break rules keep each heading with its list. */
+footer .footer .default-content-wrapper:has(> h3) {
+  columns: 4 180px;
+  column-gap: var(--space-xl);
+}
+
+footer .footer .default-content-wrapper:has(> h3) > h3 {
+  break-after: avoid;
+}
+
+footer .footer .default-content-wrapper:has(> h3) > ul {
+  break-inside: avoid;
+}
+
+/* bottom rows (hours + copyright/legal — sections with no heading): smaller, muted */
+footer .footer .section:not(:has(h2, h3)) p {
+  color: var(--text-muted);
+  font-size: var(--body-font-size-xs);
+}
+
 @media (width >= 900px) {
   footer .footer > div {
-    padding: 40px 32px 24px;
+    padding: var(--space-2xl) var(--gutter-wide) var(--space-l);
   }
 }
