@@ -1,0 +1,233 @@
+/* Hero Stack — the designed home hero (annotated ingredient stack) as an EDS block.
+   Ported from app/(site)/home/home.css (the Next/RSC home) so the raw EDS render matches.
+   Mobile-first; desktop at >= 640px. */
+
+.hero-stack .hs-inner {
+  padding: 28px 22px 24px;
+  color: var(--text-primary);
+}
+
+.hero-stack .overline {
+  margin: 0 0 10px;
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary-deep);
+}
+
+.hero-stack .wordmark {
+  margin: 0;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 54px;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+}
+
+.hero-stack .hero-tagline {
+  margin: 8px 0 0;
+  font-family: var(--font-chrome);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+/* annotated stack */
+.hero-stack .annotated {
+  margin: 22px 0;
+  padding: 22px 18px 16px;
+  background-color: var(--surface);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-well);
+}
+
+.hero-stack .annotated-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hero-stack .annotated-row {
+  display: grid;
+  grid-template-columns: 1fr 132px 46px;
+  gap: 10px;
+  align-items: center;
+}
+
+.hero-stack .anno-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.hero-stack .anno-label-d {
+  display: none;
+}
+
+.hero-stack .anno-brick {
+  width: 100%;
+  height: var(--h-m);
+  background-color: var(--brick-color);
+  border-radius: var(--brick-radius);
+}
+
+.hero-stack .anno-brick-base {
+  box-shadow: var(--shadow-brick-base);
+}
+
+.hero-stack .anno-price {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  text-align: left;
+}
+
+.hero-stack .annotated-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.hero-stack .anno-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.hero-stack .anno-total-val {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+/* CTAs — shown on all sizes here (the EDS surface has no mobile app dock) */
+.hero-stack .hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0 0;
+}
+
+.hero-stack .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 24px;
+  border-radius: var(--radius-brick);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.hero-stack .btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-text-on);
+}
+
+.hero-stack .btn-primary:hover {
+  background-color: var(--primary-press);
+}
+
+.hero-stack .btn-ghost {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: var(--hairline) solid var(--border);
+}
+
+.hero-stack .btn-ghost:hover {
+  border-color: var(--text-tertiary);
+}
+
+/* ========== Desktop (2a) ========== */
+@media (width >= 640px) {
+  .hero-stack .hs-inner {
+    padding: 72px 64px 56px;
+    text-align: center;
+  }
+
+  .hero-stack .overline {
+    font-size: 10px;
+  }
+
+  .hero-stack .wordmark {
+    font-size: clamp(72px, 10vw, 128px);
+    line-height: 0.86;
+    letter-spacing: -0.045em;
+  }
+
+  .hero-stack .hero-tagline {
+    font-size: 22px;
+  }
+
+  .hero-stack .annotated {
+    max-width: 860px;
+    margin: 40px auto 0;
+    padding: 0;
+    background: none;
+    border: none;
+  }
+
+  .hero-stack .annotated-row {
+    grid-template-columns: 1fr 300px 1fr;
+    gap: 20px;
+  }
+
+  .hero-stack .anno-label-d {
+    display: inline;
+  }
+
+  .hero-stack .anno-label-m {
+    display: none;
+  }
+
+  .hero-stack .anno-brick {
+    height: var(--h-d);
+  }
+
+  .hero-stack .annotated-total {
+    display: grid;
+    grid-template-columns: 1fr 300px 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .hero-stack .anno-count {
+    text-align: right;
+  }
+
+  .hero-stack .anno-total-val {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .hero-stack .hero-ctas {
+    justify-content: center;
+    margin-top: 48px;
+  }
+}

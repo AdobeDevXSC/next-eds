@@ -1,3 +1,51 @@
-/* Fonts are loaded and self-hosted by next/font/google in app/layout.js (Spectral + DM Sans),
-   which injects @font-face and exposes them as --font-spectral / --font-dm-sans on <html>.
-   styles/tokens/typography.css maps those onto the family tokens. Nothing to declare here. */
+/* Design fonts — Spectral (content/display) + DM Sans (chrome/UI).
+   In the Next/RSC app these are loaded by next/font/google (app/layout.js) which exposes
+   --font-spectral / --font-dm-sans on <html>. On the raw EDS runtime next/font never runs,
+   so the same families are self-hosted here (files in /fonts, extracted from the Next build)
+   and the vars are declared, so styles/tokens/typography.css resolves to the real families
+   on both surfaces. */
+
+@font-face {
+  font-family: 'DM Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/dm-sans.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/spectral-normal-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/spectral-normal-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/spectral-italic-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: Spectral;
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/spectral-italic-600.woff2') format('woff2');
+}
+
+:root {
+  --font-spectral: Spectral;
+  --font-dm-sans: 'DM Sans';
+}
