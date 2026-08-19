@@ -15,7 +15,8 @@
     "lint:blocks": "node scripts/lint-blocks.mjs",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:blocks",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix",
-    "build:lit": "esbuild --format=esm --minify ./deps/lit/src/index.js --bundle --outfile=./deps/lit/dist/index.js"
+    "build:lit": "esbuild --format=esm --minify ./deps/lit/src/index.js --bundle --outfile=./deps/lit/dist/index.js",
+    "sync:wovea-docs": "node --env-file=.env.local scripts/sync-wovea-docs.mjs"
   },
   "repository": {
     "type": "git",
