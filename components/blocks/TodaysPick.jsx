@@ -8,9 +8,9 @@ import './todays-pick.css';
 //
 // Content model: ONE row, 5 cells, all plain text —
 //   [badge, name, price, description, add-button label]
-// The decorative stack-brick colors are NOT authored; they're baked below from
-// content/home.json's todaysPicks.stackColors (a fixed brand illustration), the same pattern
-// blocks/hero-stack and blocks/two-ways use for their own baked decoration.
+// The decorative stack-brick colors are NOT authored; they're baked below (a fixed brand
+// illustration from the original design handoff), the same pattern blocks/hero-stack and
+// blocks/two-ways use for their own baked decoration.
 //
 // Self-contained: does not import from app/(site)/home/ (a later task deletes that directory).
 // ./PickAddButton.jsx is a local copy of app/(site)/home/PickAddButton.jsx's cart logic.

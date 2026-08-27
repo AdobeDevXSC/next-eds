@@ -1,8 +1,8 @@
 // Two Ways — portable OOTB presentation block (Tier 1). Reproduces the Next/RSC home's "Two ways
 // to lunch" rows on the raw EDS runtime so it matches the Next/RSC home. Authored content: 2
 // rows, each [title, description, CTA label, CTA href]. The per-row index label/color and the
-// brick "specimen" bars are a fixed brand illustration, baked here from the design source
-// (content/home.json → twoWays), so authors edit words, not hex codes. The <h2> section heading
+// brick "specimen" bars are a fixed brand illustration, baked here from the original design
+// handoff, so authors edit words, not hex codes. The <h2> section heading
 // is authored as default content in the section (styled by styles/styles.css's
 // .section.home-section), not part of this block.
 const DECOR = [

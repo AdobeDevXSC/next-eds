@@ -2,7 +2,7 @@
 // (the annotated ingredient stack) on the raw EDS runtime so it matches the Next/RSC home.
 // Authored content: an overline <p>, the wordmark <h1>, a tagline <p>, and a <p> with the two
 // CTA links. The annotated stack itself is a fixed brand illustration, baked here from the
-// design source (content/home.json → heroStack), so authors edit words, not hex codes.
+// original design handoff, so authors edit words, not hex codes.
 
 const STACK = {
   countLabel: 'six bricks',
