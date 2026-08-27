@@ -1,0 +1,18 @@
+/* Dock CTAs — ported from app/(site)/home/home.css (.home-dock-ctas / .home-dock-btn), renamed
+   to match this block's name. This is a Tier-2 RSC island (see
+   docs/architecture/blocks-and-rsc.md): ./DockCtas.jsx pushes this markup into the mobile docked
+   action row (app/(site)/AppShell.jsx's .docked-action) — the row/slot chrome itself is styled
+   by app/(site)/shell.css (including hiding the whole docked bar on desktop), so this file only
+   styles the pushed content. */
+
+.dock-ctas {
+  display: flex;
+  gap: 8px;
+}
+
+.dock-ctas .dock-cta-btn {
+  flex: 1;
+  min-height: 52px;
+  border-radius: 10px;
+  font-size: 15px;
+}
