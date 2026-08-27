@@ -121,9 +121,9 @@ or app-level state?**
   example: cart, menu, sign-in, the sandwich builder, feature flags). Implement as React/RSC under
   `app/` (routes/components) + `lib/` (data access) instead of as a block.
 
-`lib/registry.js` is an intentionally empty escape hatch for the rare case where one specific block
-needs server-rendered (RSC) content instead of the vanilla-plus-`LegacyBlock` path; read the
-architecture doc before adding an entry to it.
+`lib/registry.js` is a deliberately rare escape hatch for the case where one specific block needs
+server-rendered (RSC) content instead of the vanilla-plus-`LegacyBlock` path — its two entries today
+are the home page's `todays-pick` and `dock-ctas`; read the architecture doc before adding another.
 
 ### Auto-Blocking
 
