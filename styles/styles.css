@@ -110,6 +110,86 @@ main .section.highlight {
   padding: var(--space-l) 0;
 }
 
+/* home page sections — Section Style "home-section" (authored) puts this class on the section;
+   the h2 heading is default content, styled here rather than baked into a block. Ported from
+   app/(site)/home/home.css's .home-section (spacing) + .section-heading (heading treatment).
+   The padding override replaces the generic section gutter above (which swaps 22px/64px at
+   900px) with home.css's own values at its own 640px breakpoint, on the same element, so the
+   two don't stack; margin: 0 replaces the generic inter-section margin so consecutive
+   home-sections keep home.css's flush padding-only rhythm. */
+main .section.home-section {
+  margin: 0;
+}
+
+main .section.home-section > div {
+  padding: 24px 22px;
+}
+
+main .section.home-section h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+@media (width >= 640px) {
+  main .section.home-section > div {
+    padding: 40px 64px;
+  }
+
+  main .section.home-section h2 {
+    font-size: 34px;
+  }
+}
+
+/* Section Style "lede" — a full-bleed band (background + hairline top/bottom) for the home's
+   single-paragraph lede, in the same spirit as .section.light/.highlight above. Ported from
+   app/(site)/home/home.css's .lede-band/.lede; the inner div gets its own gutter override for
+   the same reason as .home-section above. */
+main .section.lede {
+  margin: 0;
+  padding: 26px 0;
+  background-color: var(--surface-raised);
+  border-top: var(--hairline) solid var(--border);
+  border-bottom: var(--hairline) solid var(--border);
+}
+
+main .section.lede > div {
+  padding: 0 22px;
+}
+
+main .section.lede p {
+  margin: 0;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  text-wrap: pretty;
+}
+
+@media (width >= 640px) {
+  main .section.lede {
+    padding: 52px 0;
+    text-align: center;
+  }
+
+  main .section.lede > div {
+    padding: 0 64px;
+  }
+
+  main .section.lede p {
+    max-width: 62ch;
+    margin: 0 auto;
+    font-size: 25px;
+  }
+}
+
 /* full-bleed hero — breaks out of the content-width cap above so the background spans the
    viewport, while padding keeps the content aligned to the centered content column. */
 main > .section > .hero {
