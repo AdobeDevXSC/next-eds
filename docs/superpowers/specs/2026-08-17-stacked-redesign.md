@@ -1,5 +1,10 @@
 # Stacked redesign — home (2a/3a) + builder (3b) + PWA shell
 
+> **Superseded (2026-08-27):** decision 1 below (home as a bespoke Next route) was reversed by the
+> Phase 3 home unification — `/` is an EDS-authored page again, rendered by the optional catch-all.
+> See [`docs/architecture/blocks-and-rsc.md`](../../architecture/blocks-and-rsc.md). The builder
+> (3b) and PWA shell decisions below are unaffected.
+
 Source of truth for visuals/copy: `design_handoff_stacked_home/README.md` (in the repo root of the
 main checkout). This doc records the architecture decisions and how the design maps onto the
 codebase. It does not restate the README's token values — those are authoritative there.
