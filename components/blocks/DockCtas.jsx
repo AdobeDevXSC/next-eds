@@ -40,6 +40,8 @@ export default function DockCtas({ rows = [] }) {
   const [primaryCells, secondaryCells] = rows;
   const primaryLabel = cellText(primaryCells?.[0]);
   const primaryHref = readHref(primaryCells?.[1]);
+  // Only 1 row authored → render just the primary; don't push an empty-label ghost button.
+  const hasSecondary = Boolean(secondaryCells);
   const secondaryLabel = cellText(secondaryCells?.[0]);
   const secondaryHref = readHref(secondaryCells?.[1]);
 
@@ -47,11 +49,13 @@ export default function DockCtas({ rows = [] }) {
     setAction(
       <div className="dock-ctas">
         <Link href={primaryHref} className="btn btn-primary dock-cta-btn">{primaryLabel}</Link>
-        <Link href={secondaryHref} className="btn btn-ghost dock-cta-btn">{secondaryLabel}</Link>
+        {hasSecondary && (
+          <Link href={secondaryHref} className="btn btn-ghost dock-cta-btn">{secondaryLabel}</Link>
+        )}
       </div>,
     );
     return () => setAction(null);
-  }, [setAction, primaryLabel, primaryHref, secondaryLabel, secondaryHref]);
+  }, [setAction, primaryLabel, primaryHref, hasSecondary, secondaryLabel, secondaryHref]);
 
   return null;
 }

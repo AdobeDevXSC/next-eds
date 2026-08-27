@@ -11,7 +11,7 @@
     "deploy:cf": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "deploy:cf:preview": "opennextjs-cloudflare build && wrangler deploy --env preview",
     "lint:js": "eslint .",
-    "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\" \"app/**/*.css\"",
+    "lint:css": "stylelint \"blocks/**/*.css\" \"styles/*.css\" \"app/**/*.css\" \"components/**/*.css\"",
     "lint:blocks": "node scripts/lint-blocks.mjs",
     "lint": "npm run lint:js && npm run lint:css && npm run lint:blocks",
     "lint:fix": "npm run lint:js -- --fix && npm run lint:css -- --fix",
