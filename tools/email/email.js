@@ -1,6 +1,16 @@
 import { LitElement, html, nothing } from '../../deps/lit/dist/index.js';
 import loadStyle from '../../scripts/utils/styles.js';
 
+// Spectrum 2 (not the Stacked site's own brand CSS) styles this admin/DA tool — an internal
+// utility, not customer-facing surface. Vendored locally (deps/spectrum, built via `npm run
+// build:spectrum`) rather than loaded from a CDN, mirroring deps/lit's own pattern: Spectrum
+// Web Components share static state across files (the theme fragment registry) and across
+// packages (sp-theme <-> sp-sidenav's Lit @lit/context wiring) that must resolve to the exact
+// same module instance to work, which per-file CDN requests can't reliably guarantee — verified
+// empirically against two different CDN resolvers before switching to a local bundle. See
+// deps/spectrum/src/index.js for the full explanation.
+import '../../deps/spectrum/dist/index.js';
+
 const styles = await loadStyle(import.meta.url);
 
 // The deployed convert-email App Builder action (Stage namespace). Override with ?action=<url>
@@ -91,13 +101,13 @@ class EmailPreview extends LitElement {
   render() {
     if (this.error) {
       return html`
-        <style>:host { display: block; padding: 16px; font: 14px system-ui, sans-serif; color: #b4232f; }</style>
+        <style>:host { display: block; padding: 16px; font-size: 14px; color: var(--spectrum-red-1000, #b4232f); }</style>
         <p>${this.error}</p>
       `;
     }
     if (!this.content) {
       return html`
-        <style>:host { display: block; padding: 16px; font: 14px system-ui, sans-serif; color: #6b6156; }</style>
+        <style>:host { display: block; padding: 16px; font-size: 14px; color: var(--spectrum-gray-600, #6b6156); }</style>
         <p>Loading preview…</p>
       `;
     }
@@ -145,30 +155,27 @@ export default class EmailApp extends LitElement {
 
   render() {
     return html`
-      <h1>Emails</h1>
-      <p class="lede">Pages authored under /email, converted to email-safe HTML by the convert-email action.</p>
-      <div class="layout">
-        <ul class="pages">
+      <sp-theme system="spectrum-two" color="light" scale="medium">
+        <h1>Emails</h1>
+        <p class="lede">Pages authored under /email, converted to email-safe HTML by the convert-email action.</p>
+        <div class="layout">
           ${this.pages.length === 0 && !this.error
-            ? html`<li class="empty">No pages found under /email.</li>`
-            : nothing}
-          ${this.pages.map((p) => html`
-            <li>
-              <button
-                type="button"
-                class=${p.path === this.selected ? 'active' : ''}
-                @click=${() => { this.selected = p.path; }}
-              >${p.title || p.path}</button>
-            </li>
-          `)}
-        </ul>
-        <div class="preview">
-          ${this.selected
-            ? html`<email-preview path=${this.selected}></email-preview>`
-            : html`<p class="status">Select an email from the list.</p>`}
+            ? html`<p class="empty">No pages found under /email.</p>`
+            : html`
+              <sp-sidenav @change=${(e) => { this.selected = e.target.value; }}>
+                ${this.pages.map((p) => html`
+                  <sp-sidenav-item value=${p.path} label=${p.title || p.path} ?selected=${p.path === this.selected}></sp-sidenav-item>
+                `)}
+              </sp-sidenav>
+            `}
+          <div class="preview">
+            ${this.selected
+              ? html`<email-preview path=${this.selected}></email-preview>`
+              : html`<p class="status">Select an email from the list.</p>`}
+          </div>
         </div>
-      </div>
-      <div class="msg" role="status" aria-live="polite">${this.error}</div>
+        <div class="msg" role="status" aria-live="polite">${this.error}</div>
+      </sp-theme>
     `;
   }
 }
