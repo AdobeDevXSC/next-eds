@@ -12,11 +12,21 @@ Edge Delivery Services (EDS) page into email-client-safe HTML.
 fetch <path>.plain.html
   → parseEds        (reused read-only from ../lib/eds/parse.js)
   → normalize       (<picture>→absolute <img>, absolutize URLs, strip <script>/on* handlers, entity-encode)
-  → per-block MJML  (default · hero · cards · columns · callout; unknown/interactive blocks → warnings[])
+  → per-block MJML  (site-hosted template if one exists, else generic content-flattening; see below)
   → mjml2html       (bulletproof, Outlook-safe tables + VML/MSO)
 ```
 
-Unknown or malformed blocks never throw — they are omitted and reported in `warnings[]`.
+The action carries **no per-block knowledge of its own**. For each block it finds, it fetches
+`<site-origin>/blocks/<name>/<name>.email.mjml` — the same fetch pattern already used for
+`.plain.html` — and fills that template with the block's content. A block with no such file
+still isn't dropped: its cells flatten into a plain content section (headings/text/images/links
+render; the special layout a template would give does not). Only a short, fixed deny-list of
+genuinely non-content blocks (`form`, `search`, `modal`, `embed` — interactive, no static
+representation makes sense) is omitted outright, reported in `warnings[]`. Nothing here throws
+on an unfamiliar block — that's the point: **this action is generic and site-agnostic.** Point it
+at any EDS site and it works immediately; a site adds bespoke email layouts by adding files next
+to its own blocks, never by touching or redeploying this action. See "Adding email support for a
+block" below.
 
 ## Local development
 
@@ -49,6 +59,45 @@ npm run preview -- /menu/italian-stack live
 > The `test`/`preview` scripts pass `--experimental-detect-module` so bare Node can import the ESM
 > `../lib/eds/parse.js` (which lives under the repo's CommonJS root). This flag is **local-only** — the
 > deployed action is a single webpack CJS bundle, so it doesn't need the flag.
+
+## Adding email support for a block
+
+Drop a `<name>.email.mjml` file next to a block's existing `.js`/`.css`, e.g.
+`blocks/hero/hero.email.mjml`. It's fetched fresh on every conversion — no action redeploy, ever
+— and it's what this repo's own `hero`/`cards`/`columns`/`callout` blocks use (read them for real
+examples). No file → the block still renders, just generically (see "How it works" above); the
+template is what upgrades that to a bespoke layout.
+
+**Data available to the template**, derived from the block's own cells (each cell's raw HTML is
+already run through the same content→MJML conversion a plain content section uses — a template
+never sees raw author HTML, only already-safe `<mj-text>`/`<mj-image>`/`<mj-button>` fragments):
+
+| Field | Shape | Use for |
+| --- | --- | --- |
+| `rows` | `Fragment[][]` — one fragment per cell, grid-shaped like the block's own rows/cells | A row is a set of side-by-side columns (`columns`: `{{#each rows.0}}`) |
+| `rowFragments` | `Fragment[]` — one fragment per row, that row's cells pre-joined | A row is one repeating unit, e.g. a card (`cards`: `{{#eachChunk rowFragments 2}}`) |
+| `name`, `variants` | strings | The block's own name / authored variant classes |
+
+**Template syntax** (a small mustache-like engine — substitution and iteration only, deliberately
+no conditionals and no code execution, so a template is never something the action has to treat
+as untrusted code):
+
+- `{{{path}}}` — insert raw (for the already-safe fragments above)
+- `{{path}}` — insert HTML-entity-escaped (for plain strings like `name`)
+- `{{#each path}}...{{/each}}` — iterate an array; `{{{this}}}`/`{{this}}` is the current item
+- `{{#eachChunk path size}}...{{/eachChunk}}` — group an array into fixed-size chunks; `this`
+  inside is the current chunk (an array — iterate it with a nested `{{#each this}}`)
+
+```html
+<!-- blocks/hero/hero.email.mjml — one cell, full-bleed -->
+<mj-section padding="0"><mj-column>{{{rows.0.0}}}</mj-column></mj-section>
+
+<!-- blocks/columns/columns.email.mjml — each cell in row 0 is its own column -->
+<mj-section>{{#each rows.0}}<mj-column>{{{this}}}</mj-column>{{/each}}</mj-section>
+
+<!-- blocks/cards/cards.email.mjml — each row is one card; group 2 per section -->
+{{#eachChunk rowFragments 2}}<mj-section>{{#each this}}<mj-column>{{{this}}}</mj-column>{{/each}}</mj-section>{{/eachChunk}}
+```
 
 ## Deploy to Adobe App Builder
 
@@ -146,7 +195,8 @@ curl "https://<namespace>.adobeioruntime.net/api/v1/web/email/convert-email?path
 ## Roadmap
 
 - **Phase 2 — sending:** implement the `send()` seam (ESP/SMTP adapter, recipients, subject/preheader sourcing).
-- **More block renderers:** emailable `menu-item`; `quote` · `steps` · `table` · `tabs` · `carousel` · `video`.
+- **More block templates:** this is now a site-side task (see "Adding email support for a block") — e.g.
+  emailable `menu-item`, `quote`, `steps`, `table`, `tabs`, `carousel`, `video` for *this* repo's own blocks.
 - **Hardening:** source `EDS_ORIGIN_*` from env (SSRF defense-in-depth), dedupe `blocksRendered`, generic
   502 message, multi-row `columns`, inline-prose `<img>` normalization.
 
