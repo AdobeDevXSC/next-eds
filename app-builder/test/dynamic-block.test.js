@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
   fetchBlockTemplate, buildTemplateData, renderDynamicBlock,
 } from '../actions/convert-email/render/dynamic-block.js';
@@ -65,5 +67,21 @@ test('renderDynamicBlock renders the fetched template against the block\'s conte
   try {
     const out = await renderDynamicBlock({ name: 'hero', variants: [], rows: [[{ html: '<h1>Hi</h1>' }]] }, ORIGIN);
     assert.equal(out, '<mj-section padding="0"><mj-column><mj-text><h1>Hi</h1></mj-text></mj-column></mj-section>');
+  } finally { globalThis.fetch = orig; }
+});
+
+test('the real callout.email.mjml renders both cells — one row, two cells: icon and message (callout.js\'s content model)', async () => {
+  const template = readFileSync(fileURLToPath(new URL('../../blocks/callout/callout.email.mjml', import.meta.url)), 'utf8');
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response(template, { status: 200 });
+  try {
+    const block = {
+      name: 'callout',
+      variants: ['info'],
+      rows: [[{ html: '<p>📬</p>' }, { html: '<p><strong>One email a week.</strong> The new special.</p>' }]],
+    };
+    const out = await renderDynamicBlock(block, ORIGIN);
+    assert.match(out, /📬/);
+    assert.match(out, /One email a week/);
   } finally { globalThis.fetch = orig; }
 });
