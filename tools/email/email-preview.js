@@ -50,13 +50,13 @@ export default class EmailPreview extends LitElement {
   render() {
     if (this.error) {
       return html`
-        <style>:host { display: block; padding: 16px; font: 14px system-ui, sans-serif; color: #b4232f; }</style>
+        <style>:host { display: block; padding: 16px; font-size: 14px; color: var(--spectrum-red-1000, #b4232f); }</style>
         <p>${this.error}</p>
       `;
     }
     if (!this.content) {
       return html`
-        <style>:host { display: block; padding: 16px; font: 14px system-ui, sans-serif; color: #6b6156; }</style>
+        <style>:host { display: block; padding: 16px; font-size: 14px; color: var(--spectrum-gray-600, #6b6156); }</style>
         <p>Loading preview…</p>
       `;
     }
