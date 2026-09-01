@@ -1,22 +1,29 @@
+/*
+ * Layout only. Colors, typography, and the list itself come from Spectrum 2 (<sp-theme>,
+ * <sp-sidenav>) — this file intentionally carries none of the Stacked site's own brand
+ * palette. --spectrum-* custom properties are set by <sp-theme> (a descendant in the
+ * composed tree) and inherit down through this shadow root and email-preview's nested one.
+ */
+
 :host {
   display: block;
   padding: 24px;
-  font-family: system-ui, sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
-  color: #2a2520;
-  background: #f3efe8;
-  -webkit-font-smoothing: antialiased;
+  background: var(--spectrum-gray-50, #fff);
+}
+
+sp-theme {
+  display: block;
 }
 
 h1 {
   margin: 0 0 4px;
   font-size: 20px;
+  color: var(--spectrum-gray-800, #2a2520);
 }
 
 .lede {
   margin: 0 0 20px;
-  color: #6b6156;
+  color: var(--spectrum-gray-600, #6b6156);
 }
 
 .layout {
@@ -25,40 +32,15 @@ h1 {
   gap: 20px;
 }
 
-.pages {
+sp-sidenav {
   flex: 0 0 240px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
-.pages li {
-  margin-bottom: 8px;
-}
-
-.pages li.empty {
+.empty {
+  flex: 0 0 240px;
   padding: 10px 0;
   font-size: 13px;
-  color: #6b6156;
-}
-
-.pages button {
-  display: block;
-  width: 100%;
-  padding: 10px 14px;
-  font: inherit;
-  text-align: left;
-  color: #2a2520;
-  background: #fcfaf6;
-  border: 1px solid rgb(60 45 25 / 10%);
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.pages button.active {
-  color: #fff;
-  background: #ff7a00;
-  border-color: #ff7a00;
+  color: var(--spectrum-gray-600, #6b6156);
 }
 
 .preview {
@@ -66,19 +48,19 @@ h1 {
   min-height: 400px;
   overflow: auto;
   background: #fff;
-  border: 1px solid rgb(60 45 25 / 10%);
+  border: 1px solid var(--spectrum-gray-200, rgb(60 45 25 / 10%));
   border-radius: 10px;
 }
 
 .status {
   padding: 16px;
   font-size: 14px;
-  color: #6b6156;
+  color: var(--spectrum-gray-600, #6b6156);
 }
 
 .msg {
   min-height: 18px;
   margin-top: 16px;
   font-size: 13px;
-  color: #b4232f;
+  color: var(--spectrum-red-1000, #b4232f);
 }
