@@ -25,11 +25,14 @@ export async function fetchPlainHtml(path = '', { env = 'preview', origins = DEF
 // preview tool passing along whatever site DA told it to browse), rather than only the site
 // baked into this deployment's own manifest defaults. `main` (the branch) is not itself
 // parameterized here — only env (preview/live) selects between .aem.page and .aem.live, same
-// as the rest of this action. Restricted to the character set real DA org/repo names use
-// ([a-z0-9-]) so org/repo can never smuggle extra path segments or a different host into the
-// constructed origin (e.g. a `../`-style value) — returns null on anything else, which the
-// caller should treat as a 400, not a silent fallback to the default site.
-const SAFE_ORG_REPO = /^[a-z0-9-]+$/;
+// as the rest of this action. Restricted to alphanumeric + hyphen — matches this deployment's
+// own default (main--next-eds--AdobeDevXSC.aem.page — GitHub org names are case-sensitive and
+// AdobeDevXSC is mixed-case, so this must allow uppercase too, verified against the real
+// deployed action after an earlier lowercase-only version rejected that exact org name) — so
+// org/repo can never smuggle extra path segments or a different host into the constructed
+// origin (e.g. a `../`-style value). Returns null on anything else, which the caller should
+// treat as a 400, not a silent fallback to the default site.
+const SAFE_ORG_REPO = /^[a-zA-Z0-9-]+$/;
 
 export function buildOriginsFromOrgRepo(org, repo) {
   if (!SAFE_ORG_REPO.test(org || '') || !SAFE_ORG_REPO.test(repo || '')) return null;

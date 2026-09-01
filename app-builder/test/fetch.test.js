@@ -57,8 +57,17 @@ test('buildOriginsFromOrgRepo builds preview/live origins for a valid org+repo',
   });
 });
 
-test('buildOriginsFromOrgRepo rejects org/repo with characters outside [a-z0-9-]', () => {
-  assert.equal(buildOriginsFromOrgRepo('Srm0233-Adobe', 'osg'), null); // uppercase
+test('buildOriginsFromOrgRepo accepts mixed-case org/repo — GitHub org names are case-sensitive', () => {
+  // AdobeDevXSC is this deployment's own real org (main--next-eds--AdobeDevXSC.aem.page) —
+  // verified against the real deployed action that a lowercase-only version of this
+  // validator incorrectly rejected its own org name.
+  assert.deepEqual(buildOriginsFromOrgRepo('AdobeDevXSC', 'next-eds'), {
+    preview: 'https://main--next-eds--AdobeDevXSC.aem.page',
+    live: 'https://main--next-eds--AdobeDevXSC.aem.live',
+  });
+});
+
+test('buildOriginsFromOrgRepo rejects org/repo with characters outside [a-zA-Z0-9-]', () => {
   assert.equal(buildOriginsFromOrgRepo('srm0233-adobe', 'osg/../x'), null); // path traversal attempt
   assert.equal(buildOriginsFromOrgRepo('srm0233-adobe', 'o sg'), null); // space
   assert.equal(buildOriginsFromOrgRepo('srm0233-adobe.com', 'osg'), null); // dot
