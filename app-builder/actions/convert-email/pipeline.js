@@ -12,7 +12,7 @@ export async function convert({
 
   const origin = resolveOrigin(env, origins);
   const tree = normalizeTree(parseEds(html), origin);
-  const { mjml, warnings: renderWarnings, blocksRendered } = renderDocument(tree, { preheader });
+  const { mjml, warnings: renderWarnings, blocksRendered } = await renderDocument(tree, { preheader, origin });
   const { html: emailHtml, warnings: compileWarnings } = compile(mjml);
 
   return {
