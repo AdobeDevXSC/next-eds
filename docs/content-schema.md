@@ -33,40 +33,48 @@ How the catalog is authored as **EDS structured content** — not spreadsheets �
 | Column | Type | Required | Notes |
 |---|---|---|---|
 | `type` | enum: `bread` \| `protein` \| `cheese` \| `veg` \| `sauce` \| `extra` | yes | groups the palette; drives select mode |
-| `name` | string | yes | display label |
+| `name` | string | yes | display label; also the source for the app-derived `id` (see below) |
 | `price` | number (USD) | yes | see pricing rule |
 | `default` | boolean (`true`) | no | pre-selected in the builder |
+| `color` | hex color, e.g. `#E0B678` | no | swatch color in the builder UI — presentational only; a row missing it is still parsed and rendered, just with an empty swatch, unlike the required columns above |
 
 ### Rules
 - **Pricing:** `bread` prices are the **base price** of the build (choosing a bread sets the base); every other type is an **additive upcharge** (`0` = included). No separate base-price field.
 - **Selection:** `bread` is single-select (one base); every other `type` is multi-select. The mapping lives in the app, keyed by `type`.
+- **Id:** not an authored column — the app derives a stable `id` from `name` (lowercase, `&` → space, any run of remaining non-alphanumeric characters collapsed to a single `-`, leading/trailing `-` trimmed), e.g. "Salami & Capicola" → `salami-capicola`. Used as the builder's selection/React key.
 
 ### Example authored block
 ```
-| Ingredients |            |       |         |
-| ----------- | ---------- | ----- | ------- |
-| bread       | Ciabatta   | 8.50  | true    |
-| bread       | Sourdough  | 8.50  |         |
-| protein     | Turkey     | 0     | true    |
-| protein     | Bacon      | 2     |         |
-| cheese      | Provolone  | 1     |         |
-| veg         | Lettuce    | 0     | true    |
-| sauce       | Pesto mayo | 0     | true    |
-| extra       | Avocado    | 1.50  |         |
+| Ingredients |            |       |         |         |
+| ----------- | ---------- | ----- | ------- | ------- |
+| bread       | Ciabatta   | 8.50  | true    | #E7C288 |
+| bread       | Sourdough  | 8.50  |         | #E0B678 |
+| protein     | Turkey     | 0     | true    | #D9A273 |
+| protein     | Bacon      | 2     |         | #8E4B33 |
+| cheese      | Provolone  | 1     |         | #F2C14E |
+| veg         | Lettuce    | 0     | true    | #6E8F4A |
+| sauce       | Pesto mayo | 0     | true    | #8A6A3E |
+| extra       | Avocado    | 1.50  |         | #7E9B4E |
 ```
 
 ### Parsed shape (app)
 ```json
 {
-  "bread":   [{ "name": "Ciabatta", "priceCents": 850, "default": true }, ...],
-  "protein": [{ "name": "Turkey", "priceCents": 0, "default": true }, ...],
+  "bread":   [{ "id": "ciabatta", "name": "Ciabatta", "priceCents": 850, "default": true, "color": "#E7C288" }, ...],
+  "protein": [{ "id": "turkey", "name": "Turkey", "priceCents": 0, "default": true, "color": "#D9A273" }, ...],
   "cheese":  [...], "veg": [...], "sauce": [...], "extra": [...]
 }
 ```
 
+`getBuilderPalette()` (also in `lib/catalog.js`) composes this into the `/build` page's palette:
+it groups the above by `type` under a fixed, code-defined display config (label/note/select-mode
+and category order — `bread, protein, cheese, veg, sauce`; UI structure, not authored content),
+dropping any category with zero authored items. `extra` has no entry in that display config, so
+`extra` rows are parsed but never rendered on `/build`.
+
 ## 3. Consumption & caching (`lib/catalog.js`)
 - `getMenu()` → discover paths via `/menu/query-index.json` (path/lastModified only), then fetch and parse each page's `menu-item` block directly, coerce/validate → `MenuItem[]`.
-- `getIngredients()` → fetch `/config/ingredients.plain.html`, parse the `Ingredients` block → grouped palette.
+- `getIngredients()` → fetch `/config/ingredients.plain.html`, parse the `Ingredients` block → grouped palette. `getBuilderPalette()` composes that into the `/build` page's ordered category array (see §2).
 - Both cached with ISR + a `catalog` revalidation tag. `/api/revalidate` busts `catalog` when any `/menu/**` page or `/config/ingredients` publishes.
 - Orders capture a **price/build snapshot** at order time, so later catalog edits never rewrite history.
 
