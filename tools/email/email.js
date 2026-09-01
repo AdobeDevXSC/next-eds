@@ -1,5 +1,6 @@
 import { LitElement, html } from '../../deps/lit/dist/index.js';
 import loadStyle from '../../scripts/utils/styles.js';
+import getSiteContext from './site-context.js';
 import './email-preview.js';
 
 // Spectrum 2 (not the Stacked site's own brand CSS) styles this admin/DA tool — an internal
@@ -28,23 +29,14 @@ function prettifyName(name) {
 // "Could not load preview (HTTP 404)" error, since the convert-email action reads from the EDS
 // preview surface, not DA directly — previewing the page in DA first is what resolves that.
 //
-// Mirrors tools/feat-flags/feat-flags.js's DA App SDK pattern: the token comes from the
-// author's real DA session (never pasted/stored), with a 1.5s timeout fallback for when this
-// tool isn't opened inside DA — a raw IMS token has no meaningful "manual entry" fallback the
-// way feat-flags' admin key does, so outside DA this simply cannot list and says so.
+// The org/repo to list come from getSiteContext() (query params take priority — see
+// site-context.js — so this tool can be launched against any DA site, not just the one
+// hosting it); the auth token can only come from the DA App SDK regardless of that — a raw
+// IMS token has no meaningful "manual entry" fallback the way feat-flags' admin key does, so
+// outside DA this simply cannot list and says so.
 async function fetchDaSources() {
-  const sdk = await Promise.race([
-    // eslint-disable-next-line import/no-unresolved -- remote ESM URL, not a local module
-    import('https://da.live/nx/utils/sdk.js').then((mod) => mod.default),
-    new Promise((_resolve, reject) => {
-      setTimeout(() => reject(new Error('not in DA')), 1500);
-    }),
-  ]);
-  const token = sdk && sdk.token;
+  const { org, repo, token } = await getSiteContext();
   if (!token) throw new Error('not in DA');
-  const context = (sdk && sdk.context) || {};
-  const org = context.org || 'adobedevxsc';
-  const repo = context.repo || 'next-eds';
   const res = await fetch(`https://admin.da.live/list/${org}/${repo}/email`, {
     headers: { authorization: `Bearer ${token}` },
   });
@@ -57,6 +49,8 @@ export default class EmailApp extends LitElement {
     pages: { state: true },
     selected: { state: true },
     error: { state: true },
+    org: { state: true },
+    repo: { state: true },
   };
 
   constructor() {
@@ -64,6 +58,8 @@ export default class EmailApp extends LitElement {
     this.pages = [];
     this.selected = null;
     this.error = '';
+    this.org = '';
+    this.repo = '';
   }
 
   connectedCallback() {
@@ -72,6 +68,9 @@ export default class EmailApp extends LitElement {
   }
 
   async firstUpdated() {
+    // getSiteContext() caches its result, so this and fetchDaSources()'s own call below
+    // resolve the DA SDK/query-param lookup only once.
+    ({ org: this.org, repo: this.repo } = await getSiteContext());
     await this.loadPages();
   }
 
@@ -105,7 +104,7 @@ export default class EmailApp extends LitElement {
               </sp-sidenav>
             `}
           <div class="preview">
-            ${this.selected ? html`<email-preview path=${this.selected}></email-preview>` : html`<p class="status">Select an email from the list.</p>`}
+            ${this.selected ? html`<email-preview path=${this.selected} org=${this.org} repo=${this.repo}></email-preview>` : html`<p class="status">Select an email from the list.</p>`}
           </div>
         </div>
         <div class="msg" role="status" aria-live="polite">${this.error}</div>

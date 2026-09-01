@@ -21,4 +21,22 @@ export async function fetchPlainHtml(path = '', { env = 'preview', origins = DEF
   return res.text();
 }
 
+// Lets a caller point this action at a different EDS site by org+repo (e.g. the tools/email
+// preview tool passing along whatever site DA told it to browse), rather than only the site
+// baked into this deployment's own manifest defaults. `main` (the branch) is not itself
+// parameterized here — only env (preview/live) selects between .aem.page and .aem.live, same
+// as the rest of this action. Restricted to the character set real DA org/repo names use
+// ([a-z0-9-]) so org/repo can never smuggle extra path segments or a different host into the
+// constructed origin (e.g. a `../`-style value) — returns null on anything else, which the
+// caller should treat as a 400, not a silent fallback to the default site.
+const SAFE_ORG_REPO = /^[a-z0-9-]+$/;
+
+export function buildOriginsFromOrgRepo(org, repo) {
+  if (!SAFE_ORG_REPO.test(org || '') || !SAFE_ORG_REPO.test(repo || '')) return null;
+  return {
+    preview: `https://main--${repo}--${org}.aem.page`,
+    live: `https://main--${repo}--${org}.aem.live`,
+  };
+}
+
 export { DEFAULT_ORIGINS };

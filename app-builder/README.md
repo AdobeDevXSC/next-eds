@@ -160,10 +160,16 @@ curl "https://<namespace>.adobeioruntime.net/api/v1/web/email/convert-email?path
 | Param       | Required | Default   | Meaning                                                        |
 | ----------- | -------- | --------- | -------------------------------------------------------------- |
 | `path`      | yes      | —         | EDS page path, e.g. `/email/welcome`                           |
+| `org`       | no*      | —         | GitHub org/owner of the EDS site to convert from                |
+| `repo`      | no*      | —         | Repo name of the EDS site to convert from                       |
 | `env`       | no       | `preview` | `preview` → `*.aem.page`, `live` → `*.aem.live`                |
 | `preview`   | no       | `false`   | `true` → responds `text/html`; otherwise JSON                  |
 | `subject`   | no       | `""`      | Pass-through (Phase 2 will auto-source)                        |
 | `preheader` | no       | `""`      | Hidden preview text (entity-encoded into the email)            |
+
+\* `org`/`repo` are optional as a pair — provide both to convert from that site (branch is always
+`main`), or provide neither to use this deployment's manifest default (see "Notes & gotchas"
+below). Providing only one, or either with characters outside `[a-z0-9-]`, is a `400`.
 
 **JSON response** (default):
 
@@ -182,10 +188,17 @@ curl "https://<namespace>.adobeioruntime.net/api/v1/web/email/convert-email?path
 ## Notes & gotchas
 
 - **Public by design.** `app.config.yaml` sets `require-adobe-auth: false`, so anyone with the URL can call
-  the action. To require an Adobe IMS token, set it to `true`. `final: true` prevents the `EDS_ORIGIN_*`
-  inputs from being overridden by caller query params (an SSRF mitigation).
+  the action. To require an Adobe IMS token, set it to `true`.
+- **`org`/`repo` are a deliberately open pass-through, not an allowlist.** Any caller can point this
+  action at any EDS site's `org`/`repo` — there's no allowlist and no auth gate on that. This was a
+  conscious choice: the action has no auth today, and `*.aem.page`/`*.aem.live` content is already
+  public regardless of which origin fetches it, so this doesn't expose anything that wasn't already
+  reachable directly. If that changes (e.g. auth gets required), reconsider whether `org`/`repo` should
+  be gated too.
 - **Origins** default to `main--next-eds--AdobeDevXSC.aem.{page,live}` (set as manifest `inputs` in
-  `app.config.yaml`); change them there for a different site/branch.
+  `app.config.yaml` — `EDS_ORIGIN_PREVIEW`/`EDS_ORIGIN_LIVE`, still `final: true` so a caller can't
+  override *those specific* inputs directly) when neither `org` nor `repo` is given; change the manifest
+  defaults for a different default site/branch, or pass `org`+`repo` per-request as above.
 - **Unrelated CLI noise:** some `aio` commands print `ERR_REQUIRE_ESM` warnings from the
   `@adobe/aio-cli-plugin-aem-edge-functions` plugin. Harmless here; remove it with
   `aio plugins uninstall @adobe/aio-cli-plugin-aem-edge-functions` to quiet it.
