@@ -3,7 +3,7 @@ import { LitElement, html } from '../../deps/lit/dist/index.js';
 // The deployed convert-email App Builder action (Stage namespace). Override with ?action=<url>
 // for a different deployment. See app-builder/README.md.
 const ACTION_URL = new URLSearchParams(window.location.search).get('action')
-  || 'https://20409-726redworm-stage.adobeioruntime.net/api/v1/web/email/convert-email';
+  || 'https://20409-807byzantiumskunk-stage.adobeioruntime.net/api/v1/web/email/convert-email';
 
 // Fetches one page's converted email HTML and renders it inside its own shadow root. The
 // fetched markup is a full compiled document (inline styles + a <style> block for the parts
