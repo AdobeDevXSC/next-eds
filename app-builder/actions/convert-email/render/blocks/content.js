@@ -12,6 +12,20 @@ function isButtonPara(el) {
   return el.textContent.trim() === linkText;
 }
 
+// Markdown-authored images (`![alt](url)`) land as <p><picture>...<img></picture></p> —
+// the picture wrapped in a paragraph, not a bare top-level child, since that's how EDS's own
+// markdown-to-HTML step emits a lone image. An image-only paragraph: exactly one
+// img/picture child, and nothing else but whitespace alongside it (a caption or link text
+// sharing the paragraph means it isn't image-only, and falls through to the text buffer).
+function isImagePara(el) {
+  if (el.tagName !== 'P') return false;
+  const media = el.childNodes.filter((n) => n.tagName === 'IMG' || n.tagName === 'PICTURE');
+  if (media.length !== 1) return false;
+  return el.childNodes
+    .filter((n) => n !== media[0])
+    .every((n) => !n.tagName && !(n.text || '').trim());
+}
+
 export function contentToMjml(html) {
   const root = parse(html || '');
   const out = [];
@@ -30,9 +44,10 @@ export function contentToMjml(html) {
       return;
     }
     const tag = node.tagName;
-    if (tag === 'IMG' || tag === 'PICTURE') {
+    if (tag === 'IMG' || tag === 'PICTURE' || isImagePara(node)) {
       flush();
-      const img = tag === 'IMG' ? node : node.querySelector('img');
+      const media = tag === 'IMG' || tag === 'PICTURE' ? node : node.querySelector('img, picture');
+      const img = media.tagName === 'IMG' ? media : media.querySelector('img');
       const src = img?.getAttribute('src') || '';
       const alt = img?.getAttribute('alt') || '';
       out.push(`<mj-image src="${escapeAttr(src)}" alt="${escapeAttr(alt)}" />`);
