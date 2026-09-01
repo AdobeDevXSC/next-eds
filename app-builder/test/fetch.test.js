@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveOrigin, fetchPlainHtml } from '../actions/convert-email/fetch.js';
+import { resolveOrigin, fetchPlainHtml, buildOriginsFromOrgRepo } from '../actions/convert-email/fetch.js';
 
 const ORIGINS = { preview: 'https://p.example', live: 'https://l.example' };
 
@@ -48,4 +48,20 @@ test('non-ok status rejects with error', async () => {
       /EDS fetch failed: 500/,
     );
   } finally { globalThis.fetch = orig; }
+});
+
+test('buildOriginsFromOrgRepo builds preview/live origins for a valid org+repo', () => {
+  assert.deepEqual(buildOriginsFromOrgRepo('srm0233-adobe', 'osg'), {
+    preview: 'https://main--osg--srm0233-adobe.aem.page',
+    live: 'https://main--osg--srm0233-adobe.aem.live',
+  });
+});
+
+test('buildOriginsFromOrgRepo rejects org/repo with characters outside [a-z0-9-]', () => {
+  assert.equal(buildOriginsFromOrgRepo('Srm0233-Adobe', 'osg'), null); // uppercase
+  assert.equal(buildOriginsFromOrgRepo('srm0233-adobe', 'osg/../x'), null); // path traversal attempt
+  assert.equal(buildOriginsFromOrgRepo('srm0233-adobe', 'o sg'), null); // space
+  assert.equal(buildOriginsFromOrgRepo('srm0233-adobe.com', 'osg'), null); // dot
+  assert.equal(buildOriginsFromOrgRepo('', 'osg'), null); // empty
+  assert.equal(buildOriginsFromOrgRepo('srm0233-adobe', ''), null); // empty
 });

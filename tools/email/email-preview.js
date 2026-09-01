@@ -14,6 +14,8 @@ const ACTION_URL = new URLSearchParams(window.location.search).get('action')
 export default class EmailPreview extends LitElement {
   static properties = {
     path: {},
+    org: {},
+    repo: {},
     content: { state: true },
     error: { state: true },
   };
@@ -25,7 +27,7 @@ export default class EmailPreview extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('path')) this.load();
+    if (changed.has('path') || changed.has('org') || changed.has('repo')) this.load();
     if (changed.has('content') && this.content) {
       this.shadowRoot.getElementById('content').innerHTML = this.content;
     }
@@ -36,7 +38,14 @@ export default class EmailPreview extends LitElement {
     this.error = '';
     if (!this.path) return;
     try {
-      const res = await fetch(`${ACTION_URL}?path=${encodeURIComponent(this.path)}&preview=true`);
+      // org/repo (from EmailApp's getSiteContext()) tell the action which EDS site to convert
+      // from — passed through unconditionally; the action falls back to its own manifest
+      // default site when both are empty, same as if this tool were never launched with a
+      // site context at all.
+      const params = new URLSearchParams({ path: this.path, preview: 'true' });
+      if (this.org) params.set('org', this.org);
+      if (this.repo) params.set('repo', this.repo);
+      const res = await fetch(`${ACTION_URL}?${params}`);
       if (!res.ok) {
         this.error = `Could not load preview (HTTP ${res.status}).`;
         return;
