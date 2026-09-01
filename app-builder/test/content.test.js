@@ -75,3 +75,18 @@ test('linked image with no visible text renders as a clickable mj-image, not an 
   assert.match(out, /<mj-image[^>]*href="https:\/\/x\/promo"[^>]*\/>/);
   assert.match(out, /<mj-image[^>]*alt="Promo"[^>]*\/>/);
 });
+
+// Standard EDS image markup: `![alt](url)` in markdown authoring produces a
+// <p><picture>...<img></picture></p> — the picture is wrapped in a paragraph, not a bare
+// top-level child. Without unwrapping it, this paragraph falls through to the generic
+// buffer.push(outerHTML) branch and gets merged into one big <mj-text> alongside whatever
+// heading/body text follows in the same cell — the image loses mj-image's own sizing
+// (width/max-width), and email clients like Outlook render it unconstrained. It must
+// become its own <mj-image>, split from surrounding text, exactly like a bare <picture>.
+test('an image-only paragraph (<p><picture>...) becomes its own mj-image, not text', () => {
+  const out = contentToMjml(
+    '<p><picture><source srcset="https://x/hero.png?w=2000"><img src="https://x/hero.png?w=750" alt="Hero"></picture></p>'
+    + '<p>Kicker</p><h2>Title</h2>',
+  );
+  assert.match(out, /^<mj-image src="https:\/\/x\/hero\.png\?w=750" alt="Hero" \/><mj-text><p>Kicker<\/p><h2>Title<\/h2><\/mj-text>$/);
+});
