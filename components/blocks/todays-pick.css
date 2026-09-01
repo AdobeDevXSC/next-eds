@@ -1,0 +1,142 @@
+/* Today's Pick — ported from app/(site)/home/home.css (.pick-*) so this Tier-2 RSC island
+   (./TodaysPick.jsx) matches the bespoke home's design exactly. This block never renders via
+   LegacyBlock/aem.js (it's Next-only — see docs/architecture/blocks-and-rsc.md), but selectors
+   are still scoped under .todays-pick per the repo's block-scoping convention. Mobile-first;
+   desktop at >= 640px (matches home.css's breakpoint, same as blocks/two-ways and
+   blocks/how-it-works). */
+
+.todays-pick .pick-card {
+  overflow: hidden;
+  background-color: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.todays-pick .pick-well {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 18px;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.todays-pick .pick-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 9px;
+  border: var(--hairline) solid var(--primary-tint-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-tint);
+  color: var(--primary-deep);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.todays-pick .pick-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 170px;
+}
+
+.todays-pick .pick-brick {
+  height: 12px;
+  background-color: var(--brick-color);
+  border-radius: 3px;
+}
+
+.todays-pick .pick-brick:first-child {
+  border-radius: 8px 8px 3px 3px;
+}
+
+.todays-pick .pick-brick:last-child {
+  border-radius: 3px 3px 8px 8px;
+  box-shadow: var(--shadow-brick-base);
+}
+
+.todays-pick .pick-body {
+  padding: 16px;
+}
+
+.todays-pick .pick-titlerow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.todays-pick .pick-name {
+  margin: 0;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.todays-pick .pick-price {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.todays-pick .pick-desc {
+  margin: 6px 0 0;
+  font-family: var(--font-chrome);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.todays-pick .pick-add {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 14px;
+}
+
+@media (width >= 640px) {
+  .todays-pick .pick-card {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 32px;
+    align-items: center;
+    padding: 28px 32px;
+  }
+
+  .todays-pick .pick-well {
+    order: 2;
+    padding: 0;
+    background: none;
+  }
+
+  .todays-pick .pick-body {
+    order: 1;
+    padding: 0;
+  }
+
+  .todays-pick .pick-name {
+    font-size: 30px;
+  }
+
+  .todays-pick .pick-price {
+    font-size: 20px;
+  }
+
+  .todays-pick .pick-desc {
+    font-size: 14px;
+  }
+
+  .todays-pick .pick-add {
+    display: none;
+  }
+}

@@ -90,3 +90,29 @@ The scoped `menu` index (target `/menu/query-index.json`) exists purely for path
 - Menu items are real content pages — own URL, image, description, detail view — a natural fit for EDS and the query-index this project already uses.
 - The ingredients block gives authors a compact, schema'd table without a separate spreadsheet tool.
 - One authoring surface (Docs/DA), one publish flow, indexed + parsed at the edge — and it showcases EDS structured content, which is the point of the demo.
+
+## 7. Home page — authored block content
+
+The home (`/`) is an EDS-authored page like any other, rendered by the same catch-all (see [`docs/architecture/blocks-and-rsc.md`](architecture/blocks-and-rsc.md) for the Tier-1/Tier-2 render split). Its content model, for reference alongside the catalog above:
+
+### Sections (top to bottom)
+| Section | Section Style | Content |
+|---|---|---|
+| Hero | *(none)* | `hero-stack` block |
+| Lede | `lede` | one authored paragraph — default content, no block |
+| Two ways to lunch | `home-section` | `<h2>` (default content) + `two-ways` block |
+| Today's picks | `home-section` | `<h2>` (default content) + `todays-pick` block |
+| How it works | `home-section` | `<h2>` (default content) + `how-it-works` block |
+| Dock CTAs | *(none)* | `dock-ctas` block |
+
+`home-section` and `lede` are Section Styles defined in `styles/styles.css`.
+
+### Block cell contracts
+| Block | Rows | Cells (in order) | Baked, not authored |
+|---|---|---|---|
+| `two-ways` | 2 | title, description, CTA label, CTA href | per-row index letter/color + specimen bars |
+| `how-it-works` | 4 | title, description | step number `01`–`04`, from row position |
+| `todays-pick` | 1 | badge, name, price, description, add-button label | stack brick colors |
+| `dock-ctas` | 1–2 | label, href | — (row 1 = primary button, row 2 = optional ghost button) |
+
+`todays-pick` and `dock-ctas` are Tier-2 registered islands (`lib/registry.js` → `components/blocks/TodaysPick.jsx` / `DockCtas.jsx`): authored the same as any block, but they only render in the Next app. On raw EDS, their `blocks/<name>/<name>.js` removes the whole section instead of decorating it — see `docs/architecture/blocks-and-rsc.md`.

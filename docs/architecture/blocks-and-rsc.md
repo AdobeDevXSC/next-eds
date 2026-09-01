@@ -21,7 +21,8 @@ page in the browser across the three phases described in `AGENTS.md` (eager/lazy
 
 **Next / OpenNext on Cloudflare** — a Cloudflare Worker (built with OpenNext, custom domain
 `nxtjs.page`; see `DEPLOYMENT.md`) fronts EDS as a headless content origin and server-renders with
-Next.js App Router + RSC. The catch-all content route, `app/(site)/[...slug]/page.js`, does:
+Next.js App Router + RSC. The catch-all content route, `app/(site)/[[...slug]]/page.js` — an
+*optional* catch-all, so it also matches `/` — does:
 
 `lib/eds/fetch.js` (fetch `.plain.html`) → `lib/eds/parse.js`'s `parseEds` (pure parse into a
 section/block/default-content tree — no DOM, no mutation) → `lib/eds/render.js`'s `renderNode`
@@ -64,9 +65,9 @@ Already built, RSC under `app/` + `lib/`: auth/session/persona (`lib/session.js`
 `app/api/cart`, `app/api/order/place`, `app/(site)/order`), menu/catalog (`lib/catalog.js`,
 `lib/eds/queryIndex.js`, `app/(site)/menu`), the sandwich builder (`app/(site)/build`), feature flags
 (`lib/flags.js`, `app/api/flags`), and the app shell/dock (`app/(site)/AppShell.jsx`,
-`app/(site)/DockSlot.jsx`, `app/(site)/layout.js`). The home page (`/`) is also a bespoke React
-route rather than a block, and stays that way (see
-`docs/superpowers/specs/2026-08-17-stacked-redesign.md`).
+`app/(site)/DockSlot.jsx`, `app/(site)/layout.js`). The home page (`/`) is **not** a Tier-2 route —
+it's a single EDS-authored page, rendered by the same catch-all as every other path, composed of
+Tier-1 blocks plus two Tier-2 islands registered in `lib/registry.js` (see "The registry" below).
 
 ## The `LegacyBlock` bridge
 
@@ -96,17 +97,27 @@ The dynamic imports are name-keyed (`` `../../blocks/${name}/${name}.js` ``), so
 one lazy chunk per block automatically — adding a new Tier-1 block needs no import wiring anywhere in
 `lib/eds/`.
 
-## The registry: an intentionally empty escape hatch
+## The registry: a deliberately rare escape hatch
 
-`lib/registry.js` exports `registry` (a block-name → component map) and `resolveBlock(name)`. By
-convention **it is empty**. `renderNode` checks it first; a miss — the normal case for every block
-today — falls through to `LegacyBlock`.
+`lib/registry.js` exports `registry` (a block-name → component map) and `resolveBlock(name)`.
+`renderNode` checks it first; a miss — the normal case for almost every block — falls through to
+`LegacyBlock`. Add an entry only for a deliberate, one-off decision to server-render one specific
+block's content as RSC instead of the vanilla-plus-`LegacyBlock` path, because it needs app-level
+state that exists only in the Next runtime. This is uncommon: it means that block no longer has a
+shared vanilla source and needs its own React render logic.
 
-Add an entry here only for a deliberate, one-off decision to server-render one specific block's
-content as RSC instead of the vanilla-plus-`LegacyBlock` path (for example, a block that must ship
-zero client JS and has no interactivity to justify a `decorate()` step). This is uncommon: it means
-that block no longer has a shared vanilla source, needs its own React render logic, and no longer
-renders on the raw EDS URL. Most new blocks do not need this — prefer Tier 1.
+**Concrete example — the home page.** The registry's only two entries today are both home blocks:
+`todays-pick` → `TodaysPick.jsx` (its "Add to order" button needs the cart, `useOrder()`) and
+`dock-ctas` → `DockCtas.jsx` (needs the mobile dock slot, `useDockSlot()`). Neither piece of state
+exists on raw EDS, so both are registered instead of shipped as ordinary Tier-1 blocks. Each still
+has a `blocks/<name>/<name>.js` file, but it's not a real `decorate()` — it's a **vanilla shim**,
+`(block.closest('.section') || block).remove()`. On raw EDS, `aem.js` calls it like any other block
+and it removes the whole authored section (heading included) instead of leaving an undecorated table
+on the page; on Next the file never runs, since a registry hit takes precedence over `LegacyBlock`.
+Follow this shim pattern for any future Next-only block that's authored into content shared with raw
+EDS.
+
+Most new blocks do not need this — prefer Tier 1.
 
 ## How to add a block (Tier 1)
 

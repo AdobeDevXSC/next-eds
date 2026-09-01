@@ -10,10 +10,11 @@ fronts EDS and renders at the edge. See [DEPLOYMENT.md](./DEPLOYMENT.md) for the
 
 - Content blocks are portable, vanilla OOTB blocks — `blocks/<name>/<name>.js` (`decorate()`) +
   `<name>.css`, no `.jsx`. They render natively via `aem.js` on the raw EDS URL, and via the
-  `LegacyBlock` bridge in Next; the registry in [`lib/registry.js`](lib/registry.js) is an
-  intentionally empty escape hatch. App features (auth, cart, menu, builder, flags) are RSC under
-  `app/` + `lib/`. See [`docs/architecture/blocks-and-rsc.md`](docs/architecture/blocks-and-rsc.md)
-  for the full two-tier convention.
+  `LegacyBlock` bridge in Next; the registry in [`lib/registry.js`](lib/registry.js) is a
+  deliberately rare escape hatch (two entries today: `todays-pick`, `dock-ctas`). App features
+  (auth, cart, menu, builder, flags) are RSC under `app/` + `lib/`. See
+  [`docs/architecture/blocks-and-rsc.md`](docs/architecture/blocks-and-rsc.md) for the full
+  two-tier convention.
 - The EDS parse layer is in [`lib/eds/`](lib/eds) (fetch → parse → render).
 - Requires Node 18+ (`nvm use 22`). Run locally with `npm run dev`; deploy with `npm run deploy:cf`.
 

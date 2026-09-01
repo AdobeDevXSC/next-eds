@@ -1,0 +1,86 @@
+/* How It Works — ported from app/(site)/home/home.css (.hiw-*) so the raw EDS render matches
+   the Next/RSC home. Mobile-first; desktop (4-col grid) at >= 640px; collapses to 2 columns
+   between 640–900px (matches home.css's breakpoints). */
+
+.how-it-works .hiw-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.how-it-works .hiw-step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  column-gap: 12px;
+  padding: 16px 0;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.how-it-works .hiw-num {
+  grid-row: 1 / 3;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.how-it-works .hiw-step-first .hiw-num {
+  color: var(--primary-deep);
+}
+
+.how-it-works .hiw-title {
+  grid-column: 2;
+}
+
+.how-it-works .hiw-title p {
+  margin: 0;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.how-it-works .hiw-desc {
+  grid-column: 2;
+}
+
+.how-it-works .hiw-desc p {
+  margin: 4px 0 0;
+  font-family: var(--font-chrome);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+@media (width >= 640px) {
+  .how-it-works .hiw-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .how-it-works .hiw-step {
+    display: block;
+    padding: 18px 0 0;
+    border-top: var(--hairline) solid var(--border);
+  }
+
+  .how-it-works .hiw-step-first {
+    border-top: 1px solid var(--primary);
+  }
+
+  .how-it-works .hiw-num {
+    display: block;
+  }
+
+  .how-it-works .hiw-title p {
+    margin-top: 8px;
+    font-size: 21px;
+  }
+}
+
+@media (width >= 640px) and (width < 900px) {
+  .how-it-works .hiw-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

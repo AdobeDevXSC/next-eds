@@ -1,0 +1,5 @@
+/* Today's Pick — Tier-2 RSC island (see lib/registry.js, components/blocks/TodaysPick.jsx). Its
+   real styles live in components/blocks/todays-pick.css, loaded only by the Next/RSC render. On
+   raw EDS this block's decorate() (todays-pick.js) just removes its own section instead of
+   decorating it, so nothing here is ever applied — this file exists only so aem.js's loadBlock
+   doesn't 404 fetching it. See docs/architecture/blocks-and-rsc.md. */

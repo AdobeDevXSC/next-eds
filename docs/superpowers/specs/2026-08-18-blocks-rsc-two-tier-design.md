@@ -40,7 +40,9 @@ into a portable form and codifying the convention.
    intent, one source of truth, least new machinery, lowest risk; the RSC *showcase* stays
    concentrated in the Tier-2 app features where it earns its keep.
 3. **No `landing` block** — it was named in error; out of scope. The home page (`/`) stays a bespoke
-   React route (per `docs/superpowers/specs/2026-08-17-stacked-redesign.md`), unchanged.
+   React route (per `docs/superpowers/specs/2026-08-17-stacked-redesign.md`), unchanged. *(Superseded
+   2026-08-27: the Phase 3 home unification moved `/` back to an EDS-authored page — see
+   [`blocks-and-rsc.md`](../../architecture/blocks-and-rsc.md).)*
 4. **Keep `lib/registry.js` as an empty, documented escape hatch** (not removed entirely).
 5. **Include the dead-code / stale-doc cleanup** surfaced by the inventory in this change.
 
@@ -175,6 +177,7 @@ Per converted block, in **both** runtimes:
 ## Out of scope
 
 - **Home page** stays a bespoke React route; the Tier-2 app features are unchanged in behavior.
+  *(Superseded 2026-08-27 — see [`blocks-and-rsc.md`](../../architecture/blocks-and-rsc.md).)*
 - **Security gap (flagged separately):** `DEPLOYMENT.md` claims `/api/revalidate` is guarded by
   `REVALIDATE_SECRET`/`x-revalidate-secret`, but `app/api/revalidate/route.js` is actually
   unauthenticated with open CORS (`*`). Real issue, unrelated to this refactor — fix in its own change.
