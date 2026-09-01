@@ -15,10 +15,29 @@ sp-theme {
   display: block;
 }
 
-h1 {
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0 0 4px;
+}
+
+h1 {
+  margin: 0;
   font-size: 20px;
   color: var(--spectrum-gray-800, #2a2520);
+}
+
+.send-to-esp {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--spectrum-gray-600, #6b6156);
+  background: var(--spectrum-gray-100, #f4f2ec);
+  border: 1px solid var(--spectrum-gray-300, rgb(60 45 25 / 20%));
+  border-radius: 6px;
+  cursor: not-allowed;
 }
 
 .lede {

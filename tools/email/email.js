@@ -91,7 +91,11 @@ export default class EmailApp extends LitElement {
   render() {
     return html`
       <sp-theme system="spectrum-two" color="light" scale="medium">
-        <h1>Emails</h1>
+        <div class="header">
+          <h1>Emails</h1>
+          <!-- Placeholder only — not wired up to any ESP yet. -->
+          <button type="button" class="send-to-esp" disabled title="Not yet implemented">Send to ESP</button>
+        </div>
         <p class="lede">Pages authored under /email, converted to email-safe HTML by the convert-email action.</p>
         <div class="layout">
           ${this.pages.length === 0 && !this.error
