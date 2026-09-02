@@ -69,3 +69,25 @@ test('mj-section defaults to a tighter 10px vertical padding than MJML\'s own 20
   const doc = renderShell({ body: '<mj-section><mj-column><mj-text>Hi</mj-text></mj-column></mj-section>' });
   assert.match(doc, /<mj-section padding="10px 0" \/>/);
 });
+
+// .hero-email is opt-in (unlike the tag-based rules above): only a template that adds
+// css-class="hero-email" to its own mj-column gets pill-shaped, brand-colored CTA buttons —
+// next-eds's own hero.email.mjml, matching the real site's hero CTA row (blocks/hero/hero.css'
+// var(--accent-blue), which actually resolves to #ff7a00). Other sites'/blocks' buttons are
+// untouched since they never emit that class. Both buttons get identical styling — see the
+// comment in shell.js for why a primary/secondary pair isn't reliably targetable here.
+test('.hero-email styles its buttons as brand-colored pills', () => {
+  const doc = renderShell({ body: '<mj-column css-class="hero-email"><mj-button href="/a">A</mj-button><mj-button href="/b">B</mj-button></mj-column>' });
+  assert.match(doc, /\.hero-email a \{ background: #ff7a00 !important; border-radius: 9999px !important; color: #ffffff !important; \}/);
+});
+
+// mj-button always gets its own <tr> in the column's shared table, stacking vertically by
+// default. :has(> td > table[role="presentation"]) is the one structural signature unique to
+// a button row (mj-image/mj-text put their content directly in the <td>, never a nested
+// role="presentation" table), so it can pull just the button rows into inline-block —
+// putting them side by side — without also catching the image/heading rows above them.
+test('.hero-email puts button rows side by side without touching image/heading rows', () => {
+  const doc = renderShell({ body: '<mj-column css-class="hero-email"><mj-button href="/a">A</mj-button></mj-column>' });
+  assert.match(doc, /\.hero-email tr:has\(> td > table\[role="presentation"\]\) \{ display: inline-block; \}/);
+  assert.match(doc, /\.hero-email tr:has\(> td > table\[role="presentation"\]\) > td \{ padding: 10px 8px !important; \}/);
+});

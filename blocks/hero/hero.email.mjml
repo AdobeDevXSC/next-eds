@@ -1,1 +1,1 @@
-<mj-section padding="0"><mj-column>{{{rows.0.0}}}</mj-column></mj-section>
+<mj-section padding="0"><mj-column css-class="hero-email">{{{rows.0.0}}}</mj-column></mj-section>
