@@ -24,3 +24,16 @@ test('entity-encodes a hostile preheader (script tag + ampersand)', () => {
   assert.match(doc, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.match(doc, /&amp; Co/);
 });
+
+// h5 is the semantic hook for an "eyebrow"/kicker label (a small caps, letter-spaced
+// category tag above a headline — e.g. "GEAR · GUNS") — a common editorial pattern any
+// site's blocks can opt into just by tagging that text as <h5>, with no per-site template
+// change needed. This is a global, cross-site default (like the existing `a` color rule
+// above it), not one customer's brand color — sites wanting a different eyebrow color need
+// the per-site theme override mechanism, which doesn't exist yet.
+test('h5 gets eyebrow/kicker styling: small caps, letter-spaced, colored', () => {
+  const doc = renderShell({ body: '<mj-text><h5>Gear · Guns</h5></mj-text>' });
+  assert.match(doc, /h5 \{[^}]*text-transform: uppercase;[^}]*\}/);
+  assert.match(doc, /h5 \{[^}]*letter-spacing: 2px;[^}]*\}/);
+  assert.match(doc, /h5 \{[^}]*font-weight: bold;[^}]*\}/);
+});
