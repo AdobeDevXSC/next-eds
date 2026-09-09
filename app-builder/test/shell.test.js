@@ -1,6 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { renderShell } from '../actions/convert-email/render/shell.js';
+import { renderShell, fetchSiteTheme } from '../actions/convert-email/render/shell.js';
+
+const ORIGIN = 'https://eds.example';
+
+test('fetchSiteTheme requests email-theme.css at the given origin', async () => {
+  let requested = '';
+  const orig = globalThis.fetch;
+  globalThis.fetch = async (url) => { requested = url; return new Response('.a { color: red; }', { status: 200 }); };
+  try {
+    const css = await fetchSiteTheme(ORIGIN);
+    assert.equal(requested, 'https://eds.example/email-theme.css');
+    assert.equal(css, '.a { color: red; }');
+  } finally { globalThis.fetch = orig; }
+});
+
+test('fetchSiteTheme returns \'\' on 404 (no site theme — caller should fall back to generic defaults)', async () => {
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response('', { status: 404 });
+  try {
+    assert.equal(await fetchSiteTheme(ORIGIN), '');
+  } finally { globalThis.fetch = orig; }
+});
+
+test('fetchSiteTheme throws on a non-404 error status', async () => {
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response('', { status: 500 });
+  try {
+    await assert.rejects(() => fetchSiteTheme(ORIGIN), /500/);
+  } finally { globalThis.fetch = orig; }
+});
 
 test('wraps body in a full MJML document with preheader', () => {
   const doc = renderShell({ body: '<mj-section><mj-column><mj-text>Hi</mj-text></mj-column></mj-section>', preheader: 'Peek' });
@@ -70,24 +99,36 @@ test('mj-section defaults to a tighter 10px vertical padding than MJML\'s own 20
   assert.match(doc, /<mj-section padding="10px 0" \/>/);
 });
 
-// .hero-email is opt-in (unlike the tag-based rules above): only a template that adds
-// css-class="hero-email" to its own mj-column gets pill-shaped, brand-colored CTA buttons —
-// next-eds's own hero.email.mjml, matching the real site's hero CTA row (blocks/hero/hero.css'
-// var(--accent-blue), which actually resolves to #ff7a00). Other sites'/blocks' buttons are
-// untouched since they never emit that class. Both buttons get identical styling — see the
-// comment in shell.js for why a primary/secondary pair isn't reliably targetable here.
-test('.hero-email styles its buttons as brand-colored pills', () => {
-  const doc = renderShell({ body: '<mj-column css-class="hero-email"><mj-button href="/a">A</mj-button><mj-button href="/b">B</mj-button></mj-column>' });
-  assert.match(doc, /\.hero-email a \{ background: #ff7a00 !important; border-radius: 9999px !important; color: #ffffff !important; \}/);
+// mj-wrapper is a card container around every section — an opt-in hook (css-class, like
+// hero-email before it) for a site's own theme to give the whole email a bordered/colored
+// container, without affecting sites that don't provide one. padding="0" so it's inert by
+// default: no theme means no visible chrome, same layout as before this existed.
+test('wraps body in a css-class="email-card" mj-wrapper with no default padding', () => {
+  const doc = renderShell({ body: '<mj-section><mj-column><mj-text>Hi</mj-text></mj-column></mj-section>' });
+  assert.match(doc, /<mj-wrapper css-class="email-card" padding="0">/);
+  assert.match(doc, /<\/mj-wrapper>/);
 });
 
-// mj-button always gets its own <tr> in the column's shared table, stacking vertically by
-// default. :has(> td > table[role="presentation"]) is the one structural signature unique to
-// a button row (mj-image/mj-text put their content directly in the <td>, never a nested
-// role="presentation" table), so it can pull just the button rows into inline-block —
-// putting them side by side — without also catching the image/heading rows above them.
-test('.hero-email puts button rows side by side without touching image/heading rows', () => {
-  const doc = renderShell({ body: '<mj-column css-class="hero-email"><mj-button href="/a">A</mj-button></mj-column>' });
-  assert.match(doc, /\.hero-email tr:has\(> td > table\[role="presentation"\]\) \{ display: inline-block; \}/);
-  assert.match(doc, /\.hero-email tr:has\(> td > table\[role="presentation"\]\) > td \{ padding: 10px 8px !important; \}/);
+// mj-body also gets a css-class hook, for a theme to override the canvas/page background
+// behind the card.
+test('mj-body carries a css-class="email-body" hook', () => {
+  const doc = renderShell({ body: '' });
+  assert.match(doc, /<mj-body css-class="email-body"/);
+});
+
+// theme is a site's own CSS (see fetchSiteTheme), injected as a *second* <mj-style> block —
+// after the generic rules above, so equal-specificity !important declarations there win by
+// cascade order (last wins), letting a site override without needing higher specificity.
+// theme defaults to '' and must add nothing when empty, so sites with no theme file see the
+// exact same shell as before this feature existed.
+test('injects a non-empty theme as a second mj-style block, after the generic rules', () => {
+  const doc = renderShell({ body: '', theme: '.email-card { background: #FCFAF6; }' });
+  const genericIndex = doc.indexOf('h5 {');
+  const themeIndex = doc.indexOf('.email-card { background: #FCFAF6; }');
+  assert.ok(genericIndex > -1 && themeIndex > -1 && themeIndex > genericIndex);
+});
+
+test('adds no extra mj-style block when theme is empty', () => {
+  const doc = renderShell({ body: '' });
+  assert.equal((doc.match(/<mj-style/g) || []).length, 1);
 });
