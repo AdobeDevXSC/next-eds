@@ -1,1 +1,1 @@
-<mj-section background-color="#f4f4f4" padding="24px" css-class="callout-email"><mj-column width="48px" css-class="callout-icon">{{{rows.0.0}}}</mj-column><mj-column>{{{rows.0.1}}}</mj-column></mj-section>
+<mj-section background-color="#f4f4f4" padding="24px" css-class="callout-email"><mj-column width="90px" css-class="callout-icon">{{{rows.0.0}}}</mj-column><mj-column>{{{rows.0.1}}}</mj-column></mj-section>
