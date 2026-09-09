@@ -1,4 +1,4 @@
-import { renderShell } from './shell.js';
+import { renderShell, fetchSiteTheme } from './shell.js';
 import { renderDefault } from './blocks/default.js';
 import { fetchBlockTemplate, buildTemplateData } from './dynamic-block.js';
 import { renderTemplate } from './template.js';
@@ -59,5 +59,14 @@ export async function renderDocument(tree, { preheader = '', origin } = {}) {
     }
   }
 
-  return { mjml: renderShell({ body: parts.join('\n'), preheader }), warnings, blocksRendered };
+  // A theme-fetch failure shouldn't sink the whole conversion any more than a single
+  // block's template failure does above — fall back to the generic shell and warn.
+  let theme = '';
+  try {
+    theme = await fetchSiteTheme(origin);
+  } catch (err) {
+    warnings.push(`site theme failed to load: ${err.message}`);
+  }
+
+  return { mjml: renderShell({ body: parts.join('\n'), preheader, theme }), warnings, blocksRendered };
 }

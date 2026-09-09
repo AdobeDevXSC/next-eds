@@ -1,0 +1,87 @@
+/*
+ * Stacked's brand theme for converted emails — matches the site redesign and the hand-built
+ * "weekly special" email (design_handoff_email/stacked-weekly-special-email.html). Fetched
+ * fresh by the convert-email action on every request (see app-builder's shell.js,
+ * fetchSiteTheme) — editing this file changes every future email conversion immediately,
+ * no action redeploy needed, same as a block's own .email.mjml template.
+ *
+ * Design tokens (from the handoff email's README): canvas #ECE8E0, card #FCFAF6, banded
+ * surface #F3EFE8, hairline #DCD4C6, ink #2A2520, secondary #6B6156, accent teal #0E7C6F,
+ * action orange #FF7A00. Georgia italic bold stands in for Spectral (no web fonts in email).
+ *
+ * Everything here uses !important to win over the generic shell's own inline mj-attributes
+ * defaults (color/font-family/background-color) — see shell.js's own comment on why this
+ * file is injected as a *second* <mj-style> block specifically so same-specificity
+ * !important rules win by cascade order, not just specificity.
+ */
+
+.email-body,
+body {
+  background-color: #ece8e0 !important;
+}
+
+/* The 3px top accent bar in the handoff email is just this card's own top border — no
+   extra structural markup needed. */
+.email-card {
+  background-color: #fcfaf6 !important;
+  border: 1px solid #dcd4c6 !important;
+  border-top: 3px solid #ff7a00 !important;
+}
+
+h1, h2, h3, h4 {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-style: italic;
+  font-weight: bold;
+  color: #2a2520 !important;
+}
+
+/* A card-row title authored as a lone bold run in its own paragraph (this repo's cards
+   block content model: <p><strong>Title</strong></p><p>description</p>, no heading tag) —
+   :only-child keeps this from also catching a <strong> used for inline emphasis inside a
+   larger paragraph elsewhere on the page. */
+p > strong:only-child {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: bold;
+  color: #2a2520;
+}
+
+p {
+  color: #2a2520;
+}
+
+a {
+  color: #0e7c6f !important;
+}
+
+/* The eyebrow/kicker color (font-size/letter-spacing/uppercase/weight already come from the
+   shared shell's own h5 rule — this only overrides the color token). */
+h5 {
+  color: #c25e00 !important;
+}
+
+/* Opt-in hook set by this repo's own blocks/hero/hero.email.mjml (css-class="hero-email") —
+   see that file. Rounded-rect (8px), not a full pill, matching the handoff email's actual
+   button radius. If this theme file is ever unreachable, the hero CTAs fall back to the
+   shared shell's plain default button — a real but acceptable degradation, same tier as any
+   other site-hosted template failing to fetch. */
+.hero-email a {
+  background: #ff7a00 !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+}
+
+.hero-email tr:has(> td > table[role="presentation"]) {
+  display: inline-block;
+}
+
+.hero-email tr:has(> td > table[role="presentation"]) > td {
+  padding: 10px 8px !important;
+}
+
+/* Opt-in hook set by this repo's own blocks/callout/callout.email.mjml
+   (css-class="callout-email") — see that file for its own inline fallback color. */
+.callout-email {
+  background-color: #f3efe8 !important;
+  border: 1px solid #dcd4c6 !important;
+}
