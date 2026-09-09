@@ -64,18 +64,36 @@ h5 {
    see that file. Rounded-rect (8px), not a full pill, matching the handoff email's actual
    button radius. If this theme file is ever unreachable, the hero CTAs fall back to the
    shared shell's plain default button — a real but acceptable degradation, same tier as any
-   other site-hosted template failing to fetch. */
-.hero-email a {
+   other site-hosted template failing to fetch.
+
+   table[role="presentation"] alone isn't unique to a button: mj-image's own compiled wrapper
+   is *also* a role="presentation" table (verified — an earlier version of this rule leaked
+   an orange background onto the hero image's cell). border-collapse is the one real
+   structural difference MJML emits between them ("separate" for mj-button, needed for its
+   border-radius to render at all; "collapse" for mj-image) — [style*="border-collapse:
+   separate"] is what actually scopes this to buttons only. */
+.hero-email a,
+.hero-email table[role="presentation"][style*="border-collapse:separate"] td {
   background: #ff7a00 !important;
   border-radius: 8px !important;
   color: #ffffff !important;
 }
 
-.hero-email tr:has(> td > table[role="presentation"]) {
+/* Each button's own row becomes inline-block (see the comment on the pair below), so the
+   two rows are laid out side by side as a group — centering them as a group needs
+   text-align:center on their shared ancestor. That's the column itself, since a <tr>/<tbody>
+   doesn't independently establish the text-align context inline-block siblings are
+   positioned within. !important: the column's own compiled div already carries an inline
+   text-align:left (verified — without !important this rule silently lost to it). */
+.hero-email {
+  text-align: center !important;
+}
+
+.hero-email tr:has(> td > table[role="presentation"][style*="border-collapse:separate"]) {
   display: inline-block;
 }
 
-.hero-email tr:has(> td > table[role="presentation"]) > td {
+.hero-email tr:has(> td > table[role="presentation"][style*="border-collapse:separate"]) > td {
   padding: 10px 8px !important;
 }
 
@@ -84,4 +102,14 @@ h5 {
 .callout-email {
   background-color: #f3efe8 !important;
   border: 1px solid #dcd4c6 !important;
+}
+
+/* callout.js's icon cell (an emoji, always the block's first cell) rendered at the same
+   16px as regular body text via contentToMjml's generic <p> handling — indistinguishable
+   from an ordinary character rather than reading as an icon. The div, not the mj-column
+   itself, carries the font-size inline, so the override has to target that nested div. */
+.callout-icon div {
+  font-size: 28px !important;
+  line-height: 1 !important;
+  text-align: center !important;
 }
