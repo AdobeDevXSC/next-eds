@@ -60,11 +60,15 @@ h5 {
   color: #c25e00 !important;
 }
 
-/* Opt-in hook set by this repo's own blocks/hero/hero.email.mjml (css-class="hero-email") —
-   see that file. Rounded-rect (8px), not a full pill, matching the handoff email's actual
-   button radius. If this theme file is ever unreachable, the hero CTAs fall back to the
-   shared shell's plain default button — a real but acceptable degradation, same tier as any
-   other site-hosted template failing to fetch.
+/* Any mj-button, anywhere in the email — not just inside the hero — should read as a
+   branded CTA. Only the hero's *layout* (side-by-side, centered) is hero-specific; the
+   color/shape below is not, so it isn't scoped to .hero-email. Without this, a CTA outside
+   the hero (e.g. a closing "See this week's specials" button-paragraph) fell through to the
+   shared shell's plain default button (black, see shell.js's <mj-button> default) instead of
+   the brand color. Rounded-rect (8px), not a full pill, matching the handoff email's actual
+   button radius. If this theme file is ever unreachable, CTAs fall back to the shared
+   shell's plain default button — a real but acceptable degradation, same tier as any other
+   site-hosted template failing to fetch.
 
    table[role="presentation"] alone isn't unique to a button: mj-image's own compiled wrapper
    is *also* a role="presentation" table (verified — an earlier version of this rule leaked
@@ -72,8 +76,8 @@ h5 {
    structural difference MJML emits between them ("separate" for mj-button, needed for its
    border-radius to render at all; "collapse" for mj-image) — [style*="border-collapse:
    separate"] is what actually scopes this to buttons only. */
-.hero-email a,
-.hero-email table[role="presentation"][style*="border-collapse:separate"] td {
+table[role="presentation"][style*="border-collapse:separate"] td,
+table[role="presentation"][style*="border-collapse:separate"] a {
   background: #ff7a00 !important;
   border-radius: 8px !important;
   color: #ffffff !important;
