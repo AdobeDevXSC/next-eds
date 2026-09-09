@@ -85,3 +85,25 @@ test('the real callout.email.mjml renders both cells — one row, two cells: ico
     assert.match(out, /One email a week/);
   } finally { globalThis.fetch = orig; }
 });
+
+// Iterating rows.0 with {{#each}} gave both cells an equal, auto-distributed width (50/50
+// for icon + message) — a tiny emoji stranded alone in a whole half-width column, with the
+// message squeezed into the other half. callout.js's own content model is always exactly
+// one row, two cells (icon, message — never more), so the template can address them by
+// fixed position instead of iterating: a narrow explicit width for the icon column, no width
+// (auto-fills the rest) for the message column.
+test('the real callout.email.mjml gives the icon column a narrow fixed width, not an equal share', async () => {
+  const template = readFileSync(fileURLToPath(new URL('../../blocks/callout/callout.email.mjml', import.meta.url)), 'utf8');
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response(template, { status: 200 });
+  try {
+    const block = {
+      name: 'callout',
+      variants: ['info'],
+      rows: [[{ html: '<p>📬</p>' }, { html: '<p>Message</p>' }]],
+    };
+    const out = await renderDynamicBlock(block, ORIGIN);
+    assert.match(out, /<mj-column width="48px" css-class="callout-icon"><mj-text><p>📬<\/p><\/mj-text><\/mj-column>/);
+    assert.match(out, /<mj-column><mj-text><p>Message<\/p><\/mj-text><\/mj-column>/);
+  } finally { globalThis.fetch = orig; }
+});
