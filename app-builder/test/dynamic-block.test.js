@@ -103,7 +103,32 @@ test('the real callout.email.mjml gives the icon column a narrow fixed width, no
       rows: [[{ html: '<p>📬</p>' }, { html: '<p>Message</p>' }]],
     };
     const out = await renderDynamicBlock(block, ORIGIN);
-    assert.match(out, /<mj-column width="48px" css-class="callout-icon"><mj-text><p>📬<\/p><\/mj-text><\/mj-column>/);
+    assert.match(out, /<mj-column width="90px" css-class="callout-icon"><mj-text><p>📬<\/p><\/mj-text><\/mj-column>/);
     assert.match(out, /<mj-column><mj-text><p>Message<\/p><\/mj-text><\/mj-column>/);
   } finally { globalThis.fetch = orig; }
+});
+
+// A real callout icon is often an authored image, not an emoji — e.g. a linked SVG pasted
+// via DA. mj-image's own default padding (10px 25px, 50px total horizontally) is bigger
+// than the icon column was (48px), so MJML computed a negative width (48 - 50 = -2) for the
+// image and its wrapping <td> — a real bug caught by rendering an image icon end to end
+// through the actual compiler, not just asserting the template's own markup.
+test('the real callout.email.mjml gives an image icon enough width to clear mj-image\'s own default padding', async () => {
+  const template = readFileSync(fileURLToPath(new URL('../../blocks/callout/callout.email.mjml', import.meta.url)), 'utf8');
+  const orig = globalThis.fetch;
+  globalThis.fetch = async () => new Response(template, { status: 200 });
+  let mjml;
+  try {
+    const block = {
+      name: 'callout',
+      variants: ['info'],
+      rows: [[{ html: '<p><picture><img src="https://x/mailbox.svg" alt="" /></picture></p>' }, { html: '<p>Message</p>' }]],
+    };
+    mjml = await renderDynamicBlock(block, ORIGIN);
+  } finally { globalThis.fetch = orig; }
+  const { compile } = await import('../actions/convert-email/compile.js');
+  const { html, warnings } = compile(`<mjml><mj-body>${mjml}</mj-body></mjml>`);
+  assert.equal(warnings.length, 0);
+  assert.doesNotMatch(html, /width="-\d/, 'mj-image computed a negative width');
+  assert.doesNotMatch(html, /width:-\d/, 'the image\'s wrapping <td> computed a negative width');
 });
