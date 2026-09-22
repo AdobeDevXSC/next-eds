@@ -268,6 +268,13 @@ header .nav-sections .default-content-wrapper > ul > li > ul {
     visibility: visible;
   }
 
+  /* desktop nav is always aria-expanded='true' (header.js), which otherwise triggers the
+     mobile drawer's align-self: start — re-center the links in the horizontal bar. Matches the
+     specificity of that rule so this (later) declaration wins. */
+  header nav[aria-expanded='true'] .nav-sections {
+    align-self: center;
+  }
+
   /* over a hero, the unscrolled desktop nav is transparent with light text. Detected with
      :has() so it's correct at first paint (no JS flag, no white flash). */
   body:has(main > .section:first-of-type .hero) header .nav-wrapper:not(.is-scrolled) {
