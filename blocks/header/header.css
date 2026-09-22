@@ -244,6 +244,21 @@ header .nav-sections .default-content-wrapper > ul > li > ul {
   font-weight: 400;
 }
 
+/* On mobile the bottom tab bar (blocks/tab-bar) carries navigation, so the header drops the
+   hamburger and its drawer — leaving a compact brand + Sign in bar, matching the app shell's
+   mobile header. */
+@media (width < 900px) {
+  header nav .nav-hamburger {
+    display: none;
+    visibility: hidden;
+  }
+
+  header nav[aria-expanded='true'] .nav-sections {
+    display: none;
+    visibility: hidden;
+  }
+}
+
 @media (width >= 900px) {
   header nav .nav-hamburger {
     display: none;

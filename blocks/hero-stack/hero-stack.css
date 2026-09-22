@@ -128,6 +128,15 @@
   margin: 28px 0 0;
 }
 
+/* On mobile the inline hero CTAs are hidden — the bottom tab bar (blocks/tab-bar) and the page's
+   closing CTA pair carry navigation, matching the app shell's mobile hero (which hides its inline
+   CTAs in favour of the docked bar). They return at the hero's own 640px breakpoint. */
+@media (width < 640px) {
+  .hero-stack .hero-ctas {
+    display: none;
+  }
+}
+
 .hero-stack .btn {
   display: inline-flex;
   align-items: center;

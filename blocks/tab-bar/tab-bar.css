@@ -1,0 +1,69 @@
+/* Tab Bar — Tier-1 EDS-only twin of the app shell's mobile bottom nav. Ported from
+   app/(site)/shell.css (.docked-bar / .tab-bar / .tab*), scoped under .tab-bar. Fixed to the
+   bottom on mobile; hidden on desktop (>= 900px) where the header nav takes over — matching the
+   header block's mobile/desktop breakpoint. */
+
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  margin: 0;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-top: var(--hairline) solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab-bar .tab-bar-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.tab-bar .tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 64px;
+  padding: 6px 0;
+  text-decoration: none;
+}
+
+.tab-bar .tab-glyph {
+  position: relative;
+  display: inline-flex;
+  color: var(--text-tertiary);
+}
+
+.tab-bar .tab-label {
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.01em;
+  color: var(--text-secondary);
+}
+
+.tab-bar .tab-active .tab-glyph {
+  color: var(--primary);
+}
+
+.tab-bar .tab-active .tab-label {
+  color: var(--text-primary);
+}
+
+/* keep page content clear of the fixed bar on mobile */
+@media (width < 900px) {
+  body:has(.tab-bar) {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* desktop: the header nav handles navigation, so the bottom bar is hidden */
+@media (width >= 900px) {
+  .tab-bar {
+    display: none;
+  }
+}
