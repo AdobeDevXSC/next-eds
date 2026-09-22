@@ -1,0 +1,102 @@
+/* Menu List — Tier-1 EDS-only twin of the Next /menu route. Ported from app/(site)/menu/menu.css
+   (.menu-grid / .menu-card*) so the raw EDS card grid matches the app's menu exactly; selectors
+   are scoped under .menu-list per the repo's block-scoping convention. Brand tokens only. */
+
+.menu-list .menu-empty {
+  color: var(--text-muted);
+}
+
+.menu-list .menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-m);
+}
+
+@media (width >= 600px) {
+  .menu-list .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .menu-list .menu-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.menu-list .menu-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border-radius: var(--radius-brick);
+  box-shadow: var(--shadow-brick);
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--duration-snap) var(--ease-snap),
+              box-shadow var(--duration-snap) var(--ease-snap);
+}
+
+.menu-list .menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-pop);
+  text-decoration: none;
+}
+
+.menu-list .menu-card-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--surface-tint);
+}
+
+.menu-list .menu-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-list .menu-card-badge {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  background: var(--brand-sun);
+  color: var(--on-sun);
+  font-size: var(--body-font-size-xs);
+  font-weight: var(--weight-medium);
+  padding: 0.2em 0.7em;
+  border-radius: var(--radius-pill);
+}
+
+.menu-list .menu-card-body {
+  padding: var(--space-s) var(--space-m);
+}
+
+.menu-list .menu-card-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.menu-list .menu-card-name {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-heading);
+}
+
+.menu-list .menu-card-price {
+  font-family: var(--heading-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: var(--weight-bold);
+  white-space: nowrap;
+}
+
+.menu-list .menu-card-description {
+  margin: var(--space-2xs) 0 0;
+  color: var(--text-muted);
+  font-size: var(--body-font-size-s);
+  line-height: var(--leading-body);
+}
