@@ -1,0 +1,319 @@
+/* Sandwich Builder — Tier-1 EDS-only twin of the app's /build. Ported from app/(site)/build/build.css
+   (.builder / .stack-* / .pill / .builder-dock), scoped under .sandwich-builder. Mobile-first;
+   centered column on desktop. The dock's "Add to order" is an anchor styled as a primary button
+   here (raw EDS has no shell .btn). A focused flow: body.sandwich-builder-page hides the global
+   header/footer/tab-bar and lets the builder go full-bleed. */
+
+/* focused flow — hide global chrome and remove the section gutters/margins for this page */
+body.sandwich-builder-page header .nav-wrapper,
+body.sandwich-builder-page footer,
+body.sandwich-builder-page .tab-bar {
+  display: none;
+}
+
+body.sandwich-builder-page main,
+body.sandwich-builder-page main > .section,
+body.sandwich-builder-page main > .section > div {
+  margin: 0;
+  padding: 0;
+  max-width: none;
+}
+
+.sandwich-builder .builder {
+  min-height: 100dvh;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+/* ---- Header ---- */
+.sandwich-builder .builder-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-top: env(safe-area-inset-top);
+  background: var(--nav-bg);
+  backdrop-filter: saturate(160%) blur(12px);
+}
+
+.sandwich-builder .builder-header-inner {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 14px;
+}
+
+.sandwich-builder .builder-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 44px;
+  font-size: 20px;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.sandwich-builder .builder-title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.sandwich-builder .builder-clear {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.sandwich-builder .accent-strip {
+  height: 3px;
+  background: var(--primary);
+}
+
+/* ---- Live stack preview (sticky under header) ---- */
+.sandwich-builder .builder-preview {
+  position: sticky;
+  top: calc(52px + env(safe-area-inset-top));
+  z-index: 10;
+  padding: 20px 22px 14px;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border-bottom: var(--hairline) solid var(--border);
+}
+
+.sandwich-builder .stack-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-height: 90px;
+  justify-content: flex-end;
+}
+
+.sandwich-builder .stack-brick {
+  width: var(--brick-w);
+  height: 15px;
+  background-color: var(--brick-color);
+  border-radius: 7px;
+  transform: rotate(var(--brick-rot));
+  animation: sb-brick-land var(--duration-land) var(--ease-land) both;
+}
+
+.sandwich-builder .stack-brick-base {
+  height: 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-brick-base);
+}
+
+.sandwich-builder .stack-brick:first-child {
+  height: 20px;
+  border-radius: 10px;
+}
+
+@keyframes sb-brick-land {
+  from {
+    opacity: 0;
+    transform: translateY(6px) rotate(var(--brick-rot));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--brick-rot));
+  }
+}
+
+.sandwich-builder .preview-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: var(--hairline) solid var(--border);
+}
+
+.sandwich-builder .preview-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.sandwich-builder .preview-total {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+/* ---- Ingredient groups ---- */
+.sandwich-builder .ing-group {
+  padding: 20px 22px 8px;
+}
+
+.sandwich-builder .ing-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.sandwich-builder .ing-group-label {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--text-primary);
+}
+
+.sandwich-builder .ing-group-note {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+}
+
+.sandwich-builder .ing-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sandwich-builder .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 11px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: background-color var(--duration-state) var(--ease-standard),
+    border-color var(--duration-state) var(--ease-standard);
+}
+
+.sandwich-builder .pill-on {
+  background-color: var(--primary-tint);
+  border-color: var(--primary-tint-border);
+}
+
+.sandwich-builder .pill-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background-color: var(--brick-color);
+}
+
+.sandwich-builder .pill-name {
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.sandwich-builder .pill-price {
+  font-family: var(--font-chrome);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.sandwich-builder .pill-check {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--primary-deep);
+}
+
+/* ---- Docked total + Add to order ---- */
+.sandwich-builder .builder-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px 10px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
+  background: var(--nav-bg);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-top: var(--hairline) solid var(--border);
+}
+
+.sandwich-builder .dock-total {
+  display: flex;
+  flex-direction: column;
+}
+
+.sandwich-builder .dock-total-cap {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.sandwich-builder .dock-total-val {
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 26px;
+  color: var(--text-primary);
+}
+
+.sandwich-builder .dock-add {
+  flex: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  margin-left: auto;
+  border-radius: 10px;
+  background-color: var(--primary);
+  color: var(--primary-text-on);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.sandwich-builder .dock-add:hover {
+  background-color: var(--primary-press);
+}
+
+.sandwich-builder .builder-empty {
+  padding: 40px 22px;
+  color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sandwich-builder .stack-brick {
+    animation: none;
+  }
+}
+
+/* ---- Desktop: centered column ---- */
+@media (width >= 640px) {
+  .sandwich-builder .builder {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .sandwich-builder .builder-dock {
+    padding-inline: max(22px, calc((100% - 560px) / 2));
+  }
+}
