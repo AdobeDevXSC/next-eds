@@ -8,14 +8,15 @@ header .nav-wrapper {
   transition: background-color var(--duration-base) var(--ease-standard),
     backdrop-filter var(--duration-base) var(--ease-standard),
     border-color var(--duration-base) var(--ease-standard);
-  border-bottom: 1px solid transparent;
+
+  /* persistent 3px orange accent strip, matching the app shell's .accent-strip */
+  border-bottom: 3px solid var(--primary);
 }
 
-/* once scrolled: translucent blurred bar */
+/* once scrolled: translucent blurred bar (accent strip stays orange) */
 header .nav-wrapper.is-scrolled {
   background-color: rgb(255 255 255 / 85%);
   backdrop-filter: saturate(180%) blur(12px);
-  border-bottom-color: var(--slate-200);
 }
 
 header nav {
@@ -125,19 +126,32 @@ header nav[aria-expanded='true'] .nav-hamburger-icon::after {
   transform: rotate(-45deg);
 }
 
-/* brand */
+/* brand — orange square mark + wordmark, matching the app shell's .brand-square/.brand-word */
 header .nav-brand {
   grid-area: brand;
-  flex-basis: 128px;
-  font-family: var(--heading-font-family);
-  font-size: var(--heading-font-size-s);
-  font-weight: 700;
-  letter-spacing: var(--tracking-heading);
+  font-family: var(--font-chrome);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1;
+  color: var(--text-primary);
 }
 
 header nav .nav-brand a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   text-decoration: none;
+  color: currentcolor;
+}
+
+header nav .nav-brand a::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--primary);
+  box-shadow: var(--shadow-square-glow);
 }
 
 header nav .nav-brand img {
@@ -146,9 +160,10 @@ header nav .nav-brand img {
 }
 
 /* tools — authored as a plain link (DA strips class attributes from raw-authored anchors),
-   so the button look is applied structurally here rather than depending on a `.button`
-   class surviving authoring. Punch, dark ink, brick radius, matching every other primary
-   action in the system. (Declared before .nav-sections so ascending specificity order holds.) */
+   so the pill look is applied structurally here rather than depending on a `.button`
+   class surviving authoring. Outlined pill matching the app shell's .signin-pill: hairline
+   border, transparent fill, dark ink; hover shifts to the accent. (Declared before
+   .nav-sections so ascending specificity order holds.) */
 header nav .nav-tools {
   grid-area: tools;
 }
@@ -160,31 +175,24 @@ header nav .nav-tools p {
 header nav .nav-tools a {
   display: inline-flex;
   align-items: center;
-  border-radius: var(--radius-brick);
-  padding: 0.55em 1.2em;
-  background-color: var(--brand-punch);
-  color: var(--on-punch);
-  font-weight: var(--weight-bold);
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 16px;
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-button);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-chrome);
+  font-weight: 500;
+  font-size: 13px;
   text-decoration: none;
-  box-shadow: var(--shadow-brick);
-  transition: background-color var(--duration-fast) var(--ease-standard),
-    box-shadow var(--duration-snap) var(--ease-snap),
-    transform var(--duration-snap) var(--ease-snap);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
 }
 
 header nav .nav-tools a:hover {
-  background-color: var(--brand-punch-deep);
-}
-
-header nav .nav-tools a:active {
-  transform: translateY(3px);
-  box-shadow: var(--shadow-brick-pressed);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  header nav .nav-tools a:active {
-    transform: none;
-  }
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* sections — the authored nav list. header.js (stock EDS) renders the nav items as
@@ -208,7 +216,8 @@ header .nav-sections .default-content-wrapper > ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: var(--body-font-size-s);
+  font-family: var(--font-chrome);
+  font-size: 13px;
   font-weight: 500;
 }
 
@@ -218,8 +227,13 @@ header .nav-sections .default-content-wrapper > ul > li {
 }
 
 header .nav-sections .default-content-wrapper > ul > li > a {
-  color: inherit;
+  color: var(--text-secondary);
   text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+header .nav-sections .default-content-wrapper > ul > li > a:hover {
+  color: var(--text-primary);
 }
 
 /* nested dropdown list (nav-drop) — simple indented sublist on mobile */
