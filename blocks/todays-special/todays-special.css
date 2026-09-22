@@ -1,0 +1,146 @@
+/* Today's Special — Tier-1 static twin of the Next-only todays-pick island. Ported from
+   components/blocks/todays-pick.css (.pick-*) so the card matches the homepage's "Today's picks"
+   card exactly; inner classes stay .pick-* but are scoped under .todays-special per the repo's
+   block-scoping convention. Unlike the Next island, the CTA is a plain link/button that stays
+   visible on desktop. Mobile-first; desktop at >= 640px (matches the homepage card, two-ways,
+   and how-it-works). */
+
+.todays-special .pick-card {
+  overflow: hidden;
+  background-color: var(--surface);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.todays-special .pick-well {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 18px;
+  background-color: var(--surface-raised);
+  background-image: radial-gradient(var(--dot-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.todays-special .pick-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 9px;
+  border: var(--hairline) solid var(--primary-tint-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-tint);
+  color: var(--primary-deep);
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.todays-special .pick-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 170px;
+}
+
+.todays-special .pick-brick {
+  height: 12px;
+  background-color: var(--brick-color);
+  border-radius: 3px;
+}
+
+.todays-special .pick-brick:first-child {
+  border-radius: 8px 8px 3px 3px;
+}
+
+.todays-special .pick-brick:last-child {
+  border-radius: 3px 3px 8px 8px;
+  box-shadow: var(--shadow-brick-base);
+}
+
+.todays-special .pick-body {
+  padding: 16px;
+}
+
+.todays-special .pick-titlerow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.todays-special .pick-name {
+  margin: 0;
+  font-family: var(--font-content);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.todays-special .pick-price {
+  font-family: var(--font-chrome);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.todays-special .pick-desc {
+  margin: 6px 0 0;
+  font-family: var(--font-chrome);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.todays-special .pick-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 46px;
+  margin: 14px 0 0;
+}
+
+@media (width >= 640px) {
+  .todays-special .pick-card {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 32px;
+    align-items: center;
+    padding: 28px 32px;
+  }
+
+  .todays-special .pick-well {
+    order: 2;
+    padding: 0;
+    background: none;
+  }
+
+  .todays-special .pick-body {
+    order: 1;
+    padding: 0;
+  }
+
+  .todays-special .pick-name {
+    font-size: 30px;
+  }
+
+  .todays-special .pick-price {
+    font-size: 20px;
+  }
+
+  .todays-special .pick-desc {
+    font-size: 14px;
+  }
+
+  .todays-special .pick-add {
+    width: auto;
+    margin-top: 18px;
+  }
+}

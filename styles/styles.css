@@ -190,6 +190,22 @@ main .section.lede p {
   }
 }
 
+/* Section Style "closing-cta" — a centered closing call-to-action row. Two emphasized links,
+   authored as default content, are decorated into a primary + secondary button (scripts.js's
+   decorateButtons / lib/eds/buttons.js); this lays them out as a centered, wrapping pair.
+   Used by the EDS-only /index-eds page as the static twin of the homepage's mobile dock CTAs. */
+main .section.closing-cta > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: center;
+}
+
+main .section.closing-cta .button-wrapper {
+  margin: 0;
+}
+
 /* full-bleed hero — breaks out of the content-width cap above so the background spans the
    viewport, while padding keeps the content aligned to the centered content column. */
 main > .section > .hero {
