@@ -13,7 +13,7 @@
  * unregister the worker (DevTools > Application > Service Workers) or bump the
  * version to force a refresh.
  */
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v2';
 const CACHE = `eds-pwa-${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
